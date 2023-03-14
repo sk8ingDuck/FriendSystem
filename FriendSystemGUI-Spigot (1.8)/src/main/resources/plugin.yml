@@ -1,0 +1,13 @@
+name: FriendSystemGUI
+version: '${project.version}'
+main: me.sk8ingduck.friendsystemgui.FriendSystemGUI
+authors: [ sk8ingDuck ]
+
+commands:
+  f:
+    description: open friend menu
+    usage: /f
+
+  bungeecommand:
+    description: forward a command to bungeecord
+    usage: /bungeecommand /<cmd>

@@ -1,0 +1,10 @@
+name: FriendSystemGUI
+version: '${project.version}'
+main: me.sk8ingduck.friendsystemgui.FriendSystemGUI
+api-version: 1.13
+authors: [ sk8ingDuck ]
+
+commands:
+  f:
+    description: open friend menu
+    usage: /<command>

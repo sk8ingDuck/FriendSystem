@@ -1,0 +1,5 @@
+name: FriendSystem
+version: '${project.version}'
+author: sk8ingDuck
+main: me.sk8ingduck.friendsystem.FriendSystem
+description: FriendSystem for BungeeCord
