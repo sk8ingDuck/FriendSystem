@@ -5,14 +5,13 @@ import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.mysql.MySQL;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
+import me.sk8ingduck.friendsystem.utils.Util;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Friend extends Command {
@@ -67,7 +66,7 @@ public class Friend extends Command {
 					friendPlayer.getOfflineFriends().forEach(offlineFriend ->
 							player.sendMessage(new TextComponent(c.get("friend.list.format.offline", false)
 									.replaceAll("%PLAYEROFF%", UUIDFetcher.getName(offlineFriend))
-									.replaceAll("%OFFLINE_SINCE%", formatDifference(mySQL.getLastSeen(offlineFriend))))));
+									.replaceAll("%OFFLINE_SINCE%", Util.formatDifference(mySQL.getLastSeen(offlineFriend))))));
 					player.sendMessage(new TextComponent(c.get("friend.list.format.footer", false)));
 				});
 			} else if (action.equalsIgnoreCase("requests")) {
@@ -134,9 +133,10 @@ public class Friend extends Command {
 					if (!friendPlayer2.isInvitesAllowed()) {
 						player.sendMessage(new TextComponent(c.get("friend.request.invitestoggled")
 								.replaceAll("%PLAYER%", playerName)));
+						return;
 					}
 
-					friendPlayer.addRequest(uuid);
+					friendPlayer2.addRequest(uuid);
 					mySQL.addRequestAsync(uuid2, uuid);
 
 					player.sendMessage(new TextComponent(c.get("friend.request.sent")
@@ -192,7 +192,7 @@ public class Friend extends Command {
 					friendPlayer2.sendMessage(c.get("friend.deny.successful2")
 							.replaceAll("%PLAYER%", player.getName()));
 				} else if (action.equalsIgnoreCase("jump")) {
-					if (friendPlayer.isFriendsWith(uuid2)) {
+					if (!friendPlayer.isFriendsWith(uuid2)) {
 						player.sendMessage(new TextComponent(c.get("friend.jump.notfriends")
 								.replaceAll("%PLAYER%", playerName)));
 						return;
@@ -212,36 +212,5 @@ public class Friend extends Command {
 				}
 			});
 		}
-	}
-
-	private String formatDifference(LocalDateTime start) {
-		Duration duration = Duration.between(start, LocalDateTime.now());
-		long years = duration.toDays() / 365;
-		long days = duration.toDays() % 365;
-		long hours = duration.toHours() % 24;
-		long minutes = duration.toMinutes() % 60;
-		long seconds = duration.getSeconds() % 60;
-
-
-		if (years > 0) {
-			return years + " " + (c.get("friend.timeformat.year" + (years > 1 ? "s" : ""), false))
-					+ (days > 0 ? " " + days + " " + (c.get("friend.timeformat.day" + (days > 1 ? "s" : ""), false)) : "");
-		}
-		if (days > 0) {
-			return days + " " + (c.get("friend.timeformat.day" + (days > 1 ? "s" : ""), false))
-					+ (hours > 0 ? " " + hours + " " + (c.get("friend.timeformat.hour" + (hours > 1 ? "s" : ""), false)) : "");
-		}
-		if (hours > 0) {
-			return hours + " " + (c.get("friend.timeformat.hour" + (hours > 1 ? "s" : ""), false))
-					+ (minutes > 0 ? " " + minutes + " " + (c.get("friend.timeformat.minute" + (minutes > 1 ? "s" : ""), false)) : "");
-		}
-		if (minutes > 0) {
-			return minutes + " " + (c.get("friend.timeformat.minute" + (minutes > 1 ? "s" : ""), false))
-					+ (seconds > 0 ? " " + seconds + " " + (c.get("friend.timeformat.second" + (seconds > 1 ? "s" : ""), false)) : "");
-		}
-		if (seconds > 0) {
-			return seconds + " " + (c.get("friend.timeformat.second" + (seconds > 1 ? "s" : ""), false));
-		}
-		return "invalid";
 	}
 }

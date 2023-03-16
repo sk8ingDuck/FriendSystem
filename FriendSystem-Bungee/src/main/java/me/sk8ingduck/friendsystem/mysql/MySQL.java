@@ -7,13 +7,11 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 public class MySQL {
     private final HikariDataSource dataSource;
@@ -106,10 +104,6 @@ public class MySQL {
         return null;
     }
 
-    public void getLastSeen(UUID uuid, Consumer<LocalDateTime> consumer) {
-        pool.execute(() -> consumer.accept(getLastSeen(uuid)));
-    }
-
     public void updateLastSeen(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement(
@@ -124,7 +118,7 @@ public class MySQL {
     private void addPlayer(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement(
-                     "INSERT INTO `player`(`UUID`, `invites`, `notifies`, `msgs`, `jump`) VALUES (?, '1', '1', '1', '1')")) {
+                     "INSERT INTO `player`(`UUID`, `invites`, `notifies`, `msgs`, `jump`, `lastSeen`) VALUES (?, '1', '1', '1', '1',NOW())")) {
             stmt.setString(1, uuid.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -53,8 +53,7 @@ public class GuiRequests {
 
         FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
             requests.stream().sorted((o1, o2) -> Boolean.compare(o2.isOnline(), o1.isOnline())).forEach(request -> {
-                ItemStack item = request.isOnline() ? ItemUtil.getPlayerHead("§a" + request.getName(), request.getName()) :
-                        ItemUtil.createItem(Material.SKULL, "§c" + request.getName());
+                ItemStack item = ItemUtil.getSkeletonHead("§7" + request.getName(), null);
                 builder.addItem(SlotSettings.builder()
                         .itemTemplate(player1 -> item)
                         .clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, request.getUuid(), request.getName()))
@@ -65,3 +64,5 @@ public class GuiRequests {
 
     }
 }
+
+

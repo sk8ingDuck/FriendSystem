@@ -16,9 +16,10 @@ public class FriendManager {
 	}
 
 	public FriendPlayer getFriendPlayer(UUID uuid) {
-		if (!friendPlayers.containsKey(uuid)) {
+		if (!friendPlayers.containsKey(uuid)  || friendPlayers.get(uuid) == null) {
 			friendPlayers.put(uuid, mySQL.getFriendPlayer(uuid));
 		}
+
 		return friendPlayers.get(uuid);
 	}
 

@@ -22,7 +22,7 @@ public class GuiSettings {
         gui = ChestMenu.builder(4).title(guiConfig.getSettingsGuiTitle()).build();
 
         for (int i = 0; i < 36; i++)
-            gui.getSlot(i).setItem(ItemUtil.createItem(Material.STAINED_GLASS_PANE, (short) 0, " "));
+            gui.getSlot(i).setItem(ItemUtil.createItem(Material.BLACK_STAINED_GLASS_PANE, " "));
 
         Slot back = gui.getSlot(10);
         Slot toggleInvites = gui.getSlot(13);

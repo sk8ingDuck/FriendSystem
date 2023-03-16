@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
+import me.sk8ingduck.friendsystem.utils.Util;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -14,6 +15,7 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class PluginMessage implements Listener {
 
@@ -51,9 +53,10 @@ public class PluginMessage implements Listener {
 					out.writeUTF(uuid.toString());
 					out.writeUTF(friend == null ? UUIDFetcher.getName(uuid) : friend.getName());
 					out.writeBoolean(friend != null);
-					out.writeLong(Timestamp.from(Instant.now()).getTime());
-					receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
+					out.writeUTF(friend == null ? "offline" : friend.getServer().getInfo().getName());
+					out.writeUTF(Util.formatDifference(FriendSystem.getInstance().getMySQL().getLastSeen(uuid)));
 				});
+				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 			});
 		} else if (subChannel.equalsIgnoreCase("requestsList")) {
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
@@ -62,12 +65,12 @@ public class PluginMessage implements Listener {
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("requestsList");
 				out.writeUTF(receiver.getUniqueId().toString());
-				out.writeInt(friendPlayer.getFriends().size());
-
+				out.writeInt(friendPlayer.getRequests().size());
 				friendPlayer.getRequests().forEach(uuid -> {
 					out.writeUTF(uuid.toString());
 					out.writeUTF(UUIDFetcher.getName(uuid));
 				});
+				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 			});
 		}
 	}

@@ -27,7 +27,7 @@ public class PlayerInteractListener implements Listener {
                 .equalsIgnoreCase(config.get("guiItem").getItemMeta().getDisplayName())) {
             return;
         }
-
+        
         GuiManager.guiMainMenu.open(player);
     }
 }

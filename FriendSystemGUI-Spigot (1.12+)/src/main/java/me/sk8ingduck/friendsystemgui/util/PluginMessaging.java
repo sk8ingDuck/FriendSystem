@@ -22,15 +22,31 @@ public class PluginMessaging implements PluginMessageListener {
 		}
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
 		String subchannel = in.readUTF();
-		if (subchannel.equals("friendsList") || subchannel.equalsIgnoreCase("requestsList")) {
+		if (subchannel.equals("friendsList")) {
 			UUID uuid = UUID.fromString(in.readUTF());
 			int size = in.readInt();
 			ArrayList<BungeePlayer> bungeePlayers = new ArrayList<>();
 			for (int i = 0; i < size; i++) {
-				bungeePlayers.add(new BungeePlayer(UUID.fromString(in.readUTF()), in.readUTF(), in.readBoolean()));
+				bungeePlayers.add(new BungeePlayer(
+						UUID.fromString(in.readUTF()), in.readUTF(), in.readBoolean(), in.readUTF(), in.readUTF()));
 			}
 			if (bungeeCallbacks.get(uuid) == null) {
-				Bukkit.getConsoleSender().sendMessage("Invalid callback for " + uuid);
+				Bukkit.getConsoleSender().sendMessage("Invalid friend-list callback for " + uuid);
+				return;
+			}
+
+			bungeeCallbacks.get(uuid).onReceive(bungeePlayers);
+			bungeeCallbacks.remove(uuid);
+		} else if (subchannel.equals("requestsList")) {
+			UUID uuid = UUID.fromString(in.readUTF());
+			int size = in.readInt();
+			ArrayList<BungeePlayer> bungeePlayers = new ArrayList<>();
+			for (int i = 0; i < size; i++) {
+				bungeePlayers.add(new BungeePlayer(
+						UUID.fromString(in.readUTF()), in.readUTF(), false, null, null));
+			}
+			if (bungeeCallbacks.get(uuid) == null) {
+				Bukkit.getConsoleSender().sendMessage("Invalid friend-request callback for " + uuid);
 				return;
 			}
 
@@ -49,7 +65,7 @@ public class PluginMessaging implements PluginMessageListener {
 	public void getRequests(Player player, BungeeCallback friends) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("requestsList");
-		player.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		bungeeCallbacks.put(player.getUniqueId(), friends);
 	}
 

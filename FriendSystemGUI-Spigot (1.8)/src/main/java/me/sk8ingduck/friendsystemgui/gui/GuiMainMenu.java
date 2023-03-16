@@ -57,8 +57,13 @@ public class GuiMainMenu {
 
         FriendSystemGUI.getInstance().getPluginMessaging().getFriends(player, friends -> {
             friends.stream().sorted((o1, o2) -> Boolean.compare(o2.isOnline(), o1.isOnline())).forEach(friend -> {
-                ItemStack item = friend.isOnline() ? ItemUtil.getPlayerHead("§a" + friend.getName(), friend.getName()) :
-                        ItemUtil.createItem(Material.SKULL_ITEM, (byte) 0, "§c" + friend.getName());
+                ItemStack item = friend.isOnline()
+                        ? ItemUtil.getPlayerHead(friend.getName(),
+                        "§a" + friend.getName(),
+                        guiConfig.getOnlinePlayerLore(friend.getServer(), friend.getLastSeen()))
+
+                        : ItemUtil.getSkeletonHead("§c" + friend.getName(),
+                        guiConfig.getOfflinePlayerLore(friend.getLastSeen()));
                 builder.addItem(SlotSettings.builder()
                         .itemTemplate(player1 -> item)
                         .clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, friend.getUuid(), friend.getName()))

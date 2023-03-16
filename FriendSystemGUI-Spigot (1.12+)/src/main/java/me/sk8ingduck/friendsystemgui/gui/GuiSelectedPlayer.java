@@ -23,7 +23,7 @@ public class GuiSelectedPlayer {
                 .replaceAll("%PLAYER%", playerName)).build();
 
         for (int i = 0; i < 9; i++)
-            gui.getSlot(i).setItem(ItemUtil.createItem(Material.STAINED_GLASS_PANE, (short) 0, " "));
+            gui.getSlot(i).setItem(ItemUtil.createItem(Material.BLACK_STAINED_GLASS_PANE, " "));
 
         Slot back = gui.getSlot(0);
         Slot jump = gui.getSlot(8);

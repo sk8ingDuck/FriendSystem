@@ -26,7 +26,7 @@ public class PlayerJoinListener implements Listener {
         if (!config.isGuiEnabled()) return;
 
         ItemStack item = config.get("guiItem");
-        if (item.getType() == Material.SKULL_ITEM) {
+        if (item.getType() == Material.SKULL) {
             SkullMeta headMeta = (SkullMeta) item.getItemMeta();
             if (headMeta != null)
                 headMeta.setOwner(player.getName());

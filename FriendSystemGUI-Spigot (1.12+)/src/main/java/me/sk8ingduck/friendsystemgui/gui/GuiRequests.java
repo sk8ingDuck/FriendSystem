@@ -39,7 +39,7 @@ public class GuiRequests {
 
 				.newMenuModifier(menu -> {
 					Mask menuMask = RecipeMask.builder(menu)
-							.item('-', ItemUtil.createItem(Material.STAINED_GLASS_PANE, (short) 0, " "))
+							.item('-', ItemUtil.createItem(Material.BLACK_STAINED_GLASS_PANE, " "))
 							.row(5).pattern("---------")
 							.row(6).pattern("---------")
 							.build();
@@ -50,11 +50,9 @@ public class GuiRequests {
 					back.setClickHandler((player1, clickInformation) -> GuiManager.guiMainMenu.open(player1));
 				});
 
-
-		me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
+		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
 			requests.stream().sorted((o1, o2) -> Boolean.compare(o2.isOnline(), o1.isOnline())).forEach(request -> {
-				ItemStack item = request.isOnline() ? ItemUtil.getPlayerHead("§a" + request.getName(), request.getName()) :
-						ItemUtil.createItem(Material.SKULL_ITEM, (short) 0, "§c" + request.getName());
+				ItemStack item = ItemUtil.getSkeletonHead("§7" + request.getName(), null);
 				builder.addItem(SlotSettings.builder()
 						.itemTemplate(player1 -> item)
 						.clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, request.getUuid(), request.getName()))
