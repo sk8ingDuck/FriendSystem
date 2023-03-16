@@ -8,14 +8,14 @@ import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import me.sk8ingduck.friendsystem.utils.Util;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
+import javax.xml.soap.Text;
+import java.util.UUID;
 
 public class PluginMessage implements Listener {
 
@@ -32,16 +32,20 @@ public class PluginMessage implements Listener {
 				|| subChannel.equalsIgnoreCase("togglenotifies")
 				|| subChannel.equalsIgnoreCase("togglemsgs")
 				|| subChannel.equalsIgnoreCase("togglejump")) {
+
 			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel);
+
 		} else if (subChannel.equalsIgnoreCase("add")
 				|| subChannel.equalsIgnoreCase("remove")
 				|| subChannel.equalsIgnoreCase("deny")
 				|| subChannel.equalsIgnoreCase("accept")
 				|| subChannel.equals("jump")) {
+
 			String playerName = in.readUTF();
 			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel + " " + playerName);
 
 		} else if (subChannel.equalsIgnoreCase("friendsList")) {
+
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
 				FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(receiver.getUniqueId());
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -58,7 +62,9 @@ public class PluginMessage implements Listener {
 				});
 				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 			});
+
 		} else if (subChannel.equalsIgnoreCase("requestsList")) {
+
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
 				FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(receiver.getUniqueId());
 
@@ -72,6 +78,33 @@ public class PluginMessage implements Listener {
 				});
 				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 			});
+
+		} else if (subChannel.equalsIgnoreCase("playerInfo")) {
+			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
+				UUID otherPlayer = UUID.fromString(in.readUTF());
+				FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(receiver.getUniqueId());
+				FriendPlayer otherFriendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(otherPlayer);
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("playerInfo");
+				out.writeUTF(receiver.getUniqueId().toString());
+				out.writeBoolean(friendPlayer.getFriends().contains(otherPlayer));
+				out.writeBoolean(friendPlayer.getRequests().contains(otherPlayer));
+				out.writeBoolean(otherFriendPlayer.getRequests().contains(receiver.getUniqueId()));
+				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
+			});
+
+		} else if (subChannel.equalsIgnoreCase("settings")) {
+
+			FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(receiver.getUniqueId());
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("settings");
+			out.writeUTF(receiver.getUniqueId().toString());
+			out.writeBoolean(friendPlayer.isInvitesAllowed());
+			out.writeBoolean(friendPlayer.isNotifiesAllowed());
+			out.writeBoolean(friendPlayer.isMsgsAllowed());
+			out.writeBoolean(friendPlayer.isJumpingAllowed());
+			receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
+
 		}
 	}
 }

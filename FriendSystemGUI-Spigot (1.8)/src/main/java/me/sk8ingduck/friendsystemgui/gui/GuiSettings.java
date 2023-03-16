@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
-import me.sk8ingduck.friendsystemgui.mysql.MySQL;
 import me.sk8ingduck.friendsystemgui.util.ItemUtil;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -14,87 +13,75 @@ import org.ipvp.canvas.type.ChestMenu;
 
 public class GuiSettings {
 
-    private final ChestMenu gui;
 
-    public GuiSettings() {
-        GuiConfig guiConfig = FriendSystemGUI.getInstance().getSettingsConfig();
-        MySQL mysql = FriendSystemGUI.getInstance().getMysql();
+	public void open(Player player) {
+		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 
-        gui = ChestMenu.builder(4).title(guiConfig.getSettingsGuiTitle()).build();
+		ChestMenu gui = ChestMenu.builder(4).title(guiConfig.getSettingsGuiTitle()).build();
 
-        for (int i = 0; i < 36; i++)
-            gui.getSlot(i).setItem(ItemUtil.createItem(Material.STAINED_GLASS_PANE, DyeColor.BLACK.getData(), " "));
+		for (int i = 0; i < 36; i++)
+			gui.getSlot(i).setItem(ItemUtil.createItem(Material.STAINED_GLASS_PANE, DyeColor.BLACK.getData(), " "));
 
-        Slot back = gui.getSlot(10);
-        Slot toggleInvites = gui.getSlot(13);
-        Slot toggleNotifies = gui.getSlot(14);
-        Slot toggleMsgs = gui.getSlot(15);
-        Slot toggleJump = gui.getSlot(16);
+		Slot back = gui.getSlot(10);
+		Slot toggleInvites = gui.getSlot(13);
+		Slot toggleNotifies = gui.getSlot(14);
+		Slot toggleMsgs = gui.getSlot(15);
+		Slot toggleJump = gui.getSlot(16);
 
-        Slot currentInvites = gui.getSlot(22);
-        Slot currentNotifies = gui.getSlot(23);
-        Slot currentMsgs = gui.getSlot(24);
-        Slot currentJump = gui.getSlot(25);
+		Slot currentInvites = gui.getSlot(22);
+		Slot currentNotifies = gui.getSlot(23);
+		Slot currentMsgs = gui.getSlot(24);
+		Slot currentJump = gui.getSlot(25);
 
+		back.setItem(guiConfig.get("gui.settingsMenu.item.back"));
+		toggleInvites.setItem(guiConfig.get("gui.settingsMenu.item.toggleInvites"));
+		toggleNotifies.setItem(guiConfig.get("gui.settingsMenu.item.toggleNotifies"));
+		toggleMsgs.setItem(guiConfig.get("gui.settingsMenu.item.toggleMsgs"));
+		toggleJump.setItem(guiConfig.get("gui.settingsMenu.item.toggleJump"));
 
-        back.setItem(guiConfig.get("gui.settingsMenu.item.back"));
-        toggleInvites.setItem(guiConfig.get("gui.settingsMenu.item.toggleInvites"));
-        toggleNotifies.setItem(guiConfig.get("gui.settingsMenu.item.toggleNotifies"));
-        toggleMsgs.setItem(guiConfig.get("gui.settingsMenu.item.toggleMsgs"));
-        toggleJump.setItem(guiConfig.get("gui.settingsMenu.item.toggleJump"));
+		FriendSystemGUI.getInstance().getPluginMessaging().getSettings(player, (invites, notifies, msgs, jump) -> {
+			currentInvites.setItem(guiConfig.get("gui.settingsMenu.item.invites" + (invites ? "On" : "Off")));
+			currentNotifies.setItem(guiConfig.get("gui.settingsMenu.item.notifies" + (notifies ? "On" : "Off")));
+			currentMsgs.setItem(guiConfig.get("gui.settingsMenu.item.msgs" + (msgs ? "On" : "Off")));
+			currentJump.setItem(guiConfig.get("gui.settingsMenu.item.jump" + (jump ? "On" : "Off")));
 
-        currentInvites.setItemTemplate(player -> guiConfig.get("gui.settingsMenu.item.invites" +
-                (mysql.getOption(player.getUniqueId(), "invites") ? "On" : "Off")));
+		});
 
-        currentNotifies.setItemTemplate(player -> guiConfig.get("gui.settingsMenu.item.notifies" +
-                (mysql.getOption(player.getUniqueId(), "notifies") ? "On" : "Off")));
+		toggleInvites.setClickHandler((player1, clickInformation) -> {
+			player1.closeInventory();
 
-        currentMsgs.setItemTemplate(player -> guiConfig.get("gui.settingsMenu.item.msgs" +
-                (mysql.getOption(player.getUniqueId(), "msgs") ? "On" : "Off")));
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("toggleinvites");
+			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		});
 
-        currentJump.setItemTemplate(player -> guiConfig.get("gui.settingsMenu.item.jump" +
-                (mysql.getOption(player.getUniqueId(), "jump") ? "On" : "Off")));
+		toggleNotifies.setClickHandler((player1, clickInformation) -> {
+			player1.closeInventory();
 
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("togglenotifies");
+			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		});
 
-        toggleInvites.setClickHandler((player, clickInformation) -> {
-            player.closeInventory();
+		toggleMsgs.setClickHandler((player1, clickInformation) -> {
+			player1.closeInventory();
 
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("toggleinvites");
-            player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-        });
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("togglemsgs");
+			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		});
 
-        toggleNotifies.setClickHandler((player, clickInformation) -> {
-            player.closeInventory();
+		toggleJump.setClickHandler((player1, clickInformation) -> {
+			player1.closeInventory();
 
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("togglenotifies");
-            player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-        });
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("togglejump");
+			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		});
 
+		back.setClickHandler((player1, clickInformation) -> GuiManager.guiMainMenu.open(player));
 
-        toggleMsgs.setClickHandler((player, clickInformation) -> {
-            player.closeInventory();
+		gui.open(player);
+	}
 
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("togglemsgs");
-            player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-        });
-
-        toggleJump.setClickHandler((player, clickInformation) -> {
-            player.closeInventory();
-
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("togglejump");
-            player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-        });
-
-
-
-        back.setClickHandler((player, clickInformation) -> GuiManager.guiMainMenu.open(player));
-    }
-
-    public void open(Player player) {
-        gui.open(player);
-    }
 }

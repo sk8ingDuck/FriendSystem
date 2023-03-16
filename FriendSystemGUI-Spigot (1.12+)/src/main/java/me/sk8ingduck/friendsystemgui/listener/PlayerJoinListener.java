@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
+import me.sk8ingduck.friendsystemgui.config.SettingsConfig;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,11 +17,13 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        GuiConfig config = me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance().getSettingsConfig();
+        Player player = event.getPlayer();
+
+        SettingsConfig config = FriendSystemGUI.getInstance().getSettingsConfig();
+        GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
         if (!config.isGuiEnabled()) return;
 
-        Player player = event.getPlayer();
-        ItemStack item = config.get("guiItem");
+        ItemStack item = guiConfig.get("guiItem");
         if (item.getType() == Material.PLAYER_HEAD) {
             SkullMeta headMeta = (SkullMeta) item.getItemMeta();
             if (headMeta != null)
@@ -29,11 +32,6 @@ public class PlayerJoinListener implements Listener {
         }
 
         player.getInventory().setItem(config.getGuiSlot(), item);
-
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("friendscount");
-        player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
     }
 
 }

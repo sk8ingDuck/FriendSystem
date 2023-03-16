@@ -4,9 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
-import me.sk8ingduck.friendsystemgui.mysql.MySQL;
 import me.sk8ingduck.friendsystemgui.util.ItemUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,7 +16,7 @@ import java.util.UUID;
 public class GuiSelectedPlayer {
 
     public void open(Player player, UUID selectedPlayer, String playerName) {
-        GuiConfig guiConfig = FriendSystemGUI.getInstance().getSettingsConfig();
+        GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 
         ChestMenu gui = ChestMenu.builder(1).title(guiConfig.getSelectedPlayerGuiTitle()
                 .replaceAll("%PLAYER%", playerName)).build();
@@ -40,36 +38,32 @@ public class GuiSelectedPlayer {
         Slot alreadyRequested = gui.getSlot(4);
         Slot denyRequest = gui.getSlot(5);
 
-        MySQL mysql = FriendSystemGUI.getInstance().getMysql();
-        mysql.arePlayersFriends(player.getUniqueId(), selectedPlayer, areFriends -> {
-            if (areFriends) {
-                removeFriend.setItem(guiConfig.get("gui.selectedPlayerMenu.item.removeFriend"));
-                removeFriend.setClickHandler((player1, clickInformation) -> {
-                    sendCommand(player1, "remove", playerName);
-                });
-            } else {
-                mysql.isPlayerRequested(player.getUniqueId(), selectedPlayer, hasIncomingRequest -> {
+        FriendSystemGUI.getInstance().getPluginMessaging().getPlayerInfo(player, selectedPlayer,
+                (areFriends, hasIncomingRequest, hasOutgoingRequest) -> {
+                    if (areFriends) {
+                        removeFriend.setItem(guiConfig.get("gui.selectedPlayerMenu.item.removeFriend"));
+                        removeFriend.setClickHandler((player1, clickInformation) -> sendCommand(player1, "remove", playerName));
+                        gui.open(player);
+                        return;
+                    }
                     if (hasIncomingRequest) {
                         denyRequest.setItem(guiConfig.get("gui.selectedPlayerMenu.item.denyFriend"));
                         denyRequest.setClickHandler((player1, clickInformation) -> sendCommand(player1, "deny", playerName));
                         acceptRequest.setItem(guiConfig.get("gui.selectedPlayerMenu.item.acceptFriend"));
                         acceptRequest.setClickHandler((player1, clickInformation) -> sendCommand(player1, "accept", playerName));
-                    } else {
-                        mysql.isPlayerRequested(selectedPlayer, player.getUniqueId(), hasOutgoingRequest -> {
-                            if (hasOutgoingRequest) {
-                                alreadyRequested.setItem(guiConfig.get("gui.selectedPlayerMenu.item.alreadyRequested"));
-                                alreadyRequested.setClickHandler((player1, clickInformation) -> player1.closeInventory());
-                            } else {
-                                addFriend.setItem(guiConfig.get("gui.selectedPlayerMenu.item.addFriend"));
-                                addFriend.setClickHandler((player1, clickInformation) -> sendCommand(player1, "add", playerName));
-                            }
-                        });
+                        gui.open(player);
+                        return;
                     }
+                    if (hasOutgoingRequest) {
+                        alreadyRequested.setItem(guiConfig.get("gui.selectedPlayerMenu.item.alreadyRequested"));
+                        alreadyRequested.setClickHandler((player1, clickInformation) -> player1.closeInventory());
+                        gui.open(player);
+                        return;
+                    }
+                    addFriend.setItem(guiConfig.get("gui.selectedPlayerMenu.item.addFriend"));
+                    addFriend.setClickHandler((player1, clickInformation) -> sendCommand(player1, "add", playerName));
+                    gui.open(player);
                 });
-            }
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(FriendSystemGUI.getInstance(), () -> gui.open(player));
-        });
     }
 
     private void sendCommand(Player player, String command, String data) {

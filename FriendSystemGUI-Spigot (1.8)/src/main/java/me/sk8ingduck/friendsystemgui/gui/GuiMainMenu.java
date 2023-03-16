@@ -19,7 +19,7 @@ import org.ipvp.canvas.type.ChestMenu;
 public class GuiMainMenu {
 
     public void open(Player player) {
-        GuiConfig guiConfig = FriendSystemGUI.getInstance().getSettingsConfig();
+        GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
         ChestMenu.Builder gui = ChestMenu.builder(6).title(guiConfig.getMainGuiTitle());
 
         Mask friendHeadSlots = BinaryMask.builder(gui.getDimensions())

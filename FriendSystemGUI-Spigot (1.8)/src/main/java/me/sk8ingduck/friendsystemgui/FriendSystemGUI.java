@@ -1,14 +1,13 @@
 package me.sk8ingduck.friendsystemgui;
 
 import me.sk8ingduck.friendsystemgui.command.FCommand;
-import me.sk8ingduck.friendsystemgui.config.DBConfig;
+import me.sk8ingduck.friendsystemgui.config.*;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.gui.GuiManager;
 import me.sk8ingduck.friendsystemgui.listener.PlayerInteractEntityListener;
 import me.sk8ingduck.friendsystemgui.listener.PlayerInteractListener;
 import me.sk8ingduck.friendsystemgui.listener.PlayerJoinListener;
-import me.sk8ingduck.friendsystemgui.mysql.MySQL;
-import me.sk8ingduck.friendsystemgui.util.PluginMessaging;
+import me.sk8ingduck.friendsystemgui.pluginmessage.PluginMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ipvp.canvas.MenuFunctionListener;
@@ -16,21 +15,25 @@ import org.ipvp.canvas.MenuFunctionListener;
 public final class FriendSystemGUI extends JavaPlugin {
 
     private static FriendSystemGUI instance;
+
+    private SettingsConfig settingsConfig;
     private GuiConfig guiConfig;
-    private MySQL mysql;
-    private PluginMessaging pm;
+    private PluginMessage pm;
+
     @Override
     public void onEnable() {
         instance = this;
 
-        guiConfig = new GuiConfig("guis.yml", getDataFolder());
+        settingsConfig = new SettingsConfig("settings.yml", getDataFolder());
 
-        DBConfig dbConfig = new DBConfig("database.yml", getDataFolder());
-        mysql = new MySQL(dbConfig.getHost(), dbConfig.getPort(), dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDatabase());
+        GuiConfig german = new GuiGermanConfig("guis_german.yml", getDataFolder());
+        GuiConfig english = new GuiEnglishConfig("guis_english.yml", getDataFolder());
+
+        guiConfig = settingsConfig.getLanguage().equalsIgnoreCase("german") ? german : english;
 
         GuiManager.init();
 
-        pm = new PluginMessaging();
+        pm = new PluginMessage();
         this.getCommand("f").setExecutor(new FCommand());
         Bukkit.getPluginManager().registerEvents(new MenuFunctionListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -46,22 +49,21 @@ public final class FriendSystemGUI extends JavaPlugin {
     public void onDisable() {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
-        mysql.close();
     }
 
     public static FriendSystemGUI getInstance() {
         return instance;
     }
 
-    public GuiConfig getSettingsConfig() {
+    public SettingsConfig getSettingsConfig() {
+        return settingsConfig;
+    }
+
+    public GuiConfig getGuiConfig() {
         return guiConfig;
     }
 
-    public MySQL getMysql() {
-        return mysql;
-    }
-
-    public PluginMessaging getPluginMessaging() {
+    public PluginMessage getPluginMessaging() {
         return pm;
     }
 }

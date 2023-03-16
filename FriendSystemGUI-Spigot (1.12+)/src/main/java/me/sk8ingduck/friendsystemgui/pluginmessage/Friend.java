@@ -1,16 +1,16 @@
-package me.sk8ingduck.friendsystemgui.util;
+package me.sk8ingduck.friendsystemgui.pluginmessage;
 
 import java.util.UUID;
 
-public class BungeePlayer {
+public class Friend {
 
 	private final UUID uuid;
 	private final String name;
 	private final boolean online;
 	private final String server;
-	private String lastSeen;
+	private final String lastSeen;
 
-	public BungeePlayer(UUID uuid, String name, boolean online, String server, String lastSeen) {
+	public Friend(UUID uuid, String name, boolean online, String server, String lastSeen) {
 		this.uuid = uuid;
 		this.name = name;
 		this.online = online;

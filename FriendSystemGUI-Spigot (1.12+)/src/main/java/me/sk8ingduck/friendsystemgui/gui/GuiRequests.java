@@ -18,7 +18,7 @@ import org.ipvp.canvas.type.ChestMenu;
 public class GuiRequests {
 
 	public void open(Player player) {
-		GuiConfig guiConfig = FriendSystemGUI.getInstance().getSettingsConfig();
+		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 		ChestMenu.Builder gui = ChestMenu.builder(6).title(guiConfig.getRequestsGuiTitle());
 
 		Mask requestHeadSlots = BinaryMask.builder(gui.getDimensions())
@@ -51,14 +51,14 @@ public class GuiRequests {
 				});
 
 		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
-			requests.stream().sorted((o1, o2) -> Boolean.compare(o2.isOnline(), o1.isOnline())).forEach(request -> {
+			requests.forEach(request -> {
 				ItemStack item = ItemUtil.getSkeletonHead("§7" + request.getName(), null);
 				builder.addItem(SlotSettings.builder()
 						.itemTemplate(player1 -> item)
 						.clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, request.getUuid(), request.getName()))
 						.build());
 			});
-			Bukkit.getScheduler().scheduleSyncDelayedTask(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), () -> builder.build().get(0).open(player));
+			Bukkit.getScheduler().scheduleSyncDelayedTask(FriendSystemGUI.getInstance(), () -> builder.build().get(0).open(player));
 		});
 	}
 }
