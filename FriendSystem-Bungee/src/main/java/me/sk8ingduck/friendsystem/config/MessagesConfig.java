@@ -30,11 +30,11 @@ public class MessagesConfig extends Config {
 
 		messages.put("friend.list.format.header", "&e---------- &9Your friends &e----------");
 		messages.put("friend.list.format.online", "&7%PLAYERON% &8- &a%SERVER%");
-		messages.put("friend.list.format.offline", "&7%PLAYEROFF% &8- &cOFFLINE");
+		messages.put("friend.list.format.offline", "&7%PLAYEROFF% &8- &cOFFLINE &7(since &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.footer", "&e---------- &9Your friends &e----------");
 		messages.put("friend.request.format.header", "&e---------- &9Open requests &e----------");
 		messages.put("friend.request.format.player", "&7%PLAYER%");
-		messages.put("friend.request.format.footer", "&e---------- &9Open requests&e----------");
+		messages.put("friend.request.format.footer", "&e---------- &9Open requests &e----------");
 		messages.put("friend.toggleinvites.on", "&9Friend requests are now &aallowed&9.");
 		messages.put("friend.toggleinvites.off", "&Friend requests are now &cdisabled&9.");
 		messages.put("friend.togglemsgs.on", "&9Private messages are now &aallowed&9.");
@@ -109,7 +109,7 @@ public class MessagesConfig extends Config {
 
 		messages.put("friend.list.format.header", "&e---------- &9Deine Freundesliste &e----------");
 		messages.put("friend.list.format.online", "&7%PLAYERON% &8- &a%SERVER%");
-		messages.put("friend.list.format.offline", "&7%PLAYEROFF% &8- &cOFFLINE");
+		messages.put("friend.list.format.offline", "&7%PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.footer", "&e---------- &9Deine Freundesliste &e----------");
 		messages.put("friend.request.format.header", "&e---------- &9Offene Anfragen &e----------");
 		messages.put("friend.request.format.player", "&7%PLAYER%");
@@ -168,6 +168,17 @@ public class MessagesConfig extends Config {
 		messages.put("notifies.leave", "&7%PLAYER% &9ist nun &coffline&9.");
 		messages.put("join.friendcounter", "&9Momentan sind &7%COUNT% &9Freunde(n) von dir online");
 		messages.put("join.requestcounter", "&9Du hast noch &7%COUNT% &9offene Freundschaftsanfrage(n)");
+
+		messages.put("friend.timeformat.years", "Jahre");
+		messages.put("friend.timeformat.year", "Jahr");
+		messages.put("friend.timeformat.days", "Tage");
+		messages.put("friend.timeformat.day", "Tag");
+		messages.put("friend.timeformat.hours", "Stunden");
+		messages.put("friend.timeformat.hour", "Stunde");
+		messages.put("friend.timeformat.minutes", "Minuten");
+		messages.put("friend.timeformat.minute", "Minute");
+		messages.put("friend.timeformat.seconds", "Sekunden");
+		messages.put("friend.timeformat.second", "Sekunde");
 
 		messages.forEach((messagePath, message) -> messages.put(messagePath, (String) getPathOrSet(messagePath, message)));
 	}

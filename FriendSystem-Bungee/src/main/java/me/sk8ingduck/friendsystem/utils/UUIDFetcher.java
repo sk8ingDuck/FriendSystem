@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
@@ -15,6 +17,7 @@ import com.google.gson.GsonBuilder;
 
 public class UUIDFetcher {
 
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
     private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s";
@@ -34,7 +37,7 @@ public class UUIDFetcher {
      * @param action Do what you want to do with the uuid here
      */
     public static void getUUID(String name, Consumer<UUID> action) {
-        Util.pool.execute(() -> action.accept(getUUID(name)));
+        pool.execute(() -> action.accept(getUUID(name)));
     }
 
     /**
@@ -64,23 +67,15 @@ public class UUIDFetcher {
     }
 
     /**
-     * Fetches the name asynchronously and returns it as Future instance
-     * @param uuid The uuid
-     * @return Future holding status and result when executorservice is done
-     */
-    public static Future<String> getNameFuture(UUID uuid) {
-        return Util.pool.submit(() -> getName(uuid));
-    }
-
-    /**
      * Fetches the name asynchronously and passes it to the consumer
      *
      * @param uuid The uuid
      * @param action Do what you want to do with the name her
      */
     public static void getName(UUID uuid, Consumer<String> action) {
-        Util.pool.execute(() -> action.accept(getName(uuid)));
+        pool.execute(() -> action.accept(getName(uuid)));
     }
+
 
     /**
      * Fetches the name synchronously and returns it
