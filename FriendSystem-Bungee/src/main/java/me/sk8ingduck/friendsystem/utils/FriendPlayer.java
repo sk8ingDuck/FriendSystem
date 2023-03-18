@@ -1,17 +1,11 @@
 package me.sk8ingduck.friendsystem.utils;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class FriendPlayer {
 
@@ -21,18 +15,20 @@ public class FriendPlayer {
 	private boolean jumpingAllowed;
 	private boolean notifiesAllowed;
 	private LocalDateTime lastSeen;
-	private final ArrayList<UUID> friends;
+	private String status;
+	private final HashMap<UUID, Boolean> friends;
 	private final ArrayList<UUID> requests;
 
 	public FriendPlayer(UUID uuid,
 	                    boolean invitesAllowed, boolean msgsAllowed, boolean jumpingAllowed, boolean notifiesAllowed,
-	                    LocalDateTime lastSeen, ArrayList<UUID> friends, ArrayList<UUID> requests) {
+	                    LocalDateTime lastSeen, String status, HashMap<UUID, Boolean> friends, ArrayList<UUID> requests) {
 		this.uuid = uuid;
 		this.invitesAllowed = invitesAllowed;
 		this.msgsAllowed = msgsAllowed;
 		this.jumpingAllowed = jumpingAllowed;
 		this.notifiesAllowed = notifiesAllowed;
 		this.lastSeen = lastSeen;
+		this.status = status;
 		this.friends = friends;
 		this.requests = requests;
 	}
@@ -52,11 +48,6 @@ public class FriendPlayer {
 	public void toggleNotifies() {
 		notifiesAllowed = !notifiesAllowed;
 	}
-
-	public void setLastSeen(LocalDateTime lastSeen) {
-		this.lastSeen = lastSeen;
-	}
-
 	public boolean isInvitesAllowed() {
 		return invitesAllowed;
 	}
@@ -77,21 +68,33 @@ public class FriendPlayer {
 		return lastSeen;
 	}
 
-	public List<ProxiedPlayer> getOnlineFriends() {
-		return friends.stream()
-				.map(ProxyServer.getInstance()::getPlayer)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+	public String getStatus() {
+		return status;
 	}
 
-	public List<UUID> getOfflineFriends() {
-		return friends.stream()
-				.filter(friend -> ProxyServer.getInstance().getPlayer(friend) == null)
-				.collect(Collectors.toList());
+	public HashMap<ProxiedPlayer, Boolean> getOnlineFriends() {
+		HashMap<ProxiedPlayer, Boolean> onlineFriends = new HashMap<>();
+		friends.forEach((player, favourite) -> {
+			ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(player);
+			if (onlineFriend != null) {
+				onlineFriends.put(ProxyServer.getInstance().getPlayer(player), favourite);
+			}
+		});
+		return onlineFriends;
+	}
+
+	public HashMap<UUID, Boolean> getOfflineFriends() {
+		HashMap<UUID, Boolean> offlineFriends = new HashMap<>();
+		friends.forEach((player, favourite) -> {
+			if (ProxyServer.getInstance().getPlayer(player) == null) {
+				offlineFriends.put(player, favourite);
+			}
+		});
+		return offlineFriends;
 	}
 
 	public boolean isFriendsWith(UUID uuid) {
-		return friends.contains(uuid);
+		return friends.containsKey(uuid);
 	}
 	public boolean isRequestedBy(UUID uuid) {
 		return requests.contains(uuid);
@@ -105,13 +108,19 @@ public class FriendPlayer {
 	}
 
 	public void addFriend(UUID uuid) {
-		friends.add(uuid);
+		friends.put(uuid, false);
 	}
 	public void removeFriend(UUID uuid) {
 		friends.remove(uuid);
 	}
 
-	public ArrayList<UUID> getFriends() {
+	public void updateLastSeen() {
+		lastSeen = LocalDateTime.now();
+	}
+	public void updateStatus(String status) {
+		this.status = status;
+	}
+	public HashMap<UUID, Boolean> getFriends() {
 		return friends;
 	}
 	public ArrayList<UUID> getRequests() {

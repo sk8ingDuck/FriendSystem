@@ -10,7 +10,7 @@ import java.io.IOException;
 public class Config {
 
     private final File file;
-    private final Configuration fileConfiguration;
+    private Configuration fileConfiguration;
 
     public Config(String name, String path) {
         File folder = new File(path);
@@ -43,7 +43,7 @@ public class Config {
 
     protected void reload() {
         try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+            fileConfiguration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -54,11 +54,8 @@ public class Config {
     }
     public Object getPathOrSet(String path, Object defaultValue, boolean translateColors) {
         if (fileConfiguration.get(path) == null) {
-            defaultValue = translateColors(defaultValue);
             fileConfiguration.set(path, defaultValue);
             save();
-
-            return defaultValue;
         }
 
         return translateColors ? translateColors(fileConfiguration.get(path)) : fileConfiguration.get(path);

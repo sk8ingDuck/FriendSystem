@@ -2,6 +2,7 @@ package me.sk8ingduck.friendsystem.commands;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
+import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -9,31 +10,31 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class R extends Command {
-    private final FriendSystem fs;
-    private final MessagesConfig c;
+	private final FriendManager fm;
 
     public R() {
         super("r");
 
-        fs = FriendSystem.getInstance();
-        c = fs.getConfig();
+	    fm = FriendSystem.getInstance().getFriendManager();
     }
 
 	public void execute(CommandSender cs, String[] args) {
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
+
 		if (cs instanceof ProxiedPlayer) {
 			ProxiedPlayer player = (ProxiedPlayer) cs;
 			if (args.length < 1) {
 				player.sendMessage(new TextComponent(c.get("r.error.syntax")));
 				return;
 			}
-			ProxiedPlayer player2 = fs.msgs.get(player);
+			ProxiedPlayer player2 = fm.getMsgPartner(player);
 			if (player2 == null || !player2.isConnected()) {
 				player.sendMessage(new TextComponent(c.get("r.error.noreceiver")));
 				return;
 			}
 
-            FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(player.getUniqueId());
-            FriendPlayer friendPlayer2 = FriendSystem.getInstance().getFriendManager().getFriendPlayer(player2.getUniqueId());
+            FriendPlayer friendPlayer = fm.getFriendPlayer(player.getUniqueId());
+            FriendPlayer friendPlayer2 = fm.getFriendPlayer(player2.getUniqueId());
 
             if (!friendPlayer.isFriendsWith(player2.getUniqueId())) {
                 player.sendMessage(new TextComponent(c.get("msg.error.notfriends")
@@ -51,8 +52,8 @@ public class R extends Command {
 
             for (String arg : args) msg.append(arg).append(" ");
 
-            fs.msgs.put(player, player2);
-            fs.msgs.put(player2, player);
+            fm.setMsgPartner(player, player2);
+            fm.setMsgPartner(player2, player);
 
             player.sendMessage(new TextComponent(c.get("msg.r.sender")
                     .replaceAll("%PLAYER%", player.getName())

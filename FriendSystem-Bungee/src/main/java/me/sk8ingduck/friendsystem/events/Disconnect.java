@@ -12,22 +12,30 @@ import net.md_5.bungee.event.EventHandler;
 
 public class Disconnect implements Listener {
 
-    private final MessagesConfig c = FriendSystem.getInstance().getConfig();
-    private final FriendManager fm = FriendSystem.getInstance().getFriendManager();
-    @EventHandler
-    public void onPlayerDisconnect(PlayerDisconnectEvent event) {
-        ProxiedPlayer player = event.getPlayer();
+	private final FriendManager fm;
 
-        fm.updateLastSeen(player.getUniqueId());
+	public Disconnect() {
+		fm = FriendSystem.getInstance().getFriendManager();
+	}
 
-        FriendPlayer friendPlayer = fm.getFriendPlayer(player.getUniqueId());
-        friendPlayer.getOnlineFriends().forEach(friend -> {
-            FriendPlayer friendPlayer2 = fm.getFriendPlayer(friend.getUniqueId());
-            if (friendPlayer2.isNotifiesAllowed()) {
-                friend.sendMessage(new TextComponent(c.get("notifies.leave")
-                        .replaceAll("%PLAYER%", player.getName())));
-            }
-        });
-    }
+	@EventHandler
+	public void onPlayerDisconnect(PlayerDisconnectEvent event) {
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
+
+		ProxiedPlayer player = event.getPlayer();
+
+		fm.updateLastSeen(player.getUniqueId());
+
+		FriendPlayer friendPlayer = fm.getFriendPlayer(player.getUniqueId());
+		friendPlayer.updateLastSeen();
+
+		friendPlayer.getOnlineFriends().keySet().forEach(friend -> {
+			FriendPlayer friendPlayer2 = fm.getFriendPlayer(friend.getUniqueId());
+			if (friendPlayer2.isNotifiesAllowed()) {
+				friend.sendMessage(new TextComponent(c.get("notifies.leave")
+						.replaceAll("%PLAYER%", player.getName())));
+			}
+		});
+	}
 
 }

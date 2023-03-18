@@ -3,6 +3,7 @@ package me.sk8ingduck.friendsystem.commands;
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.mysql.MySQL;
+import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import me.sk8ingduck.friendsystem.utils.Util;
@@ -12,23 +13,27 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 public class Friend extends Command {
-	private final FriendSystem fs = FriendSystem.getInstance();
 
-	private final MySQL mySQL = fs.getMySQL();
-
-	private final MessagesConfig c = fs.getConfig();
+	private final MySQL mySQL;
+	private final FriendManager fm;
 
 	public Friend() {
 		super("friend");
+
+		FriendSystem fs = FriendSystem.getInstance();
+		mySQL = fs.getMySQL();
+		fm = fs.getFriendManager();
 	}
 
 	public void execute(CommandSender cs, String[] args) {
 		if (!(cs instanceof ProxiedPlayer)) {
 			return;
 		}
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
 		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			cs.sendMessage(new TextComponent(c.get("friend.help", false)));
 			return;
@@ -37,7 +42,7 @@ public class Friend extends Command {
 
 		ProxiedPlayer player = (ProxiedPlayer) cs;
 		UUID uuid = player.getUniqueId();
-		FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(uuid);
+		FriendPlayer friendPlayer = fm.getFriendPlayer(uuid);
 		if (args.length == 1) {
 			if (action.equalsIgnoreCase("toggleinvites")) {
 				friendPlayer.toggleInvites();
@@ -58,15 +63,31 @@ public class Friend extends Command {
 			} else if (action.equalsIgnoreCase("list")) {
 				ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
 					player.sendMessage(new TextComponent(c.get("friend.list.format.header", false)));
-					friendPlayer.getOnlineFriends().forEach(onlineFriend ->
-							player.sendMessage(new TextComponent(c.get("friend.list.format.online", false)
-									.replaceAll("%PLAYERON%", onlineFriend.getName())
-									.replaceAll("%SERVER%", onlineFriend.getServer().getInfo().getName()))));
+					friendPlayer.getOnlineFriends()
+							.entrySet()
+							.stream()
+							.sorted((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()))
+							.forEach(onlineFriend -> {
+								FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineFriend.getKey().getUniqueId());
+								player.sendMessage(new TextComponent(c.get("friend.list.format.online."
+												+ (onlineFriend.getValue() ? "favourite" : "regular"), false)
+										.replaceAll("%PLAYERON%", onlineFriend.getKey().getName())
+										.replaceAll("%SERVER%", onlineFriend.getKey().getServer().getInfo().getName())
+										.replaceAll("%ONLINE_TIME%", Util.formatDifference(friendPlayer2.getLastSeen()))));
+							});
 
-					friendPlayer.getOfflineFriends().forEach(offlineFriend ->
-							player.sendMessage(new TextComponent(c.get("friend.list.format.offline", false)
-									.replaceAll("%PLAYEROFF%", UUIDFetcher.getName(offlineFriend))
-									.replaceAll("%OFFLINE_SINCE%", Util.formatDifference(mySQL.getLastSeen(offlineFriend))))));
+					friendPlayer.getOfflineFriends()
+							.entrySet()
+							.stream()
+							.sorted((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()))
+							.forEach(offlineFriend -> {
+								FriendPlayer friendPlayer2 = fm.getFriendPlayer(offlineFriend.getKey());
+								player.sendMessage(new TextComponent(c.get("friend.list.format.offline."
+												+ (offlineFriend.getValue() ? "favourite" : "regular"), false)
+										.replaceAll("%PLAYEROFF%", UUIDFetcher.getName(offlineFriend.getKey()))
+										.replaceAll("%OFFLINE_SINCE%", Util.formatDifference(friendPlayer2.getLastSeen()))));
+							});
+
 					player.sendMessage(new TextComponent(c.get("friend.list.format.footer", false)));
 				});
 			} else if (action.equalsIgnoreCase("requests")) {
@@ -83,12 +104,29 @@ public class Friend extends Command {
 			}
 		}
 
+		if (args.length >= 2 && action.equalsIgnoreCase("status")) {
+			StringBuilder status = new StringBuilder();
+			for (int i = 1; i < args.length; i++)
+				status.append(args[i]).append(" ");
+
+			if (status.length() > 64) {
+				player.sendMessage(new TextComponent(c.get("friend.status.toolong")));
+				return;
+			}
+			String colorStatus = status.toString().replaceAll("&", "§");
+			friendPlayer.updateStatus(colorStatus);
+			mySQL.updateStatusAsync(uuid, colorStatus);
+			player.sendMessage(new TextComponent(c.get("friend.status.update")
+					.replaceAll("%STATUS%", colorStatus)));
+			return;
+		}
 		if (args.length != 2) {
 			if (action.equalsIgnoreCase("add")
 					|| action.equalsIgnoreCase("remove")
 					|| action.equalsIgnoreCase("accept")
 					|| action.equalsIgnoreCase("deny")
-					|| action.equalsIgnoreCase("jump")) {
+					|| action.equalsIgnoreCase("jump")
+					|| action.equalsIgnoreCase("favourite")) {
 				player.sendMessage(new TextComponent(c.get("friend." + args[0] + ".syntax")));
 				return;
 			}
@@ -108,7 +146,7 @@ public class Friend extends Command {
 							.replaceAll("%PLAYER%", playerName)));
 					return;
 				}
-				FriendPlayer friendPlayer2 = FriendSystem.getInstance().getFriendManager().getFriendPlayer(uuid2);
+				FriendPlayer friendPlayer2 = fm.getFriendPlayer(uuid2);
 				if (friendPlayer2 == null) {
 					player.sendMessage(new TextComponent(c.get("friend.error.notonnetwork")
 							.replaceAll("%PLAYER%", playerName)));
@@ -209,6 +247,17 @@ public class Friend extends Command {
 						return;
 					}
 					player.connect(player2.getServer().getInfo());
+				} else if (action.equalsIgnoreCase("favourite")) {
+					if (!friendPlayer.isFriendsWith(uuid2)) {
+						player.sendMessage(new TextComponent(c.get("friend.favourite.notfriends")
+								.replaceAll("%PLAYER%", playerName)));
+						return;
+					}
+					boolean newState = !friendPlayer.getFriends().get(uuid2);
+					friendPlayer.getFriends().put(uuid2, newState);
+					mySQL.updateFavouriteAsync(uuid, uuid2, newState);
+					player.sendMessage(new TextComponent(c.get("friend.favourite." + (newState ? "added" : "removed"))
+							.replaceAll("%PLAYER%", playerName)));
 				}
 			});
 		}

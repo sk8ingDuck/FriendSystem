@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,13 +33,29 @@ public class MySQL {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + database);
             stmt.executeUpdate("USE " + database);
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS player(UUID VARCHAR(40), invites BOOLEAN, notifies BOOLEAN, msgs BOOLEAN, jump BOOLEAN, lastSeen DATETIME, PRIMARY KEY(UUID));");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS friend(UUID VARCHAR(40),friendUUID VARCHAR(40),FOREIGN KEY (friendUUID) REFERENCES player(UUID));");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS request(UUID VARCHAR(40),requestUUID VARCHAR(40),FOREIGN KEY (requestUUID) REFERENCES player(UUID));");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS player(" +
+                    "UUID VARCHAR(40), " +
+                    "invites BOOLEAN, " +
+                    "notifies BOOLEAN, " +
+                    "msgs BOOLEAN, " +
+                    "jump BOOLEAN, " +
+                    "lastSeen DATETIME, " +
+                    "status VARCHAR(64), " +
+                    "PRIMARY KEY(UUID));");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS friend(" +
+                    "UUID VARCHAR(40), " +
+                    "friendUUID VARCHAR(40), " +
+                    "isFavourite BOOLEAN DEFAULT 0, " +
+                    "FOREIGN KEY (friendUUID) REFERENCES player(UUID));");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS request(" +
+                    "UUID VARCHAR(40), " +
+                    "requestUUID VARCHAR(40), " +
+                    "FOREIGN KEY (requestUUID) REFERENCES player(UUID));");
 
             stmt.close();
         } catch (SQLException e) {
-            ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("§c[FriendSystem] MySQL Connection could not be established. Error:"));
+            ProxyServer.getInstance().getConsole()
+                    .sendMessage(new TextComponent("§c[FriendSystem] MySQL Connection could not be established. Error:"));
             e.printStackTrace();
         }
     }
@@ -59,13 +76,15 @@ public class MySQL {
                     boolean msgs = rs.getBoolean("msgs");
                     boolean jump = rs.getBoolean("jump");
                     LocalDateTime lastSeen = rs.getTimestamp("lastSeen").toLocalDateTime();
+                    String status = rs.getString("status");
 
-                    ArrayList<UUID> friends = new ArrayList<>();
-                    PreparedStatement friendsStmt = con.prepareStatement("SELECT friendUUID FROM friend WHERE UUID=?");
+                    HashMap<UUID, Boolean> friends = new HashMap<>();
+                    PreparedStatement friendsStmt = con.prepareStatement("SELECT friendUUID, isFavourite FROM friend WHERE UUID=?");
                     friendsStmt.setString(1, uuid.toString());
                     ResultSet friendsRs = friendsStmt.executeQuery();
                     while (friendsRs.next()) {
-                        friends.add(UUID.fromString(friendsRs.getString("friendUUID")));
+                        friends.put(UUID.fromString(friendsRs.getString("friendUUID")),
+                                friendsRs.getBoolean("isFavourite"));
                     }
                     friendsRs.close();
                     friendsStmt.close();
@@ -80,7 +99,7 @@ public class MySQL {
                     requestsRs.close();
                     requestsStmt.close();
 
-                    return new FriendPlayer(uuid, invites, notifies, msgs, jump, lastSeen, friends, requests);
+                    return new FriendPlayer(uuid, invites, notifies, msgs, jump, lastSeen, status, friends, requests);
                 }
             }
         } catch (SQLException e) {
@@ -89,36 +108,11 @@ public class MySQL {
         return null;
     }
 
-    public LocalDateTime getLastSeen(UUID uuid) {
-        try (Connection con = dataSource.getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "SELECT lastSeen FROM player WHERE uuid = ?")) {
-            stmt.setString(1, uuid.toString());
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getTimestamp("lastSeen").toLocalDateTime();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void updateLastSeen(UUID uuid) {
-        try (Connection con = dataSource.getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "UPDATE `player` SET `lastSeen` = NOW() WHERE UUID = ?")) {
-            stmt.setString(1, uuid.toString());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void addPlayer(UUID uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement(
-                     "INSERT INTO `player`(`UUID`, `invites`, `notifies`, `msgs`, `jump`, `lastSeen`) VALUES (?, '1', '1', '1', '1',NOW())")) {
+                     "INSERT INTO `player`(`UUID`, `invites`, `notifies`, `msgs`, `jump`, `lastSeen`) " +
+                             "VALUES (?, '1', '1', '1', '1',NOW())")) {
             stmt.setString(1, uuid.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -160,6 +154,22 @@ public class MySQL {
         pool.execute(() -> removeFriend(uuid, friendUUID));
     }
 
+    private void updateFavourite(UUID uuid, UUID friendUUID, boolean state) {
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement("UPDATE `friend` SET `isFavourite`=? WHERE UUID = ? AND friendUUID = ?")) {
+            stmt.setBoolean(1, state);
+            stmt.setString(2, uuid.toString());
+            stmt.setString(3, friendUUID.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateFavouriteAsync(UUID uuid, UUID friendUUID, boolean state) {
+        pool.execute(() -> updateFavourite(uuid, friendUUID, state));
+    }
+
     private void addRequest(UUID uuid, UUID requestUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO `request`(`UUID`, `requestUUID`) VALUES (?, ?)")) {
@@ -190,7 +200,7 @@ public class MySQL {
         pool.execute(() -> removeRequest(uuid, requestUUID));
     }
 
-    public void setOption(UUID uuid, String option, boolean value) {
+    private void setOption(UUID uuid, String option, boolean value) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE `player` SET `" + option + "`=? WHERE UUID=?")) {
             stmt.setBoolean(1, value);
@@ -205,4 +215,33 @@ public class MySQL {
 
     }
 
+    private void updateLastSeen(UUID uuid) {
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement(
+                     "UPDATE `player` SET `lastSeen` = NOW() WHERE UUID = ?")) {
+            stmt.setString(1, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateLastSeenAsync(UUID uuid) {
+        pool.execute(() -> updateLastSeen(uuid));
+    }
+
+    public void updateStatus(UUID uuid, String status) {
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement("UPDATE `player` SET `status`=? WHERE UUID=?")) {
+            stmt.setString(1, status);
+            stmt.setString(2, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateStatusAsync(UUID uuid, String status) {
+        pool.execute(() -> updateStatus(uuid, status));
+    }
 }

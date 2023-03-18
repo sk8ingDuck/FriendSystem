@@ -8,7 +8,8 @@ public class MessagesGermanConfig extends MessagesConfig {
 
 	public void loadMessages() {
 		messages.put("prefix", "&cFriends &8»&9 ");
-		messages.put("friend.help", "&e---------- &9FreundeSystem &e----------\n" +
+		messages.put("friend.help",
+				"&9&m------------------&r&e« FreundeSystem »&9&m------------------\n" +
 				"&e/friend add <Name> &8- &7Füge einen Freund hinzu\n" +
 				"&e/friend remove <Name> &8- &7Entferne einen Freund\n" +
 				"&e/friend accept <Name> &8- &7Nimmt eine Freundschaftsanfrage an\n" +
@@ -22,15 +23,19 @@ public class MessagesGermanConfig extends MessagesConfig {
 				"&e/friend togglemsgs &8- &7private Nachrichten an / aus\n" +
 				"&e/friend togglejump &8- &7Nachspringen an / aus\n" +
 				"&e/friend togglenotifies &8- &7Join / Leave Nachrichten an / aus\n" +
-				"&e---------- &9FreundeSystem &e----------");
+				"&e/friend status <status> &8- &7Setze deinen Status\n" +
+				"&e/friend favourite <Name> &8- &7Favouriten hinzufügen/entfernen\n" +
+				"&9&m------------------&r&e« FreundeSystem »&9&m------------------");
 
-		messages.put("friend.list.format.header", "&e---------- &9Deine Freundesliste &e----------");
-		messages.put("friend.list.format.online", "&7%PLAYERON% &8- &a%SERVER%");
-		messages.put("friend.list.format.offline", "&7%PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
-		messages.put("friend.list.format.footer", "&e---------- &9Deine Freundesliste &e----------");
-		messages.put("friend.request.format.header", "&e---------- &9Offene Anfragen &e----------");
+		messages.put("friend.list.format.header", "&9&m--------------&r&e« Deine Freundesliste »&9&m--------------");
+		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7)");
+		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7)");
+		messages.put("friend.list.format.offline.regular", "&7%PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
+		messages.put("friend.list.format.offline.favourite", "&7[&c❤&7] %PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
+		messages.put("friend.list.format.footer", "&9&m--------------&r&e« Deine Freundesliste »&9&m--------------");
+		messages.put("friend.request.format.header", "&9&m--------------&r&e« Offene Anfragen »&9&m--------------");
 		messages.put("friend.request.format.player", "&7%PLAYER%");
-		messages.put("friend.request.format.footer", "&e---------- &9Offene Anfragen &e----------");
+		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Offene Anfragen »&9&m--------------");
 		messages.put("friend.toggleinvites.on", "&9Deine Freundschaftsanfragen sind nun &aeingeschaltet&9.");
 		messages.put("friend.toggleinvites.off", "&9Deine Freundschaftsanfragen sind nun &causgeschaltet&9.");
 		messages.put("friend.togglemsgs.on", "&9Deine privaten Nachrichten sind nun &aeingeschaltet&9.");
@@ -67,6 +72,11 @@ public class MessagesGermanConfig extends MessagesConfig {
 		messages.put("friend.jump.notfriends", "&cDu bist mit &7%PLAYER% &cnicht befreundet.");
 		messages.put("friend.jump.notonline", "&7%PLAYER% &cist nicht online.");
 		messages.put("friend.jump.jumptoggled", "&7%PLAYER% &cerlaubt kein nachspringen.");
+		messages.put("friend.status.toolong", "&cDein Status ist zu lang! Maximal 64 Zeichen");
+		messages.put("friend.status.update", "&9Dein Status ist nun: &7%STATUS%");
+		messages.put("friend.favourite.notfriends", "&cDu bist mit &7%PLAYER% &cnicht befreundet.");
+		messages.put("friend.favourite.added", "&9Du hast &7%PLAYER% &9als Favorit markiert.");
+		messages.put("friend.favourite.removed", "&7%PLAYER% &9ist kein Favourit mehr.");
 		messages.put("msg.error.syntax", "&cSyntax: &6/msg <Spieler> <Nachricht>");
 		messages.put("msg.error.interact", "&cDu kannst nicht mit dir selbst interagieren.");
 		messages.put("msg.error.playernotfound", "&cDer Spieler &7%PLAYER% &cexistiert nicht.");

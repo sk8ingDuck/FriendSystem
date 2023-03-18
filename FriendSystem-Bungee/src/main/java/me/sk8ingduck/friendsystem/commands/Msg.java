@@ -2,6 +2,7 @@ package me.sk8ingduck.friendsystem.commands;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
+import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
@@ -11,17 +12,17 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class Msg extends Command {
-	private final FriendSystem fs;
-	private final MessagesConfig c;
+	private final FriendManager fm;
 
 	public Msg() {
 		super("msg");
 
-		fs = FriendSystem.getInstance();
-		c = fs.getConfig();
+		fm = FriendSystem.getInstance().getFriendManager();
 	}
 
 	public void execute(CommandSender cs, String[] args) {
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
+
 		if (cs instanceof ProxiedPlayer) {
 			ProxiedPlayer player = (ProxiedPlayer) cs;
 			if (args.length < 2) {
@@ -70,8 +71,8 @@ public class Msg extends Command {
 				for (int i = 1; i < args.length; i++)
 					msg.append(args[i]).append(" ");
 
-				fs.msgs.put(player, player2);
-				fs.msgs.put(player2, player);
+				fm.setMsgPartner(player, player2);
+				fm.setMsgPartner(player2, player);
 
 				player.sendMessage(new TextComponent(c.get("msg.format.sender")
 						.replaceAll("%PLAYER%", player.getName())
