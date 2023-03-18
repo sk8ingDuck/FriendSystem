@@ -1,15 +1,15 @@
 package me.sk8ingduck.friendsystem.config;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public abstract class MessagesConfig extends Config {
 
-	protected final HashMap<String, String> messages;
+	protected final LinkedHashMap<String, String> messages;
 
 	public MessagesConfig(String name, String path) {
 		super(name, path);
 
-		this.messages = new HashMap<>();
+		this.messages = new LinkedHashMap<>();
 		loadMessages();
 		messages.forEach((messagePath, message) -> messages.put(messagePath, (String) getPathOrSet(messagePath, message)));
 	}

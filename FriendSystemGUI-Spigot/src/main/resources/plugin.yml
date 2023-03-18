@@ -7,7 +7,3 @@ commands:
   f:
     description: open friend menu
     usage: /f
-
-  bungeecommand:
-    description: forward a command to bungeecord
-    usage: /bungeecommand /<cmd>

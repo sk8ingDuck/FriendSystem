@@ -4,10 +4,7 @@ import me.sk8ingduck.friendsystemgui.command.FCommand;
 import me.sk8ingduck.friendsystemgui.config.*;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.gui.GuiManager;
-import me.sk8ingduck.friendsystemgui.listener.PlayerDropItemListener;
-import me.sk8ingduck.friendsystemgui.listener.PlayerInteractEntityListener;
-import me.sk8ingduck.friendsystemgui.listener.PlayerInteractListener;
-import me.sk8ingduck.friendsystemgui.listener.PlayerJoinListener;
+import me.sk8ingduck.friendsystemgui.listener.*;
 import me.sk8ingduck.friendsystemgui.pluginmessage.PluginMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,6 +38,9 @@ public final class FriendSystemGUI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDropItemListener(), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(), this);
+
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "me:friendsystem");
         getServer().getMessenger().registerIncomingPluginChannel(this, "me:friendsystem", pm);

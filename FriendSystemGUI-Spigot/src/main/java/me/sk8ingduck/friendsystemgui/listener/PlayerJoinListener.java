@@ -3,13 +3,12 @@ package me.sk8ingduck.friendsystemgui.listener;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.config.SettingsConfig;
-import org.bukkit.Material;
+import me.sk8ingduck.friendsystemgui.util.SkullCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class PlayerJoinListener implements Listener {
 
@@ -21,13 +20,7 @@ public class PlayerJoinListener implements Listener {
         GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
         if (!config.isGuiEnabled()) return;
 
-        ItemStack item = guiConfig.get("guiItem");
-        if (item.getType() == Material.SKULL) {
-            SkullMeta headMeta = (SkullMeta) item.getItemMeta();
-            if (headMeta != null)
-                headMeta.setOwner(player.getName());
-            item.setItemMeta(headMeta);
-        }
+        ItemStack item = SkullCreator.itemWithUuid(guiConfig.get("guiItem"), player.getUniqueId());
         player.getInventory().setItem(config.getGuiSlot(), item);
 
     }

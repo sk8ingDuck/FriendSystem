@@ -7,21 +7,20 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
-public class PlayerDropItemListener implements Listener {
+public class BlockPlaceListener implements Listener {
 
 	@EventHandler
-	public void onDropItem(PlayerDropItemEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 
 		SettingsConfig config = FriendSystemGUI.getInstance().getSettingsConfig();
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
-		if (config.isCanDropItem()
+
+		if (config.isCanPlaceItem()
 				|| player.getGameMode() == GameMode.CREATIVE
-				|| !event.getItemDrop().getItemStack().hasItemMeta()
-				|| !event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
-				.equalsIgnoreCase(guiConfig.get("guiItem").getItemMeta().getDisplayName()))
+				|| !event.getItemInHand().getType().equals(guiConfig.get("guiItem").getType()))
 			return;
 
 		event.setCancelled(true);

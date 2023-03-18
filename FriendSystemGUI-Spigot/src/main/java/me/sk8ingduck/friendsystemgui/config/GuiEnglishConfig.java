@@ -36,7 +36,7 @@ public class GuiEnglishConfig extends GuiConfig {
 		items.put("gui.mainMenu.item.settings", ItemCreator.createItem(Material.REDSTONE, "&cSettings"));
 		items.put("gui.mainMenu.item.requests", ItemCreator.createItem(Material.WRITTEN_BOOK, "&bFriend Requests"));
 
-		items.put("gui.requestsMenu.item.request", SkullCreator.createPlayerSkull( "&7%PLAYER%"));
+		items.put("gui.requestsMenu.item.request", SkullCreator.createSkeletonSkull( "&7%PLAYER%"));
 		items.put("gui.requestsMenu.item.previousPage", Skull.LEFT.getSkull("&ePrevious page"));
 		items.put("gui.requestsMenu.item.nextPage", Skull.RIGHT.getSkull("&eNext page"));
 		items.put("gui.requestsMenu.item.back", Skull.BACK.getSkull("&cBack"));
@@ -59,9 +59,9 @@ public class GuiEnglishConfig extends GuiConfig {
 		items.put("gui.selectedPlayerMenu.item.back", Skull.BACK.getSkull("&cBack"));
 		items.put("gui.selectedPlayerMenu.item.addFavourite", Skull.HEART.getSkull("&aAdd as favourite"));
 		items.put("gui.selectedPlayerMenu.item.removeFavourite", Skull.CROSS.getSkull("&cRemove from favourites"));
-		items.put("gui.selectedPlayerMenu.item.addFriend", ItemCreator.createItem(Material.GREEN_RECORD, "&6Send friend request"));
+		items.put("gui.selectedPlayerMenu.item.addFriend", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Send friend request"));
 		items.put("gui.selectedPlayerMenu.item.removeFriend", ItemCreator.createItem(Material.BARRIER, "&cRemove friend"));
-		items.put("gui.selectedPlayerMenu.item.acceptFriend", ItemCreator.createItem(Material.GREEN_RECORD, "&6Accept friend request"));
+		items.put("gui.selectedPlayerMenu.item.acceptFriend", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Accept friend request"));
 		items.put("gui.selectedPlayerMenu.item.denyFriend", ItemCreator.createItem(Material.BARRIER, "&cDeny friend request"));
 		items.put("gui.selectedPlayerMenu.item.alreadyRequested", ItemCreator.createItem(Material.BARRIER, "&cPlayer already requested"));
 		items.put("gui.selectedPlayerMenu.item.jump", ItemCreator.createItem(Material.ENDER_PEARL, "&cJump to player's server"));
