@@ -31,6 +31,13 @@ public class SettingsConfig extends Config {
 		return guiEnabled;
 	}
 
+	public boolean isCanDropItem() {
+		return canDropItem;
+	}
+
+	public boolean isCanMoveItemInInventory() {
+		return canMoveItemInInventory;
+	}
 	public int getGuiSlot() {
 		return guiSlot;
 	}

@@ -4,6 +4,7 @@ import me.sk8ingduck.friendsystemgui.command.FCommand;
 import me.sk8ingduck.friendsystemgui.config.*;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.gui.GuiManager;
+import me.sk8ingduck.friendsystemgui.listener.PlayerDropItemListener;
 import me.sk8ingduck.friendsystemgui.listener.PlayerInteractEntityListener;
 import me.sk8ingduck.friendsystemgui.listener.PlayerInteractListener;
 import me.sk8ingduck.friendsystemgui.listener.PlayerJoinListener;
@@ -39,6 +40,7 @@ public final class FriendSystemGUI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerDropItemListener(), this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "me:friendsystem");
         getServer().getMessenger().registerIncomingPluginChannel(this, "me:friendsystem", pm);

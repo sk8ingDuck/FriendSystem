@@ -5,8 +5,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
-import javax.xml.soap.Text;
-
 public class Freload extends Command {
 
 	public Freload() {
