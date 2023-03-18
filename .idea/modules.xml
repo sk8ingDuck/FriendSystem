@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/FriendSystem-Bungee/FriendSystem-Bungee.iml" filepath="$PROJECT_DIR$/FriendSystem-Bungee/FriendSystem-Bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FriendSystemGUI-Spigot/FriendSystemGUI-Spigot.iml" filepath="$PROJECT_DIR$/FriendSystemGUI-Spigot/FriendSystemGUI-Spigot.iml" />
+    </modules>
+  </component>
+</project>
