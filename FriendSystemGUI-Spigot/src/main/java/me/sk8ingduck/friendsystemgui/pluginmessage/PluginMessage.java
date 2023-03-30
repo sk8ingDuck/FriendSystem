@@ -10,16 +10,14 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class PluginMessage implements PluginMessageListener {
 
-	private final HashMap<UUID, Consumer<List<Friend>>> friendsListCallbacks = new HashMap<>();
-	private final HashMap<UUID, Consumer<List<Request>>> requestsListCallbacks = new HashMap<>();
-
-	private final HashMap<UUID, PlayerInfoCallback> playerInfoCallbacks = new HashMap<>();
-	private final HashMap<UUID, SettingsCallback> settingsCallbacks = new HashMap<>();
+	private final HashMap<String, Consumer<List<Friend>>> friendsListCallbacks = new HashMap<>();
+	private final HashMap<String, Consumer<List<Request>>> requestsListCallbacks = new HashMap<>();
+	private final HashMap<String, PlayerInfoCallback> playerInfoCallbacks = new HashMap<>();
+	private final HashMap<String, SettingsCallback> settingsCallbacks = new HashMap<>();
 
 
 	@Override
@@ -36,14 +34,14 @@ public class PluginMessage implements PluginMessageListener {
 				&& !subchannel.equalsIgnoreCase("settings")) {
 			return;
 		}
-		UUID uuid = UUID.fromString(in.readUTF());
+		String uuid = in.readUTF();
 		if (subchannel.equals("friendsList")) {
 
 			if (!friendsListCallbacks.containsKey(uuid)) return;
 			int size = in.readInt();
 			ArrayList<Friend> friends = new ArrayList<>();
 			for (int i = 0; i < size; i++) {
-				friends.add(new Friend(UUID.fromString(in.readUTF()), in.readUTF(), in.readBoolean(),
+				friends.add(new Friend(in.readUTF(), in.readUTF(), in.readBoolean(),
 						in.readUTF(), in.readUTF(), in.readUTF(), in.readBoolean()));
 			}
 
@@ -57,7 +55,7 @@ public class PluginMessage implements PluginMessageListener {
 
 			ArrayList<Request> requests = new ArrayList<>();
 			for (int i = 0; i < size; i++) {
-				requests.add(new Request(UUID.fromString(in.readUTF()), in.readUTF()));
+				requests.add(new Request(in.readUTF(), in.readUTF()));
 			}
 
 			requestsListCallbacks.get(uuid).accept(requests);
@@ -83,29 +81,30 @@ public class PluginMessage implements PluginMessageListener {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("friendsList");
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		friendsListCallbacks.put(player.getUniqueId(), friendlist);
+		friendsListCallbacks.put(player.getUniqueId().toString(), friendlist);
 	}
 
 	public void getRequests(Player player, Consumer<List<Request>> requestlist) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("requestsList");
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		requestsListCallbacks.put(player.getUniqueId(), requestlist);
+		requestsListCallbacks.put(player.getUniqueId().toString(), requestlist);
 	}
 
-	public void getPlayerInfo(Player player, UUID uuid, PlayerInfoCallback playerInfoCallback) {
+	public void getPlayerInfo(Player player, String uuid, String playerName, PlayerInfoCallback playerInfoCallback) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("playerInfo");
-		out.writeUTF(uuid.toString());
+		out.writeUTF(uuid);
+		out.writeUTF(playerName);
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		playerInfoCallbacks.put(player.getUniqueId(), playerInfoCallback);
+		playerInfoCallbacks.put(player.getUniqueId().toString(), playerInfoCallback);
 	}
 
 	public void getSettings(Player player, SettingsCallback settingsCallback) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("settings");
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		settingsCallbacks.put(player.getUniqueId(), settingsCallback);
+		settingsCallbacks.put(player.getUniqueId().toString(), settingsCallback);
 	}
 
 }

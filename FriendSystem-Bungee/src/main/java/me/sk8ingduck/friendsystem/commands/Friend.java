@@ -2,6 +2,7 @@ package me.sk8ingduck.friendsystem.commands;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
+import me.sk8ingduck.friendsystem.config.SettingsConfig;
 import me.sk8ingduck.friendsystem.mysql.MySQL;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
@@ -9,11 +10,10 @@ import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import me.sk8ingduck.friendsystem.utils.Util;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.util.Comparator;
 import java.util.UUID;
 
 public class Friend extends Command {
@@ -33,15 +33,20 @@ public class Friend extends Command {
 		if (!(cs instanceof ProxiedPlayer)) {
 			return;
 		}
+
 		MessagesConfig c = FriendSystem.getInstance().getConfig();
+		SettingsConfig settingsConfig = FriendSystem.getInstance().getSettingsConfig();
 		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			cs.sendMessage(new TextComponent(c.get("friend.help", false)));
 			return;
 		}
 		String action = args[0];
 
+		boolean onlineMode = ProxyServer.getInstance().getConfig().isOnlineMode();
+
 		ProxiedPlayer player = (ProxiedPlayer) cs;
-		UUID uuid = player.getUniqueId();
+		//Use minecraft username as uuid if online mode is false
+		String uuid = onlineMode ? player.getUniqueId().toString() : player.getName();
 		FriendPlayer friendPlayer = fm.getFriendPlayer(uuid);
 		if (args.length == 1) {
 			if (action.equalsIgnoreCase("toggleinvites")) {
@@ -68,7 +73,10 @@ public class Friend extends Command {
 							.stream()
 							.sorted((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()))
 							.forEach(onlineFriend -> {
-								FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineFriend.getKey().getUniqueId());
+								FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode
+										? onlineFriend.getKey().getUniqueId().toString()
+										: onlineFriend.getKey().getName());
+
 								player.sendMessage(new TextComponent(c.get("friend.list.format.online."
 												+ (onlineFriend.getValue() ? "favourite" : "regular"), false)
 										.replaceAll("%PLAYERON%", onlineFriend.getKey().getName())
@@ -84,7 +92,7 @@ public class Friend extends Command {
 								FriendPlayer friendPlayer2 = fm.getFriendPlayer(offlineFriend.getKey());
 								player.sendMessage(new TextComponent(c.get("friend.list.format.offline."
 												+ (offlineFriend.getValue() ? "favourite" : "regular"), false)
-										.replaceAll("%PLAYEROFF%", UUIDFetcher.getName(offlineFriend.getKey()))
+										.replaceAll("%PLAYEROFF%", onlineMode ? UUIDFetcher.getName(UUID.fromString(offlineFriend.getKey())) : offlineFriend.getKey())
 										.replaceAll("%OFFLINE_SINCE%", Util.formatDifference(friendPlayer2.getLastSeen()))));
 							});
 
@@ -95,7 +103,7 @@ public class Friend extends Command {
 					player.sendMessage(new TextComponent(c.get("friend.request.format.header", false)));
 					friendPlayer.getRequests().forEach(request ->
 							player.sendMessage(new TextComponent(c.get("friend.request.format.player", false)
-									.replaceAll("%PLAYER%", UUIDFetcher.getName(request)))));
+									.replaceAll("%PLAYER%", onlineMode ? UUIDFetcher.getName(UUID.fromString(request)) : request))));
 					player.sendMessage(new TextComponent(c.get("friend.request.format.footer", false)));
 				});
 			} else {
@@ -140,7 +148,7 @@ public class Friend extends Command {
 				return;
 			}
 
-			UUIDFetcher.getUUID(playerName, uuid2 -> {
+			UUIDFetcher.getUUID(playerName, onlineMode, uuid2 -> {
 				if (uuid2 == null) {
 					player.sendMessage(new TextComponent(c.get("friend.error.playernotfound")
 							.replaceAll("%PLAYER%", playerName)));
@@ -168,6 +176,14 @@ public class Friend extends Command {
 								.replaceAll("%PLAYER%", playerName)));
 						return;
 					}
+					if (settingsConfig.isPermissionsEnabled()) {
+						int maxFriends = settingsConfig.getMaxFriends(player);
+						if (friendPlayer.getFriends().size() >= maxFriends) {
+							player.sendMessage(new TextComponent(c.get("friend.request.toomanyfriends")
+									.replaceAll("%MAX_FRIENDS%", String.valueOf(maxFriends))));
+							return;
+						}
+					}
 					if (!friendPlayer2.isInvitesAllowed()) {
 						player.sendMessage(new TextComponent(c.get("friend.request.invitestoggled")
 								.replaceAll("%PLAYER%", playerName)));
@@ -181,7 +197,6 @@ public class Friend extends Command {
 							.replaceAll("%PLAYER%", playerName)));
 					friendPlayer2.sendMessage(c.get("friend.request.received")
 							.replaceAll("%PLAYER%", player.getName()));
-
 				} else if (action.equalsIgnoreCase("remove")) {
 					if (!friendPlayer.isFriendsWith(uuid2)) {
 						player.sendMessage(new TextComponent(c.get("friend.remove.notfriends")
@@ -207,7 +222,14 @@ public class Friend extends Command {
 								.replaceAll("%PLAYER%", playerName)));
 						return;
 					}
-					friendPlayer.removeRequest(uuid2);
+					if (settingsConfig.isPermissionsEnabled()) {
+						int maxFriends = settingsConfig.getMaxFriends(player);
+						if (friendPlayer.getFriends().size() >= maxFriends) {
+							player.sendMessage(new TextComponent(c.get("friend.request.toomanyfriends")
+									.replaceAll("%MAX_FRIENDS%", String.valueOf(maxFriends))));
+							return;
+						}
+					}					friendPlayer.removeRequest(uuid2);
 					friendPlayer.addFriend(uuid2);
 					friendPlayer2.addFriend(uuid);
 					mySQL.addFriendAsync(uuid, uuid2);

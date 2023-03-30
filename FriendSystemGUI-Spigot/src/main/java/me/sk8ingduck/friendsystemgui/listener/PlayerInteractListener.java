@@ -21,7 +21,8 @@ public class PlayerInteractListener implements Listener {
         if (!config.isGuiEnabled() || !config.isRightClickPlayerToOpenMenuEnabled()) return;
 
         Player player = event.getPlayer();
-        if (event.getAction().equals(Action.LEFT_CLICK_AIR)
+        if (event.getAction().equals(Action.PHYSICAL)
+                || event.getAction().equals(Action.LEFT_CLICK_AIR)
                 || event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                 || player.getInventory().getItemInHand().getType() == Material.AIR
                 || player.getInventory().getItemInHand().getItemMeta() == null

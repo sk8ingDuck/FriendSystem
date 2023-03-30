@@ -5,6 +5,7 @@ import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -33,10 +34,11 @@ public class R extends Command {
 				return;
 			}
 
-            FriendPlayer friendPlayer = fm.getFriendPlayer(player.getUniqueId());
-            FriendPlayer friendPlayer2 = fm.getFriendPlayer(player2.getUniqueId());
+			boolean onlineMode = ProxyServer.getInstance().getConfig().isOnlineMode();
+            FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? player.getUniqueId().toString() : player.getName());
+            FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode ? player2.getUniqueId().toString() : player2.getName());
 
-            if (!friendPlayer.isFriendsWith(player2.getUniqueId())) {
+            if (!friendPlayer.isFriendsWith(onlineMode ? player2.getUniqueId().toString() : player2.getName())) {
                 player.sendMessage(new TextComponent(c.get("msg.error.notfriends")
                         .replaceAll("%PLAYER%", player2.getName())));
                 return;

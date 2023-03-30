@@ -37,13 +37,16 @@ public class Msg extends Command {
 				return;
 			}
 
-			UUIDFetcher.getUUID(playerName, uuid -> {
+			boolean onlineMode = ProxyServer.getInstance().getConfig().isOnlineMode();
+
+			UUIDFetcher.getUUID(playerName, onlineMode, uuid -> {
 				if (uuid == null) {
 					player.sendMessage(new TextComponent(c.get("msg.error.playernotfound")
 							.replaceAll("%PLAYER%", playerName)));
 					return;
 				}
-				FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(player.getUniqueId());
+
+				FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(onlineMode ? player.getUniqueId().toString() : player.getName());
 				FriendPlayer friendPlayer2 = FriendSystem.getInstance().getFriendManager().getFriendPlayer(uuid);
 				if (friendPlayer2 == null) {
 					player.sendMessage(new TextComponent(c.get("friend.error.notonnetwork")

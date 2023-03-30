@@ -10,7 +10,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,10 +64,10 @@ public class MySQL {
     }
 
 
-    public FriendPlayer getFriendPlayer(UUID uuid) {
+    public FriendPlayer getFriendPlayer(String uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT * FROM player WHERE UUID = ?")) {
-            stmt.setString(1, uuid.toString());
+            stmt.setString(1, uuid);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     boolean invites = rs.getBoolean("invites");
@@ -78,23 +77,23 @@ public class MySQL {
                     LocalDateTime lastSeen = rs.getTimestamp("lastSeen").toLocalDateTime();
                     String status = rs.getString("status");
 
-                    HashMap<UUID, Boolean> friends = new HashMap<>();
+                    HashMap<String, Boolean> friends = new HashMap<>();
                     PreparedStatement friendsStmt = con.prepareStatement("SELECT friendUUID, isFavourite FROM friend WHERE UUID=?");
-                    friendsStmt.setString(1, uuid.toString());
+                    friendsStmt.setString(1, uuid);
                     ResultSet friendsRs = friendsStmt.executeQuery();
                     while (friendsRs.next()) {
-                        friends.put(UUID.fromString(friendsRs.getString("friendUUID")),
+                        friends.put(friendsRs.getString("friendUUID"),
                                 friendsRs.getBoolean("isFavourite"));
                     }
                     friendsRs.close();
                     friendsStmt.close();
 
-                    ArrayList<UUID> requests = new ArrayList<>();
+                    ArrayList<String> requests = new ArrayList<>();
                     PreparedStatement requestsStmt = con.prepareStatement("SELECT requestUUID FROM request WHERE UUID=?");
-                    requestsStmt.setString(1, uuid.toString());
+                    requestsStmt.setString(1, uuid);
                     ResultSet requestsRs = requestsStmt.executeQuery();
                     while (requestsRs.next()) {
-                        requests.add(UUID.fromString(requestsRs.getString("requestUUID")));
+                        requests.add(requestsRs.getString("requestUUID"));
                     }
                     requestsRs.close();
                     requestsStmt.close();
@@ -108,140 +107,140 @@ public class MySQL {
         return null;
     }
 
-    private void addPlayer(UUID uuid) {
+    private void addPlayer(String uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement(
                      "INSERT INTO `player`(`UUID`, `invites`, `notifies`, `msgs`, `jump`, `lastSeen`) " +
                              "VALUES (?, '1', '1', '1', '1',NOW())")) {
-            stmt.setString(1, uuid.toString());
+            stmt.setString(1, uuid);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addPlayerAsync(UUID uuid) {
+    public void addPlayerAsync(String uuid) {
         pool.execute(() -> addPlayer(uuid));
     }
 
-    private void addFriend(UUID uuid, UUID friendUUID) {
+    private void addFriend(String uuid, String friendUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO `friend`(`UUID`, `friendUUID`) VALUES (?, ?)")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, friendUUID.toString());
+            stmt.setString(1, uuid);
+            stmt.setString(2, friendUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addFriendAsync(UUID uuid, UUID friendUUID) {
+    public void addFriendAsync(String uuid, String friendUUID) {
         pool.execute(() -> addFriend(uuid, friendUUID));
     }
 
-    private void removeFriend(UUID uuid, UUID friendUUID) {
+    private void removeFriend(String uuid, String friendUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("DELETE FROM `friend` WHERE UUID=? AND friendUUID=?")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, friendUUID.toString());
+            stmt.setString(1, uuid);
+            stmt.setString(2, friendUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void removeFriendAsync(UUID uuid, UUID friendUUID) {
+    public void removeFriendAsync(String uuid, String friendUUID) {
         pool.execute(() -> removeFriend(uuid, friendUUID));
     }
 
-    private void updateFavourite(UUID uuid, UUID friendUUID, boolean state) {
+    private void updateFavourite(String uuid, String friendUUID, boolean state) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE `friend` SET `isFavourite`=? WHERE UUID = ? AND friendUUID = ?")) {
             stmt.setBoolean(1, state);
-            stmt.setString(2, uuid.toString());
-            stmt.setString(3, friendUUID.toString());
+            stmt.setString(2, uuid);
+            stmt.setString(3, friendUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateFavouriteAsync(UUID uuid, UUID friendUUID, boolean state) {
+    public void updateFavouriteAsync(String uuid, String friendUUID, boolean state) {
         pool.execute(() -> updateFavourite(uuid, friendUUID, state));
     }
 
-    private void addRequest(UUID uuid, UUID requestUUID) {
+    private void addRequest(String uuid, String requestUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO `request`(`UUID`, `requestUUID`) VALUES (?, ?)")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, requestUUID.toString());
+            stmt.setString(1, uuid);
+            stmt.setString(2, requestUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addRequestAsync(UUID uuid, UUID requestUUID) {
+    public void addRequestAsync(String uuid, String requestUUID) {
         pool.execute(() -> addRequest(uuid, requestUUID));
     }
 
-    private void removeRequest(UUID uuid, UUID requestUUID) {
+    private void removeRequest(String uuid, String requestUUID) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("DELETE FROM `request` WHERE UUID=? AND requestUUID=?")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, requestUUID.toString());
+            stmt.setString(1, uuid);
+            stmt.setString(2, requestUUID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void removeRequestAsync(UUID uuid, UUID requestUUID) {
+    public void removeRequestAsync(String uuid, String requestUUID) {
         pool.execute(() -> removeRequest(uuid, requestUUID));
     }
 
-    private void setOption(UUID uuid, String option, boolean value) {
+    private void setOption(String uuid, String option, boolean value) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE `player` SET `" + option + "`=? WHERE UUID=?")) {
             stmt.setBoolean(1, value);
-            stmt.setString(2, uuid.toString());
+            stmt.setString(2, uuid);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public void setOptionAsync(UUID uuid, String option, boolean value) {
+    public void setOptionAsync(String uuid, String option, boolean value) {
         pool.execute(() -> setOption(uuid, option, value));
 
     }
 
-    private void updateLastSeen(UUID uuid) {
+    private void updateLastSeen(String uuid) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement(
                      "UPDATE `player` SET `lastSeen` = NOW() WHERE UUID = ?")) {
-            stmt.setString(1, uuid.toString());
+            stmt.setString(1, uuid);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateLastSeenAsync(UUID uuid) {
+    public void updateLastSeenAsync(String uuid) {
         pool.execute(() -> updateLastSeen(uuid));
     }
 
-    public void updateStatus(UUID uuid, String status) {
+    public void updateStatus(String uuid, String status) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement stmt = con.prepareStatement("UPDATE `player` SET `status`=? WHERE UUID=?")) {
             stmt.setString(1, status);
-            stmt.setString(2, uuid.toString());
+            stmt.setString(2, uuid);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateStatusAsync(UUID uuid, String status) {
+    public void updateStatusAsync(String uuid, String status) {
         pool.execute(() -> updateStatus(uuid, status));
     }
 }

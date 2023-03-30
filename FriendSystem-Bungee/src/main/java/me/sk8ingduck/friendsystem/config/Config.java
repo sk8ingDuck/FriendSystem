@@ -10,7 +10,7 @@ import java.io.IOException;
 public class Config {
 
     private final File file;
-    private Configuration fileConfiguration;
+    protected Configuration fileConfiguration;
 
     public Config(String name, String path) {
         File folder = new File(path);

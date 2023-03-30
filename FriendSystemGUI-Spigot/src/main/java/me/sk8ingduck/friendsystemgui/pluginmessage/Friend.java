@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Friend {
-	private final UUID uuid;
+	private final String uuid;
 	private final String name;
 	private final boolean online;
 	private final String server;
@@ -16,7 +16,7 @@ public class Friend {
 	private final String status;
 	private final boolean isFavourite;
 
-	public Friend(UUID uuid, String name, boolean online, String server, String lastSeen, String status, boolean isFavourite) {
+	public Friend(String uuid, String name, boolean online, String server, String lastSeen, String status, boolean isFavourite) {
 		this.uuid = uuid;
 		this.name = name;
 		this.online = online;
@@ -26,7 +26,7 @@ public class Friend {
 		this.isFavourite = isFavourite;
 	}
 
-	public UUID getUuid() {
+	public String getUuid() {
 		return uuid;
 	}
 

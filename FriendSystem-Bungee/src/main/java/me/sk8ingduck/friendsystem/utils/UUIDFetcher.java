@@ -36,8 +36,8 @@ public class UUIDFetcher {
      * @param name The name
      * @param action Do what you want to do with the uuid here
      */
-    public static void getUUID(String name, Consumer<UUID> action) {
-        pool.execute(() -> action.accept(getUUID(name)));
+    public static void getUUID(String name, boolean onlineMode, Consumer<String> action) {
+        pool.execute(() -> action.accept(getUUID(name, onlineMode)));
     }
 
     /**
@@ -45,10 +45,14 @@ public class UUIDFetcher {
      *
      * @param name The name
      */
-    public static UUID getUUID(String name) {
+    public static String getUUID(String name, boolean onlineMode) {
+        if (!onlineMode) {
+            return name;
+        }
+
         name = name.toLowerCase();
         if (uuidCache.containsKey(name)) {
-            return uuidCache.get(name);
+            return uuidCache.get(name).toString();
         }
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(String.format(UUID_URL, name)).openConnection();
@@ -59,7 +63,7 @@ public class UUIDFetcher {
             uuidCache.put(name, data.id);
             nameCache.put(data.id, data.name);
 
-            return data.id;
+            return data.id.toString();
         } catch (Exception ignored) {
         }
 

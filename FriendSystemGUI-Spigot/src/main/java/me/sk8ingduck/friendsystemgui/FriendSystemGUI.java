@@ -24,10 +24,11 @@ public final class FriendSystemGUI extends JavaPlugin {
 
         settingsConfig = new SettingsConfig("settings.yml", getDataFolder());
 
-        GuiConfig german = new GuiGermanConfig("guis_german.yml", getDataFolder());
-        GuiConfig english = new GuiEnglishConfig("guis_english.yml", getDataFolder());
+        new GuiGermanConfig("guis_german.yml", getDataFolder());
+        new GuiEnglishConfig("guis_english.yml", getDataFolder());
+        new GuiEnglishConfig("guis_french.yml", getDataFolder());
 
-        guiConfig = settingsConfig.getLanguage().equalsIgnoreCase("german") ? german : english;
+        guiConfig = loadGuiConfig();
 
         GuiManager.init();
 
@@ -68,4 +69,18 @@ public final class FriendSystemGUI extends JavaPlugin {
     public PluginMessage getPluginMessaging() {
         return pm;
     }
+
+    public GuiConfig loadGuiConfig() {
+        switch (settingsConfig.getLanguage()) {
+            case "german":
+                return new GuiGermanConfig("guis_german.yml", getDataFolder());
+            case "english":
+                return new GuiEnglishConfig("guis_english.yml",getDataFolder());
+            case "french":
+                return new GuiFrenchConfig("guis_french.yml", getDataFolder());
+            default:
+                return new GuiEnglishConfig("guis_" + settingsConfig.getLanguage() + ".yml", getDataFolder());
+        }
+    }
+
 }

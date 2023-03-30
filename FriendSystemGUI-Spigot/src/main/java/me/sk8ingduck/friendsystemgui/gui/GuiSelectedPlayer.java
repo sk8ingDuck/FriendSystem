@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class GuiSelectedPlayer {
 
-    public void open(Player player, UUID selectedPlayer, String playerName) {
+    public void open(Player player, String selectedPlayer, String playerName) {
         GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 
         ChestMenu gui = ChestMenu.builder(1).title(guiConfig.getSelectedPlayerGuiTitle()
@@ -34,7 +34,7 @@ public class GuiSelectedPlayer {
         Slot alreadyRequested = gui.getSlot(4);
         Slot acceptRequest = gui.getSlot(3);
         Slot denyRequest = gui.getSlot(5);
-        FriendSystemGUI.getInstance().getPluginMessaging().getPlayerInfo(player, selectedPlayer,
+        FriendSystemGUI.getInstance().getPluginMessaging().getPlayerInfo(player, selectedPlayer, playerName,
                 (areFriends, isFavourite, hasIncomingRequest, hasOutgoingRequest) -> {
 
                     if (areFriends) {

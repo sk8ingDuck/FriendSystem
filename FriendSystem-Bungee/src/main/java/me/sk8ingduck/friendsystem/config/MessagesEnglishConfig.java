@@ -56,6 +56,7 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("friend.request.alreadyrequested", "&cYou've already sent &7%PLAYER% &ca friend request.");
 		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &chas already sent you a friend request.\n" +
 				"&cType &6/friend accept &7%PLAYER% &cto accept.");
+		messages.put("friend.request.toomanyfriends", "&cYou have already got too many friends. You are allowed to have &7%MAX_FRIENDS%");
 		messages.put("friend.request.invitestoggled", "&7%PLAYER% &cdoes not allow friend requests.");
 		messages.put("friend.request.sent", "&9You've sent &7%PLAYER% &9a friend request!");
 		messages.put("friend.request.received", "&9You received a friend request from &7%PLAYER%\n" +

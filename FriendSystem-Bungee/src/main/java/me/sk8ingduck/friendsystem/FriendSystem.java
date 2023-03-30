@@ -15,68 +15,84 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
 public class FriendSystem extends Plugin {
-    private static FriendSystem instance;
-    private MySQL mysql;
-    private FriendManager friendManager;
-    private SettingsConfig settingsConfig;
-    private MessagesConfig messagesConfig;
+	private static FriendSystem instance;
+	private MySQL mysql;
+	private FriendManager friendManager;
+	private SettingsConfig settingsConfig;
+	private MessagesConfig messagesConfig;
 
-    public void onEnable() {
-        instance = this;
+	public static FriendSystem getInstance() {
+		return instance;
+	}
 
-        DBConfig dbConfig = new DBConfig("database.yml", "plugins/FriendSystem");
-        mysql = new MySQL(dbConfig.getHost(), dbConfig.getPort(), dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDatabase());
+	public void onEnable() {
+		instance = this;
 
-        friendManager = new FriendManager();
+		DBConfig dbConfig = new DBConfig("database.yml", "plugins/FriendSystem");
+		mysql = new MySQL(dbConfig.getHost(), dbConfig.getPort(), dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDatabase());
 
-        settingsConfig = new SettingsConfig("settings.yml", "plugins/FriendSystem");
-        MessagesConfig german = new MessagesGermanConfig("messages_german.yml", "plugins/FriendSystem");
-        MessagesConfig english = new MessagesEnglishConfig("messages_english.yml", "plugins/FriendSystem");
+		friendManager = new FriendManager();
 
-        messagesConfig = settingsConfig.getLanguage().equalsIgnoreCase("german") ? german : english;
+		settingsConfig = new SettingsConfig("settings.yml", "plugins/FriendSystem");
+		//init all language configs
+        new MessagesGermanConfig("messages_german.yml", "plugins/FriendSystem");
+		new MessagesEnglishConfig("messages_english.yml", "plugins/FriendSystem");
+		new MessagesFrenchConfig("messages_french.yml", "plugins/FriendSystem");
 
-        PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
-        pluginManager.registerListener(this, new Join());
-        pluginManager.registerListener(this, new Disconnect());
-        pluginManager.registerListener(this, new PluginMessage());
+		messagesConfig = loadMessagesConfig();
 
-        pluginManager.registerCommand(this, new Freload());
-        pluginManager.registerCommand(this, new Friend());
-        pluginManager.registerCommand(this, new Msg());
-        pluginManager.registerCommand(this, new R());
+		PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
+		pluginManager.registerListener(this, new Join());
+		pluginManager.registerListener(this, new Disconnect());
+		pluginManager.registerListener(this, new PluginMessage());
 
-        getProxy().registerChannel("me:friendsystem");
+		pluginManager.registerCommand(this, new Freload());
+		pluginManager.registerCommand(this, new Friend());
+		pluginManager.registerCommand(this, new Msg());
+		pluginManager.registerCommand(this, new R());
 
-        System.out.println("§a[FriendSystem] FriendSystem enabled!");
-    }
+		getProxy().registerChannel("me:friendsystem");
 
-    public void onDisable() {
-        System.out.println("§c[FriendSystem] FriendSystem disabled!");
-        mysql.close();
-    }
+		System.out.println("§a[FriendSystem] FriendSystem enabled!");
+	}
 
-    public static FriendSystem getInstance() {
-        return instance;
-    }
+	public void onDisable() {
+		System.out.println("§c[FriendSystem] FriendSystem disabled!");
+		mysql.close();
+	}
 
-    public MySQL getMySQL() {
-        return mysql;
-    }
+	public MySQL getMySQL() {
+		return mysql;
+	}
 
-    public FriendManager getFriendManager() {
-        return friendManager;
-    }
+	public FriendManager getFriendManager() {
+		return friendManager;
+	}
 
-    public MessagesConfig getConfig() {
-        return messagesConfig;
-    }
+	public MessagesConfig getConfig() {
+		return messagesConfig;
+	}
 
-    public void reloadConfigs() {
-        settingsConfig.reload();
-        if (settingsConfig.getLanguage().equalsIgnoreCase("german")) {
-            messagesConfig = new MessagesGermanConfig("messages_german.yml", "plugins/FriendSystem");
-        } else {
-            messagesConfig = new MessagesEnglishConfig("messages_english.yml", "plugins/FriendSystem");
-        }
-    }
+	public SettingsConfig getSettingsConfig() {
+		return settingsConfig;
+	}
+
+	public void reloadConfigs() {
+		settingsConfig.reload();
+		messagesConfig = loadMessagesConfig();
+	}
+
+	public MessagesConfig loadMessagesConfig() {
+		switch (settingsConfig.getLanguage()) {
+			case "german":
+				return new MessagesGermanConfig("messages_german.yml", "plugins/FriendSystem");
+			case "english":
+				return new MessagesEnglishConfig("messages_english.yml", "plugins/FriendSystem");
+			case "french":
+				return new MessagesFrenchConfig("messages_french.yml", "plugins/FriendSystem");
+			default:
+				return new MessagesEnglishConfig("messages_" + settingsConfig.getLanguage() + ".yml", "plugins/FriendSystem");
+		}
+	}
+
 }

@@ -5,23 +5,24 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FriendPlayer {
 
-	private final UUID uuid;
+	private final String uuid;
 	private boolean invitesAllowed;
 	private boolean msgsAllowed;
 	private boolean jumpingAllowed;
 	private boolean notifiesAllowed;
 	private LocalDateTime lastSeen;
 	private String status;
-	private final HashMap<UUID, Boolean> friends;
-	private final ArrayList<UUID> requests;
+	private final HashMap<String, Boolean> friends;
+	private final ArrayList<String> requests;
 
-	public FriendPlayer(UUID uuid,
+	public FriendPlayer(String uuid,
 	                    boolean invitesAllowed, boolean msgsAllowed, boolean jumpingAllowed, boolean notifiesAllowed,
-	                    LocalDateTime lastSeen, String status, HashMap<UUID, Boolean> friends, ArrayList<UUID> requests) {
+	                    LocalDateTime lastSeen, String status, HashMap<String, Boolean> friends, ArrayList<String> requests) {
 		this.uuid = uuid;
 		this.invitesAllowed = invitesAllowed;
 		this.msgsAllowed = msgsAllowed;
@@ -83,8 +84,8 @@ public class FriendPlayer {
 		return onlineFriends;
 	}
 
-	public HashMap<UUID, Boolean> getOfflineFriends() {
-		HashMap<UUID, Boolean> offlineFriends = new HashMap<>();
+	public HashMap<String, Boolean> getOfflineFriends() {
+		HashMap<String, Boolean> offlineFriends = new HashMap<>();
 		friends.forEach((player, favourite) -> {
 			if (ProxyServer.getInstance().getPlayer(player) == null) {
 				offlineFriends.put(player, favourite);
@@ -93,24 +94,24 @@ public class FriendPlayer {
 		return offlineFriends;
 	}
 
-	public boolean isFriendsWith(UUID uuid) {
+	public boolean isFriendsWith(String uuid) {
 		return friends.containsKey(uuid);
 	}
-	public boolean isRequestedBy(UUID uuid) {
+	public boolean isRequestedBy(String uuid) {
 		return requests.contains(uuid);
 	}
 
-	public void addRequest(UUID uuid) {
+	public void addRequest(String uuid) {
 		requests.add(uuid);
 	}
-	public void removeRequest(UUID uuid) {
+	public void removeRequest(String uuid) {
 		requests.remove(uuid);
 	}
 
-	public void addFriend(UUID uuid) {
+	public void addFriend(String uuid) {
 		friends.put(uuid, false);
 	}
-	public void removeFriend(UUID uuid) {
+	public void removeFriend(String uuid) {
 		friends.remove(uuid);
 	}
 
@@ -120,10 +121,10 @@ public class FriendPlayer {
 	public void updateStatus(String status) {
 		this.status = status;
 	}
-	public HashMap<UUID, Boolean> getFriends() {
+	public HashMap<String, Boolean> getFriends() {
 		return friends;
 	}
-	public ArrayList<UUID> getRequests() {
+	public ArrayList<String> getRequests() {
 		return requests;
 	}
 

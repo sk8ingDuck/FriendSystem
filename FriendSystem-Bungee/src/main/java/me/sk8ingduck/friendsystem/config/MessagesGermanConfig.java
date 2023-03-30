@@ -56,6 +56,7 @@ public class MessagesGermanConfig extends MessagesConfig {
 		messages.put("friend.request.alreadyrequested", "&cDu hast &7%PLAYER% &cbereits eine Freundschaftsanfrage geschickt.");
 		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &chat dir bereits eine Freundschaftsanfrage geschickt.\n" +
 				"&cBenutze &6/friend accept &7%PLAYER% &cum diese anzunehmen.");
+		messages.put("friend.request.toomanyfriends", "&cDu hast bereits zu viele Freunde. Du darfst maximal &7%MAX_FRIENDS% &cFreunde haben.");
 		messages.put("friend.request.invitestoggled", "&cDu kannst &7%PLAYER% &ckeine Freundschaftsanfrage schicken.");
 		messages.put("friend.request.sent", "&9Du hast eine Freundschaftsanfrage an &7%PLAYER% &9geschickt!");
 		messages.put("friend.request.received", "&9Du hast eine Freundschaftsanfrage von &7%PLAYER% &9erhalten!\n" +

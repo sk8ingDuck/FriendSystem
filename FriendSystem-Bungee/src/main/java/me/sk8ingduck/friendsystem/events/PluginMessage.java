@@ -33,6 +33,8 @@ public class PluginMessage implements Listener {
 		String subChannel = in.readUTF();
 
 		ProxiedPlayer receiver = (ProxiedPlayer) event.getReceiver();
+		boolean onlineMode = ProxyServer.getInstance().getConfig().isOnlineMode();
+
 		if (subChannel.equalsIgnoreCase("toggleinvites")
 				|| subChannel.equalsIgnoreCase("togglenotifies")
 				|| subChannel.equalsIgnoreCase("togglemsgs")
@@ -53,7 +55,7 @@ public class PluginMessage implements Listener {
 		} else if (subChannel.equalsIgnoreCase("friendsList")) {
 
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
-				FriendPlayer friendPlayer = fm.getFriendPlayer(receiver.getUniqueId());
+				FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("friendsList");
 				out.writeUTF(receiver.getUniqueId().toString());
@@ -61,8 +63,8 @@ public class PluginMessage implements Listener {
 				friendPlayer.getFriends().forEach((uuid, favourite) -> {
 					ProxiedPlayer friend = ProxyServer.getInstance().getPlayer(uuid);
 					FriendPlayer otherFriendPlayer = fm.getFriendPlayer(uuid);
-					out.writeUTF(uuid.toString());
-					out.writeUTF(friend == null ? UUIDFetcher.getName(uuid) : friend.getName());
+					out.writeUTF(uuid);
+					out.writeUTF(friend == null ? (onlineMode ? UUIDFetcher.getName(UUID.fromString(uuid)) : uuid) : friend.getName());
 					out.writeBoolean(friend != null);
 					out.writeUTF(friend == null ? "offline" : friend.getServer().getInfo().getName());
 					out.writeUTF(Util.formatDifference(otherFriendPlayer.getLastSeen()));
@@ -76,15 +78,15 @@ public class PluginMessage implements Listener {
 		} else if (subChannel.equalsIgnoreCase("requestsList")) {
 
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
-				FriendPlayer friendPlayer = fm.getFriendPlayer(receiver.getUniqueId());
+				FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
 
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("requestsList");
 				out.writeUTF(receiver.getUniqueId().toString());
 				out.writeInt(friendPlayer.getRequests().size());
 				friendPlayer.getRequests().forEach(uuid -> {
-					out.writeUTF(uuid.toString());
-					out.writeUTF(UUIDFetcher.getName(uuid));
+					out.writeUTF(uuid);
+					out.writeUTF(onlineMode ? UUIDFetcher.getName(UUID.fromString(uuid)) : uuid);
 				});
 				receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 			});
@@ -92,13 +94,17 @@ public class PluginMessage implements Listener {
 		} else if (subChannel.equalsIgnoreCase("playerInfo")) {
 
 			ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
-				UUID otherPlayer = UUID.fromString(in.readUTF());
-				FriendPlayer friendPlayer = fm.getFriendPlayer(receiver.getUniqueId());
-				FriendPlayer otherFriendPlayer = fm.getFriendPlayer(otherPlayer);
-				boolean areFriends = friendPlayer.getFriends().containsKey(otherPlayer);
-				boolean isFavourite = friendPlayer.getFriends().get(otherPlayer) != null && friendPlayer.getFriends().get(otherPlayer);
-				boolean hasIncomingRequest = friendPlayer.getRequests().contains(otherPlayer);
-				boolean hasOutgoingRequest = otherFriendPlayer.getRequests().contains(receiver.getUniqueId());
+				String otherPlayerUuid = in.readUTF();
+				String otherPlayerName = in.readUTF();
+
+				String otherPlayerNameOrUuid = onlineMode ? otherPlayerUuid : otherPlayerName;
+
+				FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
+				FriendPlayer otherFriendPlayer = fm.getFriendPlayer(otherPlayerNameOrUuid);
+				boolean areFriends = friendPlayer.getFriends().containsKey(otherPlayerNameOrUuid);
+				boolean isFavourite = friendPlayer.getFriends().get(otherPlayerNameOrUuid) != null && friendPlayer.getFriends().get(otherPlayerNameOrUuid);
+				boolean hasIncomingRequest = friendPlayer.getRequests().contains(otherPlayerNameOrUuid);
+				boolean hasOutgoingRequest = otherFriendPlayer.getRequests().contains(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
 
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("playerInfo");
@@ -112,7 +118,7 @@ public class PluginMessage implements Listener {
 
 		} else if (subChannel.equalsIgnoreCase("settings")) {
 
-			FriendPlayer friendPlayer = fm.getFriendPlayer(receiver.getUniqueId());
+			FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("settings");
 			out.writeUTF(receiver.getUniqueId().toString());

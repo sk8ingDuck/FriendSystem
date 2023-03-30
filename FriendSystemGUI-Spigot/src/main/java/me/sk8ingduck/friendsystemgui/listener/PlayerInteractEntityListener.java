@@ -18,7 +18,7 @@ public class PlayerInteractEntityListener implements Listener {
 
         if ((event.getRightClicked() instanceof Player)) {
             Player clickedPlayer = (Player) event.getRightClicked();
-            GuiManager.guiSelectedPlayer.open(event.getPlayer(), clickedPlayer.getUniqueId(), clickedPlayer.getName());
+            GuiManager.guiSelectedPlayer.open(event.getPlayer(), clickedPlayer.getUniqueId().toString(), clickedPlayer.getName());
         }
     }
 }
