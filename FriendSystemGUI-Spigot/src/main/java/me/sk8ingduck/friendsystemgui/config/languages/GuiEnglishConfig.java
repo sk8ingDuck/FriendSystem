@@ -1,5 +1,6 @@
-package me.sk8ingduck.friendsystemgui.config;
+package me.sk8ingduck.friendsystemgui.config.languages;
 
+import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.util.ItemCreator;
 import me.sk8ingduck.friendsystemgui.util.Skull;
 import me.sk8ingduck.friendsystemgui.util.SkullCreator;
@@ -31,6 +32,8 @@ public class GuiEnglishConfig extends GuiConfig {
 		items.put("gui.mainMenu.item.offlineFriendFavourite", SkullCreator.createSkeletonSkull("&7[&c❤&7] &c%PLAYER%",
 				" ", "&7Last seen", "&e→ %LAST_SEEN%", " ", "&7Status", "&e→ %STATUS%"));
 
+		items.put("gui.mainMenu.item.ownInfo", SkullCreator.createPlayerSkull("&6%PLAYER%",
+				" ", "&7Server", "&e→ %SERVER%", " ", "&7You're online since", "&e→ %ONLINE_TIME%", " ", "&7Your Status", "&e→ %STATUS%"));
 		items.put("gui.mainMenu.item.previousPage", Skull.LEFT.getSkull("&ePrevious Page"));
 		items.put("gui.mainMenu.item.nextPage", Skull.RIGHT.getSkull("&eNext Page"));
 		items.put("gui.mainMenu.item.settings", ItemCreator.createItem(Material.REDSTONE, "&cSettings"));

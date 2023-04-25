@@ -1,10 +1,5 @@
 package me.sk8ingduck.friendsystemgui.pluginmessage;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.UUID;
-
 public class Request {
 
 	private final String uuid;
@@ -23,13 +18,5 @@ public class Request {
 		return name;
 	}
 
-	public ItemStack getHead(ItemStack template) {
-		ItemStack itemStack = template.clone();
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null) return itemStack;
 
-		itemMeta.setDisplayName(itemMeta.getDisplayName().replaceAll("%PLAYER%", name));
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
-	}
 }

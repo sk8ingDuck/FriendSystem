@@ -5,7 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 public class FCommand implements CommandExecutor {
 
 	@Override
@@ -14,6 +13,7 @@ public class FCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			GuiManager.guiMainMenu.open(player);
 		}
+
 		return true;
 	}
 }

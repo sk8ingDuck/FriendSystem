@@ -41,4 +41,5 @@ public abstract class GuiConfig extends Config {
 	public ItemStack get(String path) {
 		return items.get(path);
 	}
+
 }

@@ -45,7 +45,7 @@ public class MySQL {
                     "UUID VARCHAR(40), " +
                     "friendUUID VARCHAR(40), " +
                     "isFavourite BOOLEAN DEFAULT 0, " +
-                    "FOREIGN KEY (friendUUID) REFERENCES player(UUID));");
+                    "FOREIGN KEY (friendUUID) REFERENCES " + database + ".player(UUID));");
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS request(" +
                     "UUID VARCHAR(40), " +
                     "requestUUID VARCHAR(40), " +
@@ -53,8 +53,8 @@ public class MySQL {
 
             stmt.close();
         } catch (SQLException e) {
-            ProxyServer.getInstance().getConsole()
-                    .sendMessage(new TextComponent("§c[FriendSystem] MySQL Connection could not be established. Error:"));
+            ProxyServer.getInstance().getLogger()
+                    .info("§c[FriendSystem] MySQL Connection could not be established. Error:");
             e.printStackTrace();
         }
     }
@@ -82,8 +82,7 @@ public class MySQL {
                     friendsStmt.setString(1, uuid);
                     ResultSet friendsRs = friendsStmt.executeQuery();
                     while (friendsRs.next()) {
-                        friends.put(friendsRs.getString("friendUUID"),
-                                friendsRs.getBoolean("isFavourite"));
+                        friends.put(friendsRs.getString("friendUUID"), friendsRs.getBoolean("isFavourite"));
                     }
                     friendsRs.close();
                     friendsStmt.close();
@@ -104,6 +103,7 @@ public class MySQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 

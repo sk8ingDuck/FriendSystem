@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.ipvp.canvas.slot.Slot;
 import org.ipvp.canvas.type.ChestMenu;
 
-import java.util.UUID;
-
 public class GuiSelectedPlayer {
 
     public void open(Player player, String selectedPlayer, String playerName) {
@@ -36,7 +34,6 @@ public class GuiSelectedPlayer {
         Slot denyRequest = gui.getSlot(5);
         FriendSystemGUI.getInstance().getPluginMessaging().getPlayerInfo(player, selectedPlayer, playerName,
                 (areFriends, isFavourite, hasIncomingRequest, hasOutgoingRequest) -> {
-
                     if (areFriends) {
                         removeFriend.setItem(guiConfig.get("gui.selectedPlayerMenu.item.removeFriend"));
                         removeFriend.setClickHandler((player1, clickInformation) -> sendCommand(player1, "remove", playerName));

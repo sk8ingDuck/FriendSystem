@@ -5,7 +5,6 @@ import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -14,7 +13,7 @@ import net.md_5.bungee.event.EventHandler;
 public class Join implements Listener {
     private final FriendManager fm;
     public Join() {
-        this.fm = FriendSystem.getInstance().getFriendManager();
+        fm = FriendSystem.getInstance().getFriendManager();
     }
     @EventHandler
     public void onJoin(PostLoginEvent event) {
@@ -26,23 +25,22 @@ public class Join implements Listener {
         String playerUUIDorName = onlineMode ? player.getUniqueId().toString() : player.getName();
 
         fm.updateLastSeen(playerUUIDorName);
-        FriendPlayer friendPlayer = FriendSystem.getInstance().getFriendManager().getFriendPlayer(playerUUIDorName);
+        FriendPlayer friendPlayer = fm.getFriendPlayer(playerUUIDorName);
         if (friendPlayer == null) {
             fm.addFriendPlayer(playerUUIDorName);
             return;
         }
 
         friendPlayer.getOnlineFriends().keySet().forEach(friend -> {
-            FriendPlayer friendPlayer2 = FriendSystem.getInstance().getFriendManager().getFriendPlayer(playerUUIDorName);
+            FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode ? friend.getUniqueId().toString() : friend.getName());
             if (friendPlayer2.isNotifiesAllowed()) {
-                friend.sendMessage(new TextComponent(c.get("notifies.join")
-                        .replaceAll("%PLAYER%", player.getName())));
+                friend.sendMessage(c.get("notifies.join", "%PLAYER%", player.getName()));
             }
         });
 
-        player.sendMessage(new TextComponent(c.get("join.friendcounter")
-                .replaceAll("%COUNT%", String.valueOf(friendPlayer.getOnlineFriends().size()))));
-        player.sendMessage(new TextComponent(c.get("join.requestcounter")
-                .replaceAll("%COUNT%", String.valueOf(friendPlayer.getRequests().size()))));
+        player.sendMessage(c.get("join.friendcounter",
+                "%COUNT%", String.valueOf(friendPlayer.getOnlineFriends().size())));
+        player.sendMessage(c.get("join.requestcounter",
+                "%COUNT%", String.valueOf(friendPlayer.getRequests().size())));
     }
 }

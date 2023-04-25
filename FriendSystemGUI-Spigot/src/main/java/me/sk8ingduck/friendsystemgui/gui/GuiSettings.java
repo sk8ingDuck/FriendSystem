@@ -51,7 +51,7 @@ public class GuiSettings {
 
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("toggleinvites");
-			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		});
 
 		toggleNotifies.setClickHandler((player1, clickInformation) -> {
@@ -59,7 +59,7 @@ public class GuiSettings {
 
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("togglenotifies");
-			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		});
 
 		toggleMsgs.setClickHandler((player1, clickInformation) -> {
@@ -75,7 +75,7 @@ public class GuiSettings {
 
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("togglejump");
-			player1.sendPluginMessage(me.sk8ingduck.friendsystemgui.FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		});
 
 		back.setClickHandler((player1, clickInformation) -> GuiManager.guiMainMenu.open(player));

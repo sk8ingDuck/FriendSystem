@@ -18,7 +18,7 @@ public class PlayerInteractListener implements Listener {
         SettingsConfig config = FriendSystemGUI.getInstance().getSettingsConfig();
         GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 
-        if (!config.isGuiEnabled() || !config.isRightClickPlayerToOpenMenuEnabled()) return;
+        if (!config.isGuiEnabled()) return;
 
         Player player = event.getPlayer();
         if (event.getAction().equals(Action.PHYSICAL)

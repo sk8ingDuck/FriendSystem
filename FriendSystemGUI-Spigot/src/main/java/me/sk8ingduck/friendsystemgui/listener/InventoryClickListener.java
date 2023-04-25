@@ -27,6 +27,7 @@ public class InventoryClickListener implements Listener {
 
 			if (item1 != null
 					&& item1.getItemMeta() != null
+					&& item1.getItemMeta().getDisplayName() != null
 					&& item1.getItemMeta().getDisplayName().equalsIgnoreCase(playerHead)) {
 				event.setCancelled(true);
 				return;
@@ -35,6 +36,7 @@ public class InventoryClickListener implements Listener {
 		ItemStack item2 = event.getCurrentItem();
 		if (item2 != null
 				&& item2.getItemMeta() != null
+				&& item2.getItemMeta().getDisplayName() != null
 				&& item2.getItemMeta().getDisplayName().equalsIgnoreCase(playerHead)) {
 			event.setCancelled(true);
 		}

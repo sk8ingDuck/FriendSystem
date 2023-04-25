@@ -3,6 +3,9 @@ version: '${project.version}'
 main: me.sk8ingduck.friendsystemgui.FriendSystemGUI
 authors: [ sk8ingDuck ]
 
+softdepend:
+  - PlaceholderAPI
+
 commands:
   f:
     description: open friend menu

@@ -1,4 +1,6 @@
-package me.sk8ingduck.friendsystem.config;
+package me.sk8ingduck.friendsystem.config.languages;
+
+import me.sk8ingduck.friendsystem.config.MessagesConfig;
 
 public class MessagesGermanConfig extends MessagesConfig {
 
@@ -28,13 +30,13 @@ public class MessagesGermanConfig extends MessagesConfig {
 				"&9&m------------------&r&e« FreundeSystem »&9&m------------------");
 
 		messages.put("friend.list.format.header", "&9&m--------------&r&e« Deine Freundesliste »&9&m--------------");
-		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7)");
-		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7)");
+		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7) {jump}");
+		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(seit &e%ONLINE_TIME%&7) {jump}");
 		messages.put("friend.list.format.offline.regular", "&7%PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.offline.favourite", "&7[&c❤&7] %PLAYEROFF% &8- &cOFFLINE &7(seit &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.footer", "&9&m--------------&r&e« Deine Freundesliste »&9&m--------------");
 		messages.put("friend.request.format.header", "&9&m--------------&r&e« Offene Anfragen »&9&m--------------");
-		messages.put("friend.request.format.player", "&7%PLAYER%");
+		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny}");
 		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Offene Anfragen »&9&m--------------");
 		messages.put("friend.toggleinvites.on", "&9Deine Freundschaftsanfragen sind nun &aeingeschaltet&9.");
 		messages.put("friend.toggleinvites.off", "&9Deine Freundschaftsanfragen sind nun &causgeschaltet&9.");
@@ -55,12 +57,12 @@ public class MessagesGermanConfig extends MessagesConfig {
 		messages.put("friend.request.alreadyfriends", "&cDu bist mit &7%PLAYER% &cbereits befreundet.");
 		messages.put("friend.request.alreadyrequested", "&cDu hast &7%PLAYER% &cbereits eine Freundschaftsanfrage geschickt.");
 		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &chat dir bereits eine Freundschaftsanfrage geschickt.\n" +
-				"&cBenutze &6/friend accept &7%PLAYER% &cum diese anzunehmen.");
+				"{accept} {deny}");
 		messages.put("friend.request.toomanyfriends", "&cDu hast bereits zu viele Freunde. Du darfst maximal &7%MAX_FRIENDS% &cFreunde haben.");
 		messages.put("friend.request.invitestoggled", "&cDu kannst &7%PLAYER% &ckeine Freundschaftsanfrage schicken.");
 		messages.put("friend.request.sent", "&9Du hast eine Freundschaftsanfrage an &7%PLAYER% &9geschickt!");
-		messages.put("friend.request.received", "&9Du hast eine Freundschaftsanfrage von &7%PLAYER% &9erhalten!\n" +
-				"&9Benutze &6/friend accept &7%PLAYER% &9um diese anzunehmen.");
+		messages.put("friend.request.received","&9Du hast eine Freundschaftsanfrage von &7%PLAYER% &9erhalten!\n" +
+				"{accept} {deny}");
 		messages.put("friend.remove.notfriends", "&7%PLAYER% &cist nicht mit dir befreundet.");
 		messages.put("friend.remove.successful", "&9Du hast die Freundschaft zu &7%PLAYER% &9aufgelöst");
 		messages.put("friend.remove.successful2", "&7%PLAYER% &9hat die Freundschaft beendet.");
@@ -94,8 +96,8 @@ public class MessagesGermanConfig extends MessagesConfig {
 		messages.put("msg.r.receiver", "&7%PLAYER% &b-> &7%PLAYER2%&8: &e%MSG%");
 		messages.put("notifies.join", "&7%PLAYER% &9ist nun &aonline&9.");
 		messages.put("notifies.leave", "&7%PLAYER% &9ist nun &coffline&9.");
-		messages.put("join.friendcounter", "&9Momentan sind &7%COUNT% &9Freunde(n) von dir online");
-		messages.put("join.requestcounter", "&9Du hast noch &7%COUNT% &9offene Freundschaftsanfrage(n)");
+		messages.put("join.friendcounter", "&9Momentan sind {onlineFriends} &9Freunde(n) von dir online");
+		messages.put("join.requestcounter", "&9Du hast noch {openRequests} &9offene Freundschaftsanfrage(n)");
 
 		messages.put("friend.timeformat.years", "Jahre");
 		messages.put("friend.timeformat.year", "Jahr");
@@ -107,5 +109,22 @@ public class MessagesGermanConfig extends MessagesConfig {
 		messages.put("friend.timeformat.minute", "Minute");
 		messages.put("friend.timeformat.seconds", "Sekunden");
 		messages.put("friend.timeformat.second", "Sekunde");
+
+	}
+
+	@Override
+	public void loadTextComponents() {
+		if (fileConfiguration.getSection("textcomponents").getKeys().isEmpty()) {
+			fileConfiguration.set("textcomponents.accept", "&a[ANNEHMEN] {hovertext: &aFreundschaftsanfrage von &6%PLAYER% &aannehmen, command: /friend accept %PLAYER%}");
+			fileConfiguration.set("textcomponents.deny", "&c[ABLEHNEN] {hovertext: &cFreundschaftsanfrage von &6%PLAYER% &cablehnen, command: /friend deny %PLAYER%}");
+			fileConfiguration.set("textcomponents.openRequests", "&7%COUNT% {hovertext: &9Freundschaftsanfragen anzeigen, command: /friend requests}");
+			fileConfiguration.set("textcomponents.onlineFriends", "&7%COUNT% {hovertext: &9Freundschaftsliste anzeigen, command: /friend list}");
+			fileConfiguration.set("textcomponents.jump", "&a[JUMP] {hovertext: &9Zu &7%PLAYERON% &9Server springen, command: /friend jump %PLAYERON%}");
+			super.save();
+		}
+
+		fileConfiguration.getSection("textcomponents")
+				.getKeys()
+				.forEach(key -> messages.put("textcomponents." + key, fileConfiguration.getString("textcomponents." + key)));
 	}
 }

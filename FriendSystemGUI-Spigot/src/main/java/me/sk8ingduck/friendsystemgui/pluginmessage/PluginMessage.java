@@ -4,6 +4,9 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
+import me.sk8ingduck.friendsystemgui.pluginmessage.callback.OwnInfoCallback;
+import me.sk8ingduck.friendsystemgui.pluginmessage.callback.PlayerInfoCallback;
+import me.sk8ingduck.friendsystemgui.pluginmessage.callback.SettingsCallback;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -18,6 +21,7 @@ public class PluginMessage implements PluginMessageListener {
 	private final HashMap<String, Consumer<List<Request>>> requestsListCallbacks = new HashMap<>();
 	private final HashMap<String, PlayerInfoCallback> playerInfoCallbacks = new HashMap<>();
 	private final HashMap<String, SettingsCallback> settingsCallbacks = new HashMap<>();
+	private final HashMap<String, OwnInfoCallback> ownInfoCallbacks = new HashMap<>();
 
 
 	@Override
@@ -31,7 +35,8 @@ public class PluginMessage implements PluginMessageListener {
 		if (!subchannel.equalsIgnoreCase("friendsList")
 				&& !subchannel.equalsIgnoreCase("requestsList")
 				&& !subchannel.equalsIgnoreCase("playerInfo")
-				&& !subchannel.equalsIgnoreCase("settings")) {
+				&& !subchannel.equalsIgnoreCase("settings")
+				&& !subchannel.equalsIgnoreCase("ownInfo")) {
 			return;
 		}
 		String uuid = in.readUTF();
@@ -73,6 +78,12 @@ public class PluginMessage implements PluginMessageListener {
 			settingsCallbacks.get(uuid).onReceive(in.readBoolean(), in.readBoolean(), in.readBoolean(), in.readBoolean());
 			settingsCallbacks.remove(uuid);
 
+		} else if (subchannel.equalsIgnoreCase("ownInfo")) {
+
+			if (!ownInfoCallbacks.containsKey(uuid)) return;
+			ownInfoCallbacks.get(uuid).onReceive(in.readUTF(), in.readUTF(), in.readUTF());
+			ownInfoCallbacks.remove(uuid);
+
 		}
 	}
 
@@ -105,6 +116,13 @@ public class PluginMessage implements PluginMessageListener {
 		out.writeUTF("settings");
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		settingsCallbacks.put(player.getUniqueId().toString(), settingsCallback);
+	}
+
+	public void getOwnInfo(Player player, OwnInfoCallback ownInfoCallback) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("ownInfo");
+		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		ownInfoCallbacks.put(player.getUniqueId().toString(), ownInfoCallback);
 	}
 
 }

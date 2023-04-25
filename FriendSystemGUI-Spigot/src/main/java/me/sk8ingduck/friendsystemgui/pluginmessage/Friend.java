@@ -1,12 +1,5 @@
 package me.sk8ingduck.friendsystemgui.pluginmessage;
 
-import me.sk8ingduck.friendsystemgui.util.SkullCreator;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 public class Friend {
 	private final String uuid;
 	private final String name;
@@ -38,25 +31,20 @@ public class Friend {
 		return online;
 	}
 
+	public String getServer() {
+		return server;
+	}
+
+	public String getLastSeen() {
+		return lastSeen;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
 	public boolean isFavourite() {
 		return isFavourite;
 	}
 
-	public ItemStack getHead(ItemStack template) {
-		ItemStack itemStack = template.clone();
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null) return itemStack;
-
-		itemMeta.setDisplayName(itemMeta.getDisplayName().replaceAll("%PLAYER%", name));
-		itemMeta.setLore(itemMeta.getLore().stream()
-				.map(lore -> lore.replaceAll("&", "§")
-						.replaceAll(online ? "%ONLINE_TIME%" : "%LAST_SEEN%", lastSeen)
-						.replaceAll("%SERVER%", server)
-						.replaceAll("%STATUS%", status))
-				.collect(Collectors.toList()));
-		itemStack.setItemMeta(itemMeta);
-		if (isOnline()) SkullCreator.itemWithName(itemStack, name);
-
-		return itemStack;
-	}
 }

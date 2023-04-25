@@ -5,9 +5,9 @@ import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.util.ItemCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.mask.RecipeMask;
@@ -53,7 +53,7 @@ public class GuiRequests {
 
 		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
 			requests.forEach(request -> {
-				ItemStack item = request.getHead(guiConfig.get("gui.requestsMenu.item.request"));
+				ItemStack item = getHead(guiConfig.get("gui.requestsMenu.item.request"), request.getName());
 				builder.addItem(SlotSettings.builder()
 						.itemTemplate(player1 -> item)
 						.clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, request.getUuid(), request.getName()))
@@ -61,5 +61,15 @@ public class GuiRequests {
 			});
 			Bukkit.getScheduler().scheduleSyncDelayedTask(FriendSystemGUI.getInstance(), () -> builder.build().get(0).open(player));
 		});
+	}
+
+	public ItemStack getHead(ItemStack template, String name) {
+		ItemStack itemStack = template.clone();
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (itemMeta == null) return itemStack;
+
+		itemMeta.setDisplayName(itemMeta.getDisplayName().replaceAll("%PLAYER%", name));
+		itemStack.setItemMeta(itemMeta);
+		return itemStack;
 	}
 }

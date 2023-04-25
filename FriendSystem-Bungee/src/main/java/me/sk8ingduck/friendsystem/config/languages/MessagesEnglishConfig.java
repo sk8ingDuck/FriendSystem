@@ -1,4 +1,6 @@
-package me.sk8ingduck.friendsystem.config;
+package me.sk8ingduck.friendsystem.config.languages;
+
+import me.sk8ingduck.friendsystem.config.MessagesConfig;
 
 public class MessagesEnglishConfig extends MessagesConfig {
 
@@ -11,7 +13,7 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("friend.help",
 				"&9&m-----------------&r&e« FriendSystem »&9&m-----------------\n" +
 				"&e/friend add <player> &8- &7add friend\n" +
-				"&e/friend removefavourite <Name> &8- &7remove a favourite\n" +
+				"&e/friend remove <player> &8- &7remove friend\n" +
 				"&e/friend accept <player> &8- &7accept friend request\n" +
 				"&e/friend deny <player> &8- &7decline friend request\n" +
 				"&e/friend list &8- &7list all friends\n" +
@@ -28,14 +30,24 @@ public class MessagesEnglishConfig extends MessagesConfig {
 				"&9&m-----------------&r&e« FriendSystem »&9&m-----------------");
 
 		messages.put("friend.list.format.header", "&9&m--------------&r&e« Your friends »&9&m--------------");
-		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(since &e%ONLINE_TIME%&7)");
-		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(since &e%ONLINE_TIME%&7)");
+		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(since &e%ONLINE_TIME%&7) {jump}");
+		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(since &e%ONLINE_TIME%&7) {jtextcomponents.ump}");
 		messages.put("friend.list.format.offline.regular", "&7%PLAYEROFF% &8- &cOFFLINE &7(since &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.offline.favourite", "&7[&c❤&7] %PLAYEROFF% &8- &cOFFLINE &7(since &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.footer", "&9&m--------------&r&e« Your friends »&9&m--------------");
 		messages.put("friend.request.format.header", "&9&m--------------&r&e« Open requests »&9&m--------------");
-		messages.put("friend.request.format.player", "&7%PLAYER%");
-		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Open requests »&9&m--------------\"");
+		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny}");
+		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Open requests »&9&m--------------");
+
+		messages.put("friend.request.alreadyfriends", "&cYou are already friend with &7%PLAYER%.");
+		messages.put("friend.request.alreadyrequested", "&cYou've already sent &7%PLAYER% &ca friend request.");
+		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &chas already sent you a friend request.\n" +
+				"{accept} {deny}");
+		messages.put("friend.request.toomanyfriends", "&cYou have already got too many friends. You are allowed to have &7%MAX_FRIENDS%");
+		messages.put("friend.request.invitestoggled", "&7%PLAYER% &cdoes not allow friend requests.");
+		messages.put("friend.request.sent", "&9You've sent &7%PLAYER% &9a friend request!");
+		messages.put("friend.request.received","&9You received a friend request from &7%PLAYER%!\n" +
+				"{accept} {deny}");
 		messages.put("friend.toggleinvites.on", "&9Friend requests are now &aallowed&9.");
 		messages.put("friend.toggleinvites.off", "&9Friend requests are now &cdisabled&9.");
 		messages.put("friend.togglemsgs.on", "&9Private messages are now &aallowed&9.");
@@ -52,15 +64,6 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("friend.error.interact", "&cYou can't interact with yourself.");
 		messages.put("friend.error.playernotfound", "&cPlayer 7%PLAYER% &cdoes not exist.");
 		messages.put("friend.error.notonnetwork", "&7%PLAYER% &chas never been on the network.");
-		messages.put("friend.request.alreadyfriends", "&cYou are already friend with &7%PLAYER%.");
-		messages.put("friend.request.alreadyrequested", "&cYou've already sent &7%PLAYER% &ca friend request.");
-		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &chas already sent you a friend request.\n" +
-				"&cType &6/friend accept &7%PLAYER% &cto accept.");
-		messages.put("friend.request.toomanyfriends", "&cYou have already got too many friends. You are allowed to have &7%MAX_FRIENDS%");
-		messages.put("friend.request.invitestoggled", "&7%PLAYER% &cdoes not allow friend requests.");
-		messages.put("friend.request.sent", "&9You've sent &7%PLAYER% &9a friend request!");
-		messages.put("friend.request.received", "&9You received a friend request from &7%PLAYER%\n" +
-				"&9Type &6/friend accept &7%PLAYER% &9to accept.");
 		messages.put("friend.remove.notfriends", "&7%PLAYER% &cis not your friend");
 		messages.put("friend.remove.successful", "&7%PLAYER% &9is no longer your friend.");
 		messages.put("friend.remove.successful2", "&7%PLAYER% &9removed you as a friend.");
@@ -77,7 +80,7 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("friend.status.update", "&9Your status is now &7%STATUS%");
 		messages.put("friend.favourite.notfriends", "&7%PLAYER% &cis not your friend");
 		messages.put("friend.favourite.added", "&9You marked &7%PLAYER% &9as a favourite");
-		messages.put("friend.favourite.removed", "&7%PLAYER% &c9is now longer a favourite");
+		messages.put("friend.favourite.removed", "&7%PLAYER% &cis now longer a favourite");
 		messages.put("msg.error.syntax", "&cSyntax: &6/msg <player> <message>");
 		messages.put("msg.error.interact", "&cYou can't interact with yourself.");
 		messages.put("msg.error.playernotfound", "&7%PLAYER% &cdoes not exist.");
@@ -94,8 +97,8 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("msg.r.receiver", "&7%PLAYER% &b-> &7%PLAYER2%&8: &e%MSG%");
 		messages.put("notifies.join", "&7%PLAYER% &9is now &aonline&9.");
 		messages.put("notifies.leave", "&7%PLAYER% &9is now &coffline&9.");
-		messages.put("join.friendcounter", "&9There are currently &7%COUNT% &9friends online");
-		messages.put("join.requestcounter", "&9You have &7%COUNT% &9pending friend requests");
+		messages.put("join.friendcounter", "&9There are currently {onlineFriends} &9friends online");
+		messages.put("join.requestcounter", "&9You have {openRequests} &9pending friend requests");
 
 		messages.put("friend.timeformat.years", "years");
 		messages.put("friend.timeformat.year", "year");
@@ -107,5 +110,24 @@ public class MessagesEnglishConfig extends MessagesConfig {
 		messages.put("friend.timeformat.minute", "mins");
 		messages.put("friend.timeformat.seconds", "seconds");
 		messages.put("friend.timeformat.second", "second");
+
 	}
+
+	@Override
+	public void loadTextComponents() {
+		if (fileConfiguration.getSection("textcomponents").getKeys().isEmpty()) {
+			fileConfiguration.set("textcomponents.accept", "&a[ACCEPT] {hovertext: &aAccept friend request from &6%PLAYER%, command: /friend accept %PLAYER%}");
+			fileConfiguration.set("textcomponents.deny", "&c[DECLINE] {hovertext: &cDecline friend request from &6%PLAYER%, command: /friend deny %PLAYER%}");
+			fileConfiguration.set("textcomponents.onlineFriends", "&7%COUNT% {hovertext: &9Show online friends, command: /friend list}");
+			fileConfiguration.set("textcomponents.openRequests", "&7%COUNT% {hovertext: &9Show open requests, command: /friend requests}");
+			fileConfiguration.set("textcomponents.jump", "&a[JUMP] {hovertext: &9Jump to &7%PLAYERON%'s &9server, command: /friend jump %PLAYERON%}");
+			super.save();
+		}
+
+		fileConfiguration.getSection("textcomponents")
+				.getKeys()
+				.forEach(key -> messages.put("textcomponents." + key, fileConfiguration.getString("textcomponents." + key)));
+	}
+
+
 }

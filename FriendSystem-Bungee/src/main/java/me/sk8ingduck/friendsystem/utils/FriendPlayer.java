@@ -1,9 +1,8 @@
 package me.sk8ingduck.friendsystem.utils;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
+import me.sk8ingduck.friendsystem.FriendSystem;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +20,13 @@ public class FriendPlayer {
 	private final ArrayList<String> requests;
 
 	public FriendPlayer(String uuid,
-	                    boolean invitesAllowed, boolean msgsAllowed, boolean jumpingAllowed, boolean notifiesAllowed,
+	                    boolean invitesAllowed, boolean notifiesAllowed, boolean msgsAllowed, boolean jumpingAllowed,
 	                    LocalDateTime lastSeen, String status, HashMap<String, Boolean> friends, ArrayList<String> requests) {
 		this.uuid = uuid;
 		this.invitesAllowed = invitesAllowed;
+		this.notifiesAllowed = notifiesAllowed;
 		this.msgsAllowed = msgsAllowed;
 		this.jumpingAllowed = jumpingAllowed;
-		this.notifiesAllowed = notifiesAllowed;
 		this.lastSeen = lastSeen;
 		this.status = status;
 		this.friends = friends;
@@ -76,9 +75,9 @@ public class FriendPlayer {
 	public HashMap<ProxiedPlayer, Boolean> getOnlineFriends() {
 		HashMap<ProxiedPlayer, Boolean> onlineFriends = new HashMap<>();
 		friends.forEach((player, favourite) -> {
-			ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(player);
+			ProxiedPlayer onlineFriend = FriendSystem.getPlayer(player);
 			if (onlineFriend != null) {
-				onlineFriends.put(ProxyServer.getInstance().getPlayer(player), favourite);
+				onlineFriends.put(onlineFriend, favourite);
 			}
 		});
 		return onlineFriends;
@@ -87,7 +86,7 @@ public class FriendPlayer {
 	public HashMap<String, Boolean> getOfflineFriends() {
 		HashMap<String, Boolean> offlineFriends = new HashMap<>();
 		friends.forEach((player, favourite) -> {
-			if (ProxyServer.getInstance().getPlayer(player) == null) {
+			if (FriendSystem.getPlayer(player) == null) {
 				offlineFriends.put(player, favourite);
 			}
 		});
@@ -128,9 +127,9 @@ public class FriendPlayer {
 		return requests;
 	}
 
-	public void sendMessage(String message) {
-		ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+	public void sendMessage(BaseComponent[] message) {
+		ProxiedPlayer player = FriendSystem.getPlayer(uuid);
 		if (player != null)
-			player.sendMessage(new TextComponent(message));
+			player.sendMessage(message);
 	}
 }

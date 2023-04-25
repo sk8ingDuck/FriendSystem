@@ -8,14 +8,19 @@ import java.util.stream.Collectors;
 
 public class SettingsConfig extends Config {
 
+	private String language;
+	private final boolean msgCommandEnabled;
+	private final boolean rCommandEnabled;
 	private final boolean permissionsEnabled;
 	private Map<String, Integer> permissions;
-	private String language;
+
 
 	public SettingsConfig(String name, String path) {
 		super(name, path);
 
 		language = (String) getPathOrSet("language", "german", false);
+		msgCommandEnabled = (boolean) getPathOrSet("commands.msgEnabled", true, false);
+		rCommandEnabled = (boolean) getPathOrSet("commands.rCommand", true, false);
 		permissionsEnabled = (boolean) getPathOrSet("permissions.enabled", false, false);
 
 		permissions = new HashMap<>();
@@ -24,6 +29,14 @@ public class SettingsConfig extends Config {
 
 	public String getLanguage() {
 		return language;
+	}
+
+	public boolean isMsgCommandEnabled() {
+		return msgCommandEnabled;
+	}
+
+	public boolean isrCommandEnabled() {
+		return rCommandEnabled;
 	}
 
 	public void reload() {

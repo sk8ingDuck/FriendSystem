@@ -22,6 +22,5 @@ public class PlayerJoinListener implements Listener {
 
         ItemStack item = SkullCreator.itemWithUuid(guiConfig.get("guiItem"), player.getUniqueId());
         player.getInventory().setItem(config.getGuiSlot(), item);
-
     }
 }

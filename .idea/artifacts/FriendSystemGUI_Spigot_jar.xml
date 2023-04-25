@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="FriendSystemGUI-Spigot:jar">
+    <output-path>$USER_HOME$/Documents/MINECRAFT/server/plugins</output-path>
+    <root id="archive" name="FriendSystemGUI-Spigot.jar">
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ipvp/canvas/1.7.0-SNAPSHOT/canvas-1.7.0-SNAPSHOT.jar" path-in-jar="/" />
+      <element id="module-output" name="FriendSystemGUI-Spigot" />
+    </root>
+  </artifact>
+</component>

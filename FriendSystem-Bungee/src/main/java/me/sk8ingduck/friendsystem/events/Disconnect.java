@@ -5,7 +5,6 @@ import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -35,8 +34,7 @@ public class Disconnect implements Listener {
 		friendPlayer.getOnlineFriends().keySet().forEach(friend -> {
 			FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode ? friend.getUniqueId().toString() : friend.getName());
 			if (friendPlayer2.isNotifiesAllowed()) {
-				friend.sendMessage(new TextComponent(c.get("notifies.leave")
-						.replaceAll("%PLAYER%", player.getName())));
+				friend.sendMessage(c.get("notifies.leave", "%PLAYER%", player.getName()));
 			}
 		});
 	}
