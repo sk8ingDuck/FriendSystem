@@ -1,5 +1,6 @@
 package me.sk8ingduck.friendsystemgui;
 
+import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
 import me.sk8ingduck.friendsystemgui.command.FCommand;
 import me.sk8ingduck.friendsystemgui.config.*;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
@@ -10,7 +11,6 @@ import me.sk8ingduck.friendsystemgui.pluginmessage.Placeholder;
 import me.sk8ingduck.friendsystemgui.pluginmessage.PluginMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.ipvp.canvas.MenuFunctionListener;
 
 public final class FriendSystemGUI extends JavaPlugin {
 
@@ -19,9 +19,12 @@ public final class FriendSystemGUI extends JavaPlugin {
     private GuiConfig guiConfig;
     private PluginMessage pm;
 
+    private InventoryManager manager = new InventoryManager(this);
     @Override
     public void onEnable() {
         instance = this;
+
+        manager.invoke();
 
         settingsConfig = new SettingsConfig("settings.yml", getDataFolder());
 
@@ -36,8 +39,8 @@ public final class FriendSystemGUI extends JavaPlugin {
         GuiManager.init();
 
         pm = new PluginMessage();
+
         this.getCommand("f").setExecutor(new FCommand());
-        Bukkit.getPluginManager().registerEvents(new MenuFunctionListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);
@@ -61,6 +64,10 @@ public final class FriendSystemGUI extends JavaPlugin {
 
     public static FriendSystemGUI getInstance() {
         return instance;
+    }
+
+    public InventoryManager getManager() {
+        return manager;
     }
 
     public SettingsConfig getSettingsConfig() {
@@ -87,9 +94,17 @@ public final class FriendSystemGUI extends JavaPlugin {
                 return new GuiChineseConfig("guis_chinese.yml", getDataFolder());
             case "italian":
                 return new GuiItalianConfig("guis_italian.yml", getDataFolder());
+            case "russian":
+                return new GuiRussianConfig("guis_russian.yml", getDataFolder());
+            case "spanish":
+                return new GuiSpanishConfig("guis_spanish.yml", getDataFolder());
             default:
                 return new GuiEnglishConfig("guis_" + settingsConfig.getLanguage() + ".yml", getDataFolder());
         }
     }
 
+    public void reloadConfigs() {
+        settingsConfig = new SettingsConfig("settings.yml", getDataFolder());
+        guiConfig = loadGuiConfig();
+    }
 }

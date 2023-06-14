@@ -1,74 +1,91 @@
 package me.sk8ingduck.friendsystemgui.gui;
 
+import io.github.rysefoxx.inventory.plugin.content.IntelligentItem;
+import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
+import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
+import io.github.rysefoxx.inventory.plugin.pagination.Pagination;
+import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
+import io.github.rysefoxx.inventory.plugin.pagination.SlotIterator;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.util.ItemCreator;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.ipvp.canvas.mask.BinaryMask;
-import org.ipvp.canvas.mask.Mask;
-import org.ipvp.canvas.mask.RecipeMask;
-import org.ipvp.canvas.paginate.PaginatedMenuBuilder;
-import org.ipvp.canvas.slot.Slot;
-import org.ipvp.canvas.slot.SlotSettings;
-import org.ipvp.canvas.type.ChestMenu;
+
+import java.util.stream.Collectors;
 
 public class GuiRequests {
 
 	public void open(Player player) {
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
-		ChestMenu.Builder gui = ChestMenu.builder(6).title(guiConfig.getRequestsGuiTitle());
 
-		Mask requestHeadSlots = BinaryMask.builder(gui.getDimensions())
-				.pattern("111111111")
-				.pattern("111111111")
-				.pattern("111111111")
-				.pattern("111111111").build();
+		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests ->
+				RyseInventory.builder()
+						.title(guiConfig.getRequestsGuiTitle())
+						.rows(6)
+						.provider(new InventoryProvider() {
+							@Override
+							public void init(Player player, InventoryContents contents) {
+								for (int i = 0; i < 9; i++) {
+									contents.set(4, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
+									contents.set(5, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
+								}
 
+								Pagination pagination = contents.pagination();
+								pagination.setItemsPerPage(36);
 
-		PaginatedMenuBuilder builder = PaginatedMenuBuilder.builder(gui)
-				.slots(requestHeadSlots)
-				.previousButton(guiConfig.get("gui.requestsMenu.item.previousPage"))
-				.previousButtonSlot(45)
-				.previousButtonEmpty(guiConfig.get("gui.requestsMenu.item.previousPage"))
-				.nextButton(guiConfig.get("gui.requestsMenu.item.nextPage"))
-				.nextButtonSlot(53)
-				.nextButtonEmpty(guiConfig.get("gui.requestsMenu.item.nextPage"))
+								pagination.iterator(SlotIterator.builder()
+										.startPosition(0, 0)
+										.type(SlotIterator.SlotIteratorType.HORIZONTAL)
+										.build());
 
-				.newMenuModifier(menu -> {
-					Mask menuMask = RecipeMask.builder(menu)
-							.item('-', ItemCreator.createGlassPane(DyeColor.BLACK, " "))
-							.row(5).pattern("---------")
-							.row(6).pattern("---------")
-							.build();
-					menuMask.apply(menu);
-					Slot back = menu.getSlot(49);
-					back.setItem(guiConfig.get("gui.requestsMenu.item.back"));
+								requests.forEach(request -> {
+									ItemStack item = getHead(guiConfig.getItem("requestsMenu.requests"),
+											request.getName(), request.getRequestDate(), request.getExpiracy());
+									pagination.addItem(IntelligentItem.of(item, event ->
+											GuiManager.guiSelectedPlayer.open(player, request.getUuid(), request.getName())));
+								});
 
-					back.setClickHandler((player1, clickInformation) -> GuiManager.guiMainMenu.open(player1));
-				});
+								contents.set(5, 0, IntelligentItem.of(guiConfig.getItem("requestsMenu.previousPage"),
+										clickEvent -> {
+											if (!pagination.isFirst()) {
+												RyseInventory currentInventory = pagination.inventory();
+												currentInventory.open(player, pagination.previous().page());
+											}
+										}));
 
-		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests -> {
-			requests.forEach(request -> {
-				ItemStack item = getHead(guiConfig.get("gui.requestsMenu.item.request"), request.getName());
-				builder.addItem(SlotSettings.builder()
-						.itemTemplate(player1 -> item)
-						.clickHandler((player1, click) -> GuiManager.guiSelectedPlayer.open(player1, request.getUuid(), request.getName()))
-						.build());
-			});
-			Bukkit.getScheduler().scheduleSyncDelayedTask(FriendSystemGUI.getInstance(), () -> builder.build().get(0).open(player));
-		});
+								contents.set(5, 8, IntelligentItem.of(guiConfig.getItem("requestsMenu.nextPage"),
+										clickEvent -> {
+											if (!pagination.isLast()) {
+												RyseInventory currentInventory = pagination.inventory();
+												currentInventory.open(player, pagination.next().page());
+											}
+										}));
+
+								contents.set(5, 4, IntelligentItem.of(guiConfig.getItem("requestsMenu.back"),
+										clickEvent -> GuiManager.guiMainMenu.open(player)));
+							}
+						})
+						.build(FriendSystemGUI.getInstance())
+						.open(player)
+		);
 	}
 
-	public ItemStack getHead(ItemStack template, String name) {
+
+	public ItemStack getHead(ItemStack template, String name, String requestDate, String expiracy) {
 		ItemStack itemStack = template.clone();
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (itemMeta == null) return itemStack;
 
 		itemMeta.setDisplayName(itemMeta.getDisplayName().replaceAll("%PLAYER%", name));
+		if (itemMeta.getLore() != null)
+			itemMeta.setLore(itemMeta.getLore().stream()
+					.map(lore -> lore.replaceAll("%REQUEST_DATE%", requestDate)
+									.replaceAll("%EXPIRES_IN%", expiracy))
+					.collect(Collectors.toList()));
+
 		itemStack.setItemMeta(itemMeta);
 		return itemStack;
 	}

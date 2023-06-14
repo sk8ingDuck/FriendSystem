@@ -31,6 +31,7 @@ public class FriendManager {
 
 	public void updateLastSeen(String uuid) {
 		mySQL.updateLastSeenAsync(uuid);
+
 	}
 
 	public void setMsgPartner(ProxiedPlayer player, ProxiedPlayer partner) {

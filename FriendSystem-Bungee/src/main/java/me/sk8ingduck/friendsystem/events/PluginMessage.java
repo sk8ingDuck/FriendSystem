@@ -13,6 +13,9 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class PluginMessage implements Listener {
@@ -25,6 +28,7 @@ public class PluginMessage implements Listener {
 
 	@EventHandler
 	public void onPluginMessage(PluginMessageEvent event) {
+
 		if (!event.getTag().equalsIgnoreCase("me:friendsystem") || !(event.getReceiver() instanceof ProxiedPlayer))
 			return;
 
@@ -39,40 +43,35 @@ public class PluginMessage implements Listener {
 				|| subChannel.equalsIgnoreCase("togglemsgs")
 				|| subChannel.equalsIgnoreCase("togglejump")) {
 
-			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel);
+//			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel);
+			FriendSystem.getInstance().getFriendCommand().execute(receiver, new String[]{subChannel});
 
 		} else if (subChannel.equalsIgnoreCase("add")
 				|| subChannel.equalsIgnoreCase("remove")
 				|| subChannel.equalsIgnoreCase("deny")
 				|| subChannel.equalsIgnoreCase("accept")
 				|| subChannel.equals("jump")
-				|| subChannel.equalsIgnoreCase("favourite")) {
+				|| subChannel.equalsIgnoreCase("favourite")
+				|| subChannel.equalsIgnoreCase("status")) {
 
 			String playerName = in.readUTF();
-			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel + " " + playerName);
+//			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, "friend " + subChannel + " " + playerName);
+			FriendSystem.getInstance().getFriendCommand().execute(receiver, new String[]{subChannel, playerName});
 
 		} else if (subChannel.equalsIgnoreCase("friendsList")) {
-
 			sendFriendList(receiver, onlineMode);
-
 		} else if (subChannel.equalsIgnoreCase("requestsList")) {
-
 			sendRequestList(receiver, onlineMode);
-
 		} else if (subChannel.equalsIgnoreCase("playerInfo")) {
-
 			String otherPlayerUuid = in.readUTF();
 			String otherPlayerName = in.readUTF();
 			sendPlayerInfo(receiver, onlineMode, otherPlayerUuid, otherPlayerName);
-
 		} else if (subChannel.equalsIgnoreCase("settings")) {
-
 			sendPlayerSettings(receiver, onlineMode);
-
 		} else if (subChannel.equalsIgnoreCase("ownInfo")) {
-
 			sendOwnInfo(receiver, onlineMode);
-
+		} else if (subChannel.equalsIgnoreCase("getstatus")) {
+			sendStatus(receiver, onlineMode);
 		}
 	}
 
@@ -107,10 +106,13 @@ public class PluginMessage implements Listener {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("requestsList");
 			out.writeUTF(receiver.getUniqueId().toString());
-			out.writeInt(friendPlayer.getRequests().size());
-			friendPlayer.getRequests().forEach(uuid -> {
+			HashMap<String, LocalDateTime> requests = friendPlayer.getRequestsAndExpiracy();
+			out.writeInt(requests.size());
+			requests.forEach((uuid, expiracy) -> {
 				out.writeUTF(uuid);
 				out.writeUTF(onlineMode ? UUIDFetcher.getName(UUID.fromString(uuid)) : uuid);
+				out.writeUTF(expiracy.format(DateTimeFormatter.ofPattern(FriendSystem.getInstance().getSettingsConfig().getDateTimeFormat())));
+				out.writeUTF(FriendSystem.getInstance().getConfig().formatDifferenceRequest(expiracy));
 			});
 			receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 		});
@@ -163,5 +165,17 @@ public class PluginMessage implements Listener {
 		out.writeUTF(friendPlayer.getStatus() == null ? "" : friendPlayer.getStatus());
 		receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
 	}
+
+	private void sendStatus(ProxiedPlayer receiver, boolean onlineMode) {
+		FriendPlayer friendPlayer = fm.getFriendPlayer(onlineMode ? receiver.getUniqueId().toString() : receiver.getName());
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("status");
+		out.writeUTF(receiver.getUniqueId().toString());
+		out.writeUTF(friendPlayer.getStatus() == null ? "" : friendPlayer.getStatus());
+		receiver.getServer().getInfo().sendData("me:friendsystem", out.toByteArray());
+	}
+
+
+
 
 }

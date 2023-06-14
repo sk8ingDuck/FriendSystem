@@ -20,7 +20,7 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		String playerHead = FriendSystemGUI.getInstance().getGuiConfig().get("guiItem").getItemMeta().getDisplayName();
+		String playerHead = FriendSystemGUI.getInstance().getGuiConfig().getGuiItem().getItemMeta().getDisplayName();
 
 		if (event.getHotbarButton() >= 0 && event.getHotbarButton() <= player.getInventory().getSize()) {
 			ItemStack item1 = player.getInventory().getItem(event.getHotbarButton());

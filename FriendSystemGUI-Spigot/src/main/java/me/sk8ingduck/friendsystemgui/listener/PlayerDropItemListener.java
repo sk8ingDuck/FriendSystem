@@ -19,9 +19,10 @@ public class PlayerDropItemListener implements Listener {
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 		if (config.isCanDropItem()
 				|| player.getGameMode() == GameMode.CREATIVE
-				|| !event.getItemDrop().getItemStack().hasItemMeta()
+				|| event.getItemDrop().getItemStack().getItemMeta() == null
+				|| event.getItemDrop().getItemStack().getItemMeta().getDisplayName() == null
 				|| !event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
-				.equalsIgnoreCase(guiConfig.get("guiItem").getItemMeta().getDisplayName()))
+				.equalsIgnoreCase(guiConfig.getGuiItem().getItemMeta().getDisplayName()))
 			return;
 
 		event.setCancelled(true);

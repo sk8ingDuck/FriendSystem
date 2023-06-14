@@ -1,12 +1,12 @@
 package me.sk8ingduck.friendsystem.config;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,7 +20,7 @@ public abstract class MessagesConfig extends Config {
 	protected final LinkedHashMap<String, String> messages;
 
 	public MessagesConfig(String name, String path) {
-		super(name, path);
+		super(name, path, false);
 
 		this.messages = new LinkedHashMap<>();
 		loadMessages();
@@ -33,7 +33,7 @@ public abstract class MessagesConfig extends Config {
 
 	public abstract void loadTextComponents();
 
-	public TextComponent parseChatComponent(String message, String... replacements) {
+	private BaseComponent[] parseChatComponent(String message, String... replacements) {
 		if (message == null) return null;
 
 		// Pattern to match the format: TEXT {hovertext: TEXT, command: /command}
@@ -46,25 +46,26 @@ public abstract class MessagesConfig extends Config {
 		String hoverText = replacePlaceholders(matcher.group(2) != null ? matcher.group(2) : matcher.group(4), replacements);
 		String command = replacePlaceholders(matcher.group(3), replacements);
 
-		TextComponent textComponent = new TextComponent(text);
+		BaseComponent[] baseComponents = TextComponent.fromLegacyText(text);
 
-		if (command != null)
-			textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+		for (BaseComponent baseComponent : baseComponents) {
+			if (command != null)
+				baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
 
-		if (hoverText != null)
-			textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', hoverText)).create()));
+			if (hoverText != null)
+				baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						TextComponent.fromLegacyText(hoverText)));
+		}
 
-		return textComponent;
+		return baseComponents;
 	}
 
 	public BaseComponent[] get(String path, boolean prefix, String... replacements) {
 		List<BaseComponent> finalComponents = new ArrayList<>();
 
 		// Add the prefix if requested
-		if (prefix) {
-			finalComponents.add(new TextComponent(messages.get("prefix")));
-		}
+		if (prefix)
+			finalComponents.addAll(Arrays.asList(TextComponent.fromLegacyText(messages.get("prefix"))));
 
 		String content = replacePlaceholders(messages.get(path), replacements);
 
@@ -80,18 +81,15 @@ public abstract class MessagesConfig extends Config {
 			String textComponentPath = matcher.group(1);
 			lastIndex = matcher.end();
 
-			// Replace all replacements in the text before the match
-			beforeMatch = replacePlaceholders(beforeMatch, replacements);
-
 			// Add the text before the match
-			if (!beforeMatch.isEmpty()) {
-				finalComponents.add(new TextComponent(beforeMatch));
-			}
+			if (!beforeMatch.isEmpty())
+				finalComponents.addAll(Arrays.asList(TextComponent.fromLegacyText(beforeMatch)));
 
 			// Add the TextComponent from parseChatComponent
-			TextComponent textComponent = parseChatComponent(messages.get("textcomponents." + textComponentPath), replacements);
-			if (textComponent != null)
-				finalComponents.add(textComponent);
+
+			BaseComponent[] textComponent = parseChatComponent(messages.get("textcomponents." + textComponentPath), replacements);
+			if (textComponent != null && textComponent.length > 0)
+				finalComponents.addAll(Arrays.asList(textComponent));
 			else
 				FriendSystem.getInstance().getLogger().info("§c[FriendSystem] Failed to parse TextComponent {" + textComponentPath + "}. " +
 						"Most likely is that it has a wrong format! Format should be:\n" +
@@ -100,9 +98,8 @@ public abstract class MessagesConfig extends Config {
 
 		// Add the remaining text after the last match
 		String afterLastMatch = content.substring(lastIndex);
-		if (!afterLastMatch.isEmpty()) {
-			finalComponents.add(new TextComponent(afterLastMatch));
-		}
+		if (!afterLastMatch.isEmpty())
+			finalComponents.addAll(Arrays.asList(TextComponent.fromLegacyText(afterLastMatch)));
 
 		return finalComponents.toArray(new BaseComponent[0]);
 	}
@@ -120,14 +117,27 @@ public abstract class MessagesConfig extends Config {
 		return text;
 	}
 
+	public String formatDifferenceRequest(LocalDateTime requestDate) {
+		Duration duration = Duration.between(LocalDateTime.now(),
+				requestDate.plusMinutes(FriendSystem.getInstance().getSettingsConfig().getRequestDuration()));
+
+		return formatTimeFormat(duration);
+	}
+
 	public String formatDifference(LocalDateTime start) {
 		Duration duration = Duration.between(start, LocalDateTime.now());
-		long years = duration.toDays() / 365;
-		long days = duration.toDays() % 365;
-		long hours = duration.toHours() % 24;
-		long minutes = duration.toMinutes() % 60;
-		long seconds = duration.getSeconds() % 60;
-
+		return formatTimeFormat(duration);
+	}
+	private String formatTimeFormat(Duration duration) {
+		long totalSeconds = duration.getSeconds();
+		long seconds = totalSeconds % 60;
+		long totalMinutes = totalSeconds / 60;
+		long minutes = totalMinutes % 60;
+		long totalHours = totalMinutes / 60;
+		long hours = totalHours % 24;
+		long totalDays = totalHours / 24;
+		long days = totalDays % 365;
+		long years = totalDays / 365;
 
 		if (years > 0) {
 			return years + " " + (messages.get("friend.timeformat.year" + (years > 1 ? "s" : "")))
@@ -150,5 +160,6 @@ public abstract class MessagesConfig extends Config {
 		}
 		return "invalid";
 	}
+
 
 }

@@ -1,5 +1,6 @@
 package me.sk8ingduck.friendsystem.config;
 
+
 public class DBConfig extends Config {
 
     private final String host;
@@ -9,7 +10,7 @@ public class DBConfig extends Config {
     private final String database;
 
     public DBConfig(String name, String path) {
-        super(name, path);
+        super(name, path, false);
 
         this.host = (String) getPathOrSet("mysql.host", "localhost");
         this.port = (int) getPathOrSet("mysql.port", 3306);

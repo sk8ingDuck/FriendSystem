@@ -29,15 +29,28 @@ public class MessagesItalianConfig extends MessagesConfig {
 						"&e/friend favourite <Nome> &8- &7Aggiungi/rimuovi dai preferiti\n" +
 						"&9&m------------------&r&e« SistemaAmici »&9&m------------------");
 
-		messages.put("friend.list.format.header", "&9&m--------------&r&e« La tua lista di amici »&9&m--------------");
+		messages.put("friend.list.format.header", "&9&m-----------&r&e« La tua lista di amici &7(Pagina: %CURRENT_PAGE%/%TOTAL_PAGES%) »&9&m-----------");
 		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(da &e%ONLINE_TIME%&7) {jump}");
 		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(da &e%ONLINE_TIME%&7) {jump}");
 		messages.put("friend.list.format.offline.regular", "&7%PLAYEROFF% &8- &cOFFLINE &7(da &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.offline.favourite", "&7[&c❤&7] %PLAYEROFF% &8- &cOFFLINE &7(da &e%OFFLINE_SINCE%&7)");
-		messages.put("friend.list.format.footer", "&9&m--------------&r&e« La tua lista di amici »&9&m--------------");
-		messages.put("friend.request.format.header", "&9&m--------------&r&e« Richieste pendenti »&9&m--------------");
-		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny}");
-		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Richieste pendenti »&9&m--------------");
+		messages.put("friend.list.format.nofriends", "&cNon hai amici :(");
+		messages.put("friend.list.format.pagination.pagenotfound", "&4Pagina non trovata.");
+		messages.put("friend.list.format.pagination.textbeforepage", "\n                              ");
+		messages.put("friend.list.format.pagination.previouspage", "{friendListPreviousPage}");
+		messages.put("friend.list.format.pagination.currentpage", " &a%CURRENT_PAGE% ");
+		messages.put("friend.list.format.pagination.nextpage", "{friendListNextPage}");
+		messages.put("friend.list.format.footer", "&9&m-----------&r&e« La tua lista di amici &7(Pagina: %CURRENT_PAGE%/%TOTAL_PAGES%) »&9&m-----------");
+
+		messages.put("friend.request.format.header", "&9&m--------------&r&e« Richieste pendenti &7(Pagina: %CURRENT_PAGE%/%TOTAL_PAGES%) &e»&9&m--------------");
+		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny} &7(Scade tra: &e%EXPIRES_IN%&7)");
+		messages.put("friend.request.format.norequests", "&cNon hai richieste");
+		messages.put("friend.request.format.pagination.pagenotfound", "&4Pagina non trovata.");
+		messages.put("friend.request.format.pagination.textbeforepage", "\n                              ");
+		messages.put("friend.request.format.pagination.previouspage", "{friendRequestsPreviousPage}");
+		messages.put("friend.request.format.pagination.currentpage", " &a%CURRENT_PAGE% ");
+		messages.put("friend.request.format.pagination.nextpage", "{friendRequestsNextPage}");
+		messages.put("friend.request.format.footer", "&9&m--------------&r&e« Richieste pendenti &7(Pagina: %CURRENT_PAGE%/%TOTAL_PAGES%) &e»&9&m--------------");
 
 		messages.put("friend.request.alreadyfriends", "&cSei già amico di &7%PLAYER%.");
 		messages.put("friend.request.alreadyrequested", "&cHai già inviato a &7%PLAYER% &cuna richiesta di amicizia.");
@@ -61,6 +74,7 @@ public class MessagesItalianConfig extends MessagesConfig {
 		messages.put("friend.accept.syntax", "&cSintassi: &6/friend accept <player>");
 		messages.put("friend.deny.syntax", "&cSintassi: &6/friend deny <player>");
 		messages.put("friend.jump.syntax", "&cSintassi: &6/friend jump <player>");
+		messages.put("friend.favourite.syntax", "&cSintassi: &6/friend favourite <player>");
 		messages.put("friend.error.interact", "&cNon puoi interagire con te stesso.");
 		messages.put("friend.error.playernotfound", "&cIl giocatore 7%PLAYER% &cnon esiste.");
 		messages.put("friend.error.notonnetwork", "&7%PLAYER% &cnon è mai stato sulla rete.");
@@ -116,13 +130,40 @@ public class MessagesItalianConfig extends MessagesConfig {
 	@Override
 	public void loadTextComponents() {
 		if (fileConfiguration.getSection("textcomponents").getKeys().isEmpty()) {
-			fileConfiguration.set("textcomponents.accept", "&a[ACCETTA] {hovertext: &aAccetta la richiesta di amicizia da &6%PLAYER%, command: /friend accept %PLAYER%}");
-			fileConfiguration.set("textcomponents.deny", "&c[RIFIUTA] {hovertext: &cRifiuta la richiesta di amicizia da &6%PLAYER%, command: /friend deny %PLAYER%}");
+			fileConfiguration.set("textcomponents.accept", "&a[✔] {hovertext: &aAccetta la richiesta di amicizia da &6%PLAYER%, command: /friend accept %PLAYER%}");
+			fileConfiguration.set("textcomponents.deny", "&c[✕] {hovertext: &cRifiuta la richiesta di amicizia da &6%PLAYER%, command: /friend deny %PLAYER%}");
 			fileConfiguration.set("textcomponents.onlineFriends", "&7%COUNT% {hovertext: &9Mostra amici online, command: /friend list}");
 			fileConfiguration.set("textcomponents.openRequests", "&7%COUNT% {hovertext: &9Mostra richieste aperte, command: /friend requests}");
 			fileConfiguration.set("textcomponents.jump", "&a[SALTA] {hovertext: &9Salta al server di &7%PLAYERON% &9, command: /friend jump %PLAYERON%}");
+
+			fileConfiguration.set("textcomponents.friendRequestsPreviousPage", "&6« {hovertext: &9Pagina precedente, command: /friend requests %PREVIOUS_PAGE%}");
+			fileConfiguration.set("textcomponents.friendRequestsNextPage", "&6» {hovertext: &9Pagina successiva, command: /friend requests %NEXT_PAGE%}");
+
+			fileConfiguration.set("textcomponents.friendListPreviousPage", "&6« {hovertext: &9Pagina precedente, command: /friend list %PREVIOUS_PAGE%}");
+			fileConfiguration.set("textcomponents.friendListNextPage", "&6» {hovertext: &9Pagina successiva, command: /friend list %NEXT_PAGE%}");
 			super.save();
 		}
+
+		boolean shouldSave = false;
+		if (fileConfiguration.get("textcomponents.friendRequestsPreviousPage") == null) {
+			fileConfiguration.set("textcomponents.friendRequestsPreviousPage", "&6« {hovertext: &9Pagina precedente, command: /friend requests %PREVIOUS_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendRequestsNextPage") == null) {
+			fileConfiguration.set("textcomponents.friendRequestsNextPage", "&6» {hovertext: &9Pagina successiva, command: /friend requests %NEXT_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendListPreviousPage") == null) {
+			fileConfiguration.set("textcomponents.friendListPreviousPage", "&6« {hovertext: &9Pagina precedente, command: /friend list %PREVIOUS_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendListNextPage") == null) {
+			fileConfiguration.set("textcomponents.friendListNextPage", "&6» {hovertext: &9Pagina successiva, command: /friend list %NEXT_PAGE%}");
+			shouldSave = true;
+		}
+
+		if (shouldSave)
+			super.save();
 
 		fileConfiguration.getSection("textcomponents")
 				.getKeys()

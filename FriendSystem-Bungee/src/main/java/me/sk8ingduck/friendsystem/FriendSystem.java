@@ -20,11 +20,15 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class FriendSystem extends Plugin {
+
+
 	private static FriendSystem instance;
 	private MySQL mysql;
 	private FriendManager friendManager;
 	private SettingsConfig settingsConfig;
 	private MessagesConfig messagesConfig;
+
+	private Friend friendCommand;
 
 	public static FriendSystem getInstance() {
 		return instance;
@@ -56,7 +60,8 @@ public class FriendSystem extends Plugin {
 		pluginManager.registerListener(this, new PluginMessage());
 
 		pluginManager.registerCommand(this, new Freload());
-		pluginManager.registerCommand(this, new Friend());
+		friendCommand = new Friend();
+		pluginManager.registerCommand(this, friendCommand);
 		if (settingsConfig.isMsgCommandEnabled())
 			pluginManager.registerCommand(this, new Msg());
 		if (settingsConfig.isrCommandEnabled())
@@ -107,6 +112,10 @@ public class FriendSystem extends Plugin {
 				return new MessagesChineseConfig("messages_chinese.yml", pluginFolder);
 			case "italian":
 				return new MessagesItalianConfig("messages_italian.yml", pluginFolder);
+			case "russian":
+				return new MessagesRussianConfig("messages_russian.yml", pluginFolder);
+			case "spanish":
+				return new MessagesSpanishConfig("messages_spanish.yml", pluginFolder);
 			default:
 				return new MessagesEnglishConfig("messages_" + settingsConfig.getLanguage() + ".yml", pluginFolder);
 		}
@@ -122,5 +131,9 @@ public class FriendSystem extends Plugin {
 	private boolean checkUUID(String uuid) {
 		return Pattern.compile("^(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})$")
 				.matcher(uuid).matches();
+	}
+
+	public Friend getFriendCommand() {
+		return friendCommand;
 	}
 }

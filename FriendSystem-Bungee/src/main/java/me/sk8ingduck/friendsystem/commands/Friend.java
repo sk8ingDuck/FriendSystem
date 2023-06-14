@@ -1,5 +1,6 @@
 package me.sk8ingduck.friendsystem.commands;
 
+import com.google.common.collect.ImmutableList;
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
 import me.sk8ingduck.friendsystem.config.SettingsConfig;
@@ -9,12 +10,17 @@ import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class Friend extends Command {
+public class Friend extends Command implements TabExecutor {
 
 	private final MySQL mySQL;
 	private final FriendManager fm;
@@ -25,6 +31,44 @@ public class Friend extends Command {
 		FriendSystem fs = FriendSystem.getInstance();
 		mySQL = fs.getMySQL();
 		fm = fs.getFriendManager();
+	}
+
+	@Override
+	public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+		SettingsConfig settingsConfig = FriendSystem.getInstance().getSettingsConfig();
+
+		if (!(sender instanceof ProxiedPlayer) || !settingsConfig.isTabComplete()) {
+			return ImmutableList.of();
+		}
+
+		ProxiedPlayer player = (ProxiedPlayer) sender;
+
+		if (args.length == 0) {
+			return settingsConfig.getTabCompleteSuggestions();
+		}
+
+		if (args.length == 1) {
+			return settingsConfig.getTabCompleteSuggestions().stream()
+					.filter(action -> action.toLowerCase().startsWith(args[0].toLowerCase()))
+					.collect(Collectors.toList());
+		}
+
+		if (args.length == 2 && settingsConfig.getTabCompleteSuggestPlayerAfter().contains(args[0].toLowerCase())) {
+			Collection<ProxiedPlayer> players = (settingsConfig.isTabCompleteGlobal())
+					? ProxyServer.getInstance().getPlayers()
+					: player.getServer().getInfo().getPlayers();
+
+			List<String> playerNames = players
+					.stream()
+					.map(ProxiedPlayer::getName)
+					.collect(Collectors.toList());
+
+			return playerNames.stream()
+					.filter(onlinePlayer -> onlinePlayer.toLowerCase().startsWith(args[1].toLowerCase()))
+					.collect(Collectors.toList());
+		}
+
+		return ImmutableList.of();
 	}
 
 	public void execute(CommandSender cs, String[] args) {
@@ -68,50 +112,9 @@ public class Friend extends Command {
 				player.sendMessage(c.get("friend.togglenotifies."
 						+ (friendPlayer.isNotifiesAllowed() ? "on" : "off")));
 			} else if (action.equalsIgnoreCase("list")) {
-				ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
-					player.sendMessage(c.get("friend.list.format.header", false));
-					friendPlayer.getOnlineFriends()
-							.entrySet()
-							.stream()
-							.sorted((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()))
-							.forEach(onlineFriend -> {
-								FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode
-										? onlineFriend.getKey().getUniqueId().toString()
-										: onlineFriend.getKey().getName());
-
-								player.sendMessage(c.get("friend.list.format.online."
-												+ (onlineFriend.getValue() ? "favourite" : "regular"), false,
-										"%PLAYERON%", onlineFriend.getKey().getName(),
-										"%SERVER%", onlineFriend.getKey().getServer().getInfo().getName(),
-										"%ONLINE_TIME%", c.formatDifference(friendPlayer2.getLastSeen())));
-							});
-
-					friendPlayer.getOfflineFriends()
-							.entrySet()
-							.stream()
-							.sorted((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()))
-							.forEach(offlineFriend -> {
-								FriendPlayer friendPlayer2 = fm.getFriendPlayer(offlineFriend.getKey());
-								player.sendMessage(c.get("friend.list.format.offline."
-												+ (offlineFriend.getValue() ? "favourite" : "regular"), false,
-										"%OFFLINE_SINCE%", c.formatDifference(friendPlayer2.getLastSeen()),
-										"%PLAYEROFF%", onlineMode
-												? UUIDFetcher.getName(UUID.fromString(offlineFriend.getKey()))
-												: offlineFriend.getKey()));
-							});
-
-					player.sendMessage(c.get("friend.list.format.footer", false));
-				});
+				printFriendListPage(player, friendPlayer, 1, onlineMode);
 			} else if (action.equalsIgnoreCase("requests")) {
-				ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
-					player.sendMessage(c.get("friend.request.format.header", false));
-					friendPlayer.getRequests().forEach(request ->
-							player.sendMessage(c.get("friend.request.format.player", false,
-									"%PLAYER%", onlineMode
-											? UUIDFetcher.getName(UUID.fromString(request))
-											: request)));
-					player.sendMessage(c.get("friend.request.format.footer", false));
-				});
+				printFriendRequestPage(player, friendPlayer, 1, onlineMode);
 			} else {
 				player.sendMessage(c.get("friend.help", false));
 				return;
@@ -127,10 +130,10 @@ public class Friend extends Command {
 				player.sendMessage(c.get("friend.status.toolong"));
 				return;
 			}
-			String colorStatus = status.toString().replaceAll("&", "§");
-			friendPlayer.updateStatus(colorStatus);
-			mySQL.updateStatusAsync(uuid, colorStatus);
-			player.sendMessage(c.get("friend.status.update","%STATUS%", colorStatus));
+
+			friendPlayer.updateStatus(status.toString());
+			mySQL.updateStatusAsync(uuid, status.toString());
+			player.sendMessage(c.get("friend.status.update", "%STATUS%", friendPlayer.getStatus()));
 			return;
 		}
 		if (args.length != 2) {
@@ -146,6 +149,14 @@ public class Friend extends Command {
 		}
 
 		if (args.length == 2) {
+			if (args[0].equalsIgnoreCase("list")) {
+				printFriendListPage(player, friendPlayer, Integer.parseInt(args[1]), onlineMode);
+				return;
+			}
+			if (args[0].equalsIgnoreCase("requests")) {
+				printFriendRequestPage(player, friendPlayer, Integer.parseInt(args[1]), onlineMode);
+				return;
+			}
 			String playerName = args[1];
 
 			if (playerName.equalsIgnoreCase(player.getName())) {
@@ -165,7 +176,7 @@ public class Friend extends Command {
 				}
 				if (action.equalsIgnoreCase("add")) {
 					if (friendPlayer.isFriendsWith(uuid2)) {
-						player.sendMessage(c.get("friend.request.alreadyfriends","%PLAYER%", playerName));
+						player.sendMessage(c.get("friend.request.alreadyfriends", "%PLAYER%", playerName));
 						return;
 					}
 					if (friendPlayer.isRequestedBy(uuid2)) {
@@ -174,7 +185,7 @@ public class Friend extends Command {
 						return;
 					}
 					if (friendPlayer2.isRequestedBy(uuid)) {
-						player.sendMessage(c.get("friend.request.alreadyrequested","%PLAYER%", playerName));
+						player.sendMessage(c.get("friend.request.alreadyrequested", "%PLAYER%", playerName));
 						return;
 					}
 					if (settingsConfig.isPermissionsEnabled()) {
@@ -228,7 +239,7 @@ public class Friend extends Command {
 					mySQL.addFriendAsync(uuid, uuid2);
 					mySQL.addFriendAsync(uuid2, uuid);
 					mySQL.removeRequestAsync(uuid, uuid2);
-					player.sendMessage(c.get("friend.add.successful","%PLAYER%", playerName));
+					player.sendMessage(c.get("friend.add.successful", "%PLAYER%", playerName));
 					friendPlayer2.sendMessage(c.get("friend.add.successful2", "%PLAYER%", player.getName()));
 				} else if (action.equalsIgnoreCase("deny")) {
 					if (!friendPlayer.isRequestedBy(uuid2)) {
@@ -266,5 +277,148 @@ public class Friend extends Command {
 				}
 			});
 		}
+	}
+
+
+	private void printFriendRequestPage(ProxiedPlayer player, FriendPlayer friendPlayer, int page, boolean onlineMode) {
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
+
+		int requestsPerPage = FriendSystem.getInstance().getSettingsConfig().getRequestsPerPage();
+		ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
+
+			List<Map.Entry<String, LocalDateTime>> requests = new ArrayList<>(friendPlayer.getRequestsAndExpiracy().entrySet());
+
+			if (requests.size() == 0) {
+				player.sendMessage(c.get("friend.request.format.norequests"));
+				return;
+			}
+
+			int totalPages = (int) Math.ceil((double) requests.size() / requestsPerPage);
+
+			if (page > totalPages || page < 1) {
+				player.sendMessage(c.get("friend.request.format.pagination.pagenotfound"));
+				return;
+			}
+
+			player.sendMessage(c.get("friend.request.format.header", false, "%CURRENT_PAGE%",
+					String.valueOf(page), "%TOTAL_PAGES%", String.valueOf(totalPages)));
+
+			int startingIndex = (page - 1) * requestsPerPage;
+			int endingIndex = Math.min(startingIndex + requestsPerPage, requests.size());
+
+			requests.subList(startingIndex, Math.min(requests.size(), endingIndex)).forEach(request -> {
+				player.sendMessage(c.get("friend.request.format.player", false,
+						"%PLAYER%", onlineMode
+								? UUIDFetcher.getName(UUID.fromString(request.getKey()))
+								: request.getKey(),
+						"%EXPIRES_IN%", c.formatDifferenceRequest(request.getValue())));
+			});
+
+			if (totalPages > 1) {
+				//print pagination menu
+				ComponentBuilder cb = new ComponentBuilder();
+				cb.append(c.get("friend.request.format.pagination.textbeforepage", false));
+				if (page - 1 > 0) {
+					cb.append(c.get("friend.request.format.pagination.previouspage", false,
+							"%PREVIOUS_PAGE%", String.valueOf((page - 1))));
+				}
+				cb.append(c.get("friend.request.format.pagination.currentpage", false,
+						"%CURRENT_PAGE%", String.valueOf((page))));
+				if (page + 1 <= totalPages) {
+					cb.append(c.get("friend.request.format.pagination.nextpage", false,
+							"%NEXT_PAGE%", String.valueOf((page + 1))));
+				}
+				player.sendMessage(cb.create());
+			}
+
+			player.sendMessage(c.get("friend.request.format.footer", false, "%CURRENT_PAGE%",
+					String.valueOf(page), "%TOTAL_PAGES%", String.valueOf(totalPages)));
+
+		});
+	}
+
+	private void printFriendListPage(ProxiedPlayer player, FriendPlayer friendPlayer, int page, boolean onlineMode) {
+		MessagesConfig c = FriendSystem.getInstance().getConfig();
+
+		int friendsPerPage = FriendSystem.getInstance().getSettingsConfig().getFriendsPerPage();
+		ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
+
+			List<Map.Entry<ProxiedPlayer, Boolean>> onlineFriendsList = new ArrayList<>(friendPlayer.getOnlineFriends().entrySet());
+			List<Map.Entry<String, Boolean>> offlineFriendsList = new ArrayList<>(friendPlayer.getOfflineFriends().entrySet());
+
+			onlineFriendsList.sort((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()));
+			offlineFriendsList.sort((friend1, friend2) -> Boolean.compare(friend2.getValue(), friend1.getValue()));
+
+			int totalFriends = onlineFriendsList.size() + offlineFriendsList.size();
+
+			if (totalFriends == 0) {
+				player.sendMessage(c.get("friend.list.format.nofriends"));
+				return;
+			}
+
+			int totalPages = (int) Math.ceil((double) totalFriends / friendsPerPage);
+
+			if (page > totalPages || page < 1) {
+				player.sendMessage(c.get("friend.list.format.pagination.pagenotfound"));
+				return;
+			}
+
+			player.sendMessage(c.get("friend.list.format.header", false, "%CURRENT_PAGE%",
+					String.valueOf(page), "%TOTAL_PAGES%", String.valueOf(totalPages)));
+
+			int startingIndex = (page - 1) * friendsPerPage;
+			int endingIndex = Math.min(startingIndex + friendsPerPage, onlineFriendsList.size() + offlineFriendsList.size());
+
+			// Display online friends
+			if (startingIndex < onlineFriendsList.size()) {
+				onlineFriendsList.subList(startingIndex, Math.min(onlineFriendsList.size(), endingIndex)).forEach(onlineFriend -> {
+					FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode
+							? onlineFriend.getKey().getUniqueId().toString()
+							: onlineFriend.getKey().getName());
+
+					player.sendMessage(c.get("friend.list.format.online."
+									+ (onlineFriend.getValue() ? "favourite" : "regular"), false,
+							"%PLAYERON%", onlineFriend.getKey().getName(),
+							"%SERVER%", onlineFriend.getKey().getServer().getInfo().getName(),
+							"%ONLINE_TIME%", c.formatDifference(friendPlayer2.getLastSeen())));
+				});
+			}
+
+			// Display offline friends, if the page includes them.
+			if (endingIndex > onlineFriendsList.size()) {
+				int offlineStart = Math.max(startingIndex - onlineFriendsList.size(), 0);
+				int offlineEnd = endingIndex - onlineFriendsList.size();
+				offlineFriendsList.subList(offlineStart, offlineEnd).forEach(offlineFriend -> {
+					FriendPlayer friendPlayer2 = fm.getFriendPlayer(offlineFriend.getKey());
+					player.sendMessage(c.get("friend.list.format.offline."
+									+ (offlineFriend.getValue() ? "favourite" : "regular"), false,
+							"%OFFLINE_SINCE%", c.formatDifference(friendPlayer2.getLastSeen()),
+							"%PLAYEROFF%", onlineMode
+									? UUIDFetcher.getName(UUID.fromString(offlineFriend.getKey()))
+									: offlineFriend.getKey()));
+				});
+			}
+
+
+			if (totalPages > 1) {
+				//print pagination menu
+				ComponentBuilder cb = new ComponentBuilder();
+				cb.append(c.get("friend.list.format.pagination.textbeforepage", false));
+				if (page - 1 > 0) {
+					cb.append(c.get("friend.list.format.pagination.previouspage", false,
+							"%PREVIOUS_PAGE%", String.valueOf((page - 1))));
+				}
+				cb.append(c.get("friend.list.format.pagination.currentpage", false,
+						"%CURRENT_PAGE%", String.valueOf((page))));
+				if (page + 1 <= totalPages) {
+					cb.append(c.get("friend.list.format.pagination.nextpage", false,
+							"%NEXT_PAGE%", String.valueOf((page + 1))));
+				}
+				player.sendMessage(cb.create());
+			}
+
+			player.sendMessage(c.get("friend.list.format.footer", false, "%CURRENT_PAGE%",
+					String.valueOf(page), "%TOTAL_PAGES%", String.valueOf(totalPages)));
+		});
 	}
 }

@@ -17,56 +17,100 @@ public class GuiFrenchConfig extends GuiConfig {
 
 	@Override
 	public void loadValues() {
-		mainGuiTitle = (String) getPathOrSet("gui.mainMenu.title", "&9Menu des amis");
-		requestsGuiTitle = (String) getPathOrSet("gui.requestsMenu.title", "&9Demandes d'amis");
-		settingsGuiTitle = (String) getPathOrSet("gui.settingsMenu.title", "&cParamètres");
-		selectedPlayerGuiTitle = (String) getPathOrSet("gui.selectedPlayerMenu.title", "&6Joueur sélectionné &7- &6%PLAYER%");
-
 		items.put("guiItem", SkullCreator.createPlayerSkull("&aMenu des amis"));
-		items.put("gui.mainMenu.item.onlineFriend", SkullCreator.createPlayerSkull("&a%PLAYER%",
+
+		mainGuiTitle = (String) getPathOrSet("gui.mainMenu.title", "&9Menu des amis");
+		mainGuiRows = (int) getPathOrSet("gui.mainMenu.rows", 6);
+
+		itemSlots.put("gui.mainMenu.friends.startSlot", 0);
+		itemSlots.put("gui.mainMenu.friends.endSlot", 36);
+		items.put("gui.mainMenu.friends.onlineFriend", SkullCreator.createPlayerSkull("&a%PLAYER%",
 				" ", "&7Serveur", "&e→ %SERVER%", " ", "&7En ligne depuis", "&e→ %ONLINE_TIME%", " ", "&7Statut", "&e→ %STATUS%"));
-		items.put("gui.mainMenu.item.onlineFriendFavourite", SkullCreator.createPlayerSkull("&a&7[&c❤&7] &a%PLAYER%",
+		items.put("gui.mainMenu.friends.onlineFriendFavourite", SkullCreator.createPlayerSkull("&a&7[&c❤&7] &a%PLAYER%",
 				" ", "&7Serveur", "&e→ %SERVER%", " ", "&7En ligne depuis", "&e→ %ONLINE_TIME%", " ", "&7Statut", "&e→ %STATUS%"));
-		items.put("gui.mainMenu.item.offlineFriend", SkullCreator.createSkeletonSkull("&c%PLAYER%",
+		items.put("gui.mainMenu.friends.offlineFriend", SkullCreator.createSkeletonSkull("&c%PLAYER%",
 				" ", "&7Vu pour la dernière fois", "&e→ %LAST_SEEN%", " ", "&7Statut", "&e→ %STATUS%"));
-		items.put("gui.mainMenu.item.offlineFriendFavourite", SkullCreator.createSkeletonSkull("&7[&c❤&7] &c%PLAYER%",
+		items.put("gui.mainMenu.friends.offlineFriendFavourite", SkullCreator.createSkeletonSkull("&7[&c❤&7] &c%PLAYER%",
 				" ", "&7Vu pour la dernière fois", "&e→ %LAST_SEEN%", " ", "&7Statut", "&e→ %STATUS%"));
 
-		items.put("gui.mainMenu.item.ownInfo", SkullCreator.createPlayerSkull("&6%PLAYER%",
+		items.put("gui.mainMenu.ownInfo.item", SkullCreator.createPlayerSkull("&6%PLAYER%",
 				" ", "&7Serveur", "&e→ %SERVER%", " ", "&7Tu est en ligne depuis", "&e→ %ONLINE_TIME%", " ", "&7Ton Statut", "&e→ %STATUS%"));
-		items.put("gui.mainMenu.item.previousPage", Skull.LEFT.getSkull("&ePage précédente"));
-		items.put("gui.mainMenu.item.nextPage", Skull.RIGHT.getSkull("&ePage suivante"));
-		items.put("gui.mainMenu.item.settings", ItemCreator.createItem(Material.REDSTONE, "&cParamètres"));
-		items.put("gui.mainMenu.item.requests", ItemCreator.createItem(Material.WRITTEN_BOOK, "&bDemandes d'amis"));
+		itemSlots.put("gui.mainMenu.ownInfo.slot", 49);
+		items.put("gui.mainMenu.settings.item", ItemCreator.createItem(Material.REDSTONE, "&cParamètres"));
+		itemSlots.put("gui.mainMenu.settings.slot", 43);
+		items.put("gui.mainMenu.requests.item", ItemCreator.createItem(Material.WRITTEN_BOOK, "&bDemandes d'amis"));
+		itemSlots.put("gui.mainMenu.requests.slot", 47);
+		items.put("gui.mainMenu.previousPage.item", Skull.LEFT.getSkull("&ePage précédente"));
+		itemSlots.put("gui.mainMenu.previousPage.slot", 45);
+		items.put("gui.mainMenu.nextPage.item", Skull.RIGHT.getSkull("&ePage suivante"));
+		itemSlots.put("gui.mainMenu.nextPage.slot", 53);
 
-		items.put("gui.requestsMenu.item.request", SkullCreator.createSkeletonSkull( "&7%PLAYER%"));
-		items.put("gui.requestsMenu.item.previousPage", Skull.LEFT.getSkull("&ePage précédente"));
-		items.put("gui.requestsMenu.item.nextPage", Skull.RIGHT.getSkull("&ePage suivante"));
-		items.put("gui.requestsMenu.item.back", Skull.BACK.getSkull("&cRetour"));
+		requestsGuiTitle = (String) getPathOrSet("gui.requestsMenu.title", "&9Demandes d'amis");
+		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.size", 6);
+		itemSlots.put("gui.requestsMenu.requests.startSlot", 0);
+		itemSlots.put("gui.requestsMenu.requests.endSlot", 36);
+		items.put("gui.requestsMenu.requests.item", SkullCreator.createSkeletonSkull( "&7%PLAYER%", " ",
+				"&7Demande de", "&e→ %REQUEST_DATE%", " ", "&7Expire dans:", "&e→ %EXPIRES_IN%"));
 
-		items.put("gui.settingsMenu.item.back", Skull.BACK.getSkull("&cRetour"));
-		items.put("gui.settingsMenu.item.toggleInvites", ItemCreator.createItem(Material.TORCH, "&6Basculer les demandes d'amis"));
-		items.put("gui.settingsMenu.item.toggleNotifies", ItemCreator.createItem(Material.WOOD_DOOR, "&6Basculer les notifications d'entrée/sortie"));
-		items.put("gui.settingsMenu.item.toggleMsgs", ItemCreator.createItem(Material.PAPER, "&6Basculer les messages privés"));
-		items.put("gui.settingsMenu.item.toggleJump", ItemCreator.createItem(Material.ENDER_PEARL, "&6Basculer les sauts"));
+		itemSlots.put("gui.requestsMenu.previousPage.slot", 45);
+		items.put("gui.requestsMenu.previousPage.item", Skull.LEFT.getSkull("&ePage précédente"));
+		items.put("gui.requestsMenu.nextPage.item", Skull.RIGHT.getSkull("&ePage suivante"));
+		itemSlots.put("gui.requestsMenu.nextPage.slot", 53);
+		items.put("gui.requestsMenu.back.item", Skull.BACK.getSkull("&cRetour"));
+		itemSlots.put("gui.requestsMenu.back.slot", 49);
 
-		items.put("gui.settingsMenu.item.invitesOn", ItemCreator.createGlassPane(DyeColor.GREEN, "§6Les demandes d'amis sont maintenant §aautorisées"));
-		items.put("gui.settingsMenu.item.invitesOff", ItemCreator.createGlassPane(DyeColor.RED, "§6Les demandes d'amis sont maintenant §cinterdites"));
-		items.put("gui.settingsMenu.item.notifiesOn", ItemCreator.createGlassPane(DyeColor.GREEN, "§6Les notifications d'entrée/sortie sont maintenant §aactivées"));
-		items.put("gui.settingsMenu.item.notifiesOff", ItemCreator.createGlassPane(DyeColor.RED, "§6Les notifications d'entrée/sortie sont maintenant §cdésactivées"));
-		items.put("gui.settingsMenu.item.msgsOn", ItemCreator.createGlassPane(DyeColor.GREEN, "&6Les messages privés sont maintenant &aautorisés"));
-		items.put("gui.settingsMenu.item.msgsOff", ItemCreator.createGlassPane(DyeColor.RED, "&6Les messages privés sont maintenant &cinterdits"));
-		items.put("gui.settingsMenu.item.jumpOn", ItemCreator.createGlassPane(DyeColor.GREEN, "&6Les sauts sont maintenant &aautorisés"));
-		items.put("gui.settingsMenu.item.jumpOff", ItemCreator.createGlassPane(DyeColor.RED, "&6Les sauts sont maintenant &cinterdits"));
+		settingsGuiTitle = (String) getPathOrSet("gui.settingsMenu.title", "&cParamètres");
+		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.size", 4);
+		items.put("gui.settingsMenu.toggleInvites.item", ItemCreator.createItem(Material.TORCH, "&6Basculer les demandes d'amis"));
+		itemSlots.put("gui.settingsMenu.toggleInvites.slot", 11);
+		items.put("gui.settingsMenu.toggleNotifies.item", ItemCreator.createItem(Material.WOOD_DOOR, "&6Basculer les notifications d'entrée/sortie"));
+		itemSlots.put("gui.settingsMenu.toggleNotifies.slot", 12);
+		items.put("gui.settingsMenu.toggleMsgs.item", ItemCreator.createItem(Material.PAPER, "&6Basculer les messages privés"));
+		itemSlots.put("gui.settingsMenu.toggleMsgs.slot", 13);
+		items.put("gui.settingsMenu.toggleJump.item", ItemCreator.createItem(Material.ENDER_PEARL, "&6Basculer les sauts"));
+		itemSlots.put("gui.settingsMenu.toggleJump.slot", 14);
+		items.put("gui.settingsMenu.changeStatus.item", ItemCreator.createItem(Material.ANVIL, "&6Changer de statut"));
+		itemSlots.put("gui.settingsMenu.changeStatus.slot", 15);
 
-		items.put("gui.selectedPlayerMenu.item.back", Skull.BACK.getSkull("&cRetour"));
-		items.put("gui.selectedPlayerMenu.item.addFavourite", Skull.HEART.getSkull("&aAjouter aux favoris"));
-		items.put("gui.selectedPlayerMenu.item.removeFavourite", Skull.CROSS.getSkull("&cRetirer des favoris"));
-		items.put("gui.selectedPlayerMenu.item.addFriend", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Envoyer une demande d'ami"));
-		items.put("gui.selectedPlayerMenu.item.removeFriend", ItemCreator.createItem(Material.BARRIER, "&cSupprimer l'ami"));
-		items.put("gui.selectedPlayerMenu.item.acceptFriend", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Accepter la demande d'ami"));
-		items.put("gui.selectedPlayerMenu.item.denyFriend", ItemCreator.createItem(Material.BARRIER, "&cRefuser la demande d'ami"));
-		items.put("gui.selectedPlayerMenu.item.alreadyRequested", ItemCreator.createItem(Material.BARRIER, "&cJoueur déjà demandé"));
-		items.put("gui.selectedPlayerMenu.item.jump", ItemCreator.createItem(Material.ENDER_PEARL, "&cAller sur le serveur du joueur"));
+		items.put("gui.settingsMenu.invitesOn.item", ItemCreator.createGlassPane(DyeColor.GREEN, "&6Les demandes d'amis sont maintenant &aautorisées"));
+		itemSlots.put("gui.settingsMenu.invitesOn.slot", 20);
+		items.put("gui.settingsMenu.invitesOff.item", ItemCreator.createGlassPane(DyeColor.RED, "&6Les demandes d'amis sont maintenant &cinterdites"));
+		itemSlots.put("gui.settingsMenu.invitesOff.slot", 20);
+		items.put("gui.settingsMenu.notifiesOn.item", ItemCreator.createGlassPane(DyeColor.GREEN,  "&6Les notifications d'entrée/sortie sont maintenant &aactivées"));
+		itemSlots.put("gui.settingsMenu.notifiesOn.slot", 21);
+		items.put("gui.settingsMenu.notifiesOff.item", ItemCreator.createGlassPane(DyeColor.RED, "&6Les notifications d'entrée/sortie sont maintenant &cdésactivées"));
+		itemSlots.put("gui.settingsMenu.notifiesOff.slot", 21);
+		items.put("gui.settingsMenu.msgsOn.item", ItemCreator.createGlassPane(DyeColor.GREEN,  "&6Les messages privés sont maintenant &aautorisés"));
+		itemSlots.put("gui.settingsMenu.msgsOn.slot", 22);
+		items.put("gui.settingsMenu.msgsOff.item", ItemCreator.createGlassPane(DyeColor.RED, "&6Les messages privés sont maintenant &cinterdits"));
+		itemSlots.put("gui.settingsMenu.msgsOff.slot", 22);
+		items.put("gui.settingsMenu.jumpOn.item", ItemCreator.createGlassPane(DyeColor.GREEN,  "&6Les sauts sont maintenant &aautorisés"));
+		itemSlots.put("gui.settingsMenu.jumpOn.slot", 23);
+		items.put("gui.settingsMenu.jumpOff.item", ItemCreator.createGlassPane(DyeColor.RED, "&6Les sauts sont maintenant &cinterdits"));
+		itemSlots.put("gui.settingsMenu.jumpOff.slot", 23);
+		items.put("gui.settingsMenu.back.item", Skull.BACK.getSkull("&cRetour"));
+		itemSlots.put("gui.settingsMenu.jumpOff.slot", 0);
+
+		selectedPlayerGuiTitle = (String) getPathOrSet("gui.selectedPlayerMenu.title", "&6Joueur sélectionné &7- &6%PLAYER%");
+		selectedPlayerGuiRows = (int) getPathOrSet("gui.selectedPlayerMenu.rows", 1);
+		items.put("gui.selectedPlayerMenu.addFavourite.item", Skull.HEART.getSkull("&aAjouter aux favoris"));
+		itemSlots.put("gui.selectedPlayerMenu.addFavourite.slot", 5);
+		items.put("gui.selectedPlayerMenu.removeFavourite.item", Skull.CROSS.getSkull("&cRetirer des favoris"));
+		itemSlots.put("gui.selectedPlayerMenu.removeFavourite.slot", 5);
+		items.put("gui.selectedPlayerMenu.addFriend.item", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Envoyer une demande d'ami"));
+		itemSlots.put("gui.selectedPlayerMenu.addFriend.slot", 4);
+		items.put("gui.selectedPlayerMenu.removeFriend.item", ItemCreator.createItem(Material.BARRIER, "&cSupprimer l'ami"));
+		itemSlots.put("gui.selectedPlayerMenu.removeFriend.slot", 8);
+		items.put("gui.selectedPlayerMenu.acceptFriend.item", ItemCreator.createItem(Material.YELLOW_FLOWER, "&6Accepter la demande d'ami"));
+		itemSlots.put("gui.selectedPlayerMenu.acceptFriend.slot", 3);
+		items.put("gui.selectedPlayerMenu.denyFriend.item", ItemCreator.createItem(Material.BARRIER, "&cRefuser la demande d'ami"));
+		itemSlots.put("gui.selectedPlayerMenu.denyFriend.slot", 5);
+		items.put("gui.selectedPlayerMenu.alreadyRequested.item", ItemCreator.createItem(Material.BARRIER, "&cJoueur déjà demandé"));
+		itemSlots.put("gui.selectedPlayerMenu.alreadyRequested.slot", 4);
+		items.put("gui.selectedPlayerMenu.jump.item", ItemCreator.createItem(Material.ENDER_PEARL, "&cAller sur le serveur du joueur"));
+		itemSlots.put("gui.selectedPlayerMenu.jump.slot", 3);
+		items.put("gui.selectedPlayerMenu.back.item", Skull.BACK.getSkull("&cRetour"));
+		itemSlots.put("gui.selectedPlayerMenu.back.slot", 0);
+
 	}
 }

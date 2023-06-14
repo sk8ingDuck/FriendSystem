@@ -25,7 +25,7 @@ public class Placeholder extends PlaceholderExpansion {
 
 	@Override
 	public @NotNull String getVersion() {
-		return "1.7";
+		return "1.8";
 	}
 
 	@Override
@@ -50,13 +50,15 @@ public class Placeholder extends PlaceholderExpansion {
 					friendsOnlineCache.put(player, (int) friends.stream().filter(Friend::isOnline).count());
 				});
 
+		Integer result = null;
 		if (params.equalsIgnoreCase("friendsTotal")) {
-			return friendsTotalCache.get(player).toString();
-		}
-		if (params.equalsIgnoreCase("friendsOnline")) {
-			return friendsOnlineCache.get(player).toString();
+			result = friendsTotalCache.get(player);
+		} else if (params.equalsIgnoreCase("friendsOnline")) {
+			result = friendsOnlineCache.get(player);
 		}
 
-		return "";
+		result = result == null ? 0 : result;
+
+		return result.toString();
 	}
 }

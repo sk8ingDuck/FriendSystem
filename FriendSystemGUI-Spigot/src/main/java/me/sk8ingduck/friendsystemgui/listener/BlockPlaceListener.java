@@ -4,6 +4,7 @@ import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.config.SettingsConfig;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,11 @@ public class BlockPlaceListener implements Listener {
 
 		if (config.isCanPlaceItem()
 				|| player.getGameMode() == GameMode.CREATIVE
-				|| !event.getItemInHand().getType().equals(guiConfig.get("guiItem").getType()))
+				|| player.getInventory().getItemInHand().getType() == Material.AIR
+				|| player.getInventory().getItemInHand().getItemMeta() == null
+				|| guiConfig.getGuiItem().getItemMeta() == null
+				|| !player.getInventory().getItemInHand().getItemMeta().getDisplayName()
+				.equalsIgnoreCase(guiConfig.getGuiItem().getItemMeta().getDisplayName()))
 			return;
 
 		event.setCancelled(true);

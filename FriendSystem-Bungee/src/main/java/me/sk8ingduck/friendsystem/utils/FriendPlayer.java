@@ -1,11 +1,16 @@
 package me.sk8ingduck.friendsystem.utils;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
+import me.sk8ingduck.friendsystem.config.Config;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class FriendPlayer {
 
@@ -17,18 +22,18 @@ public class FriendPlayer {
 	private LocalDateTime lastSeen;
 	private String status;
 	private final HashMap<String, Boolean> friends;
-	private final ArrayList<String> requests;
+	private final HashMap<String, LocalDateTime> requests;
 
 	public FriendPlayer(String uuid,
 	                    boolean invitesAllowed, boolean notifiesAllowed, boolean msgsAllowed, boolean jumpingAllowed,
-	                    LocalDateTime lastSeen, String status, HashMap<String, Boolean> friends, ArrayList<String> requests) {
+	                    LocalDateTime lastSeen, String status, HashMap<String, Boolean> friends, HashMap<String, LocalDateTime> requests) {
 		this.uuid = uuid;
 		this.invitesAllowed = invitesAllowed;
 		this.notifiesAllowed = notifiesAllowed;
 		this.msgsAllowed = msgsAllowed;
 		this.jumpingAllowed = jumpingAllowed;
 		this.lastSeen = lastSeen;
-		this.status = status;
+		this.status = Config.hex(status);
 		this.friends = friends;
 		this.requests = requests;
 	}
@@ -97,11 +102,11 @@ public class FriendPlayer {
 		return friends.containsKey(uuid);
 	}
 	public boolean isRequestedBy(String uuid) {
-		return requests.contains(uuid);
+		return getRequests().contains(uuid);
 	}
 
 	public void addRequest(String uuid) {
-		requests.add(uuid);
+		requests.put(uuid, LocalDateTime.now());
 	}
 	public void removeRequest(String uuid) {
 		requests.remove(uuid);
@@ -118,13 +123,33 @@ public class FriendPlayer {
 		lastSeen = LocalDateTime.now();
 	}
 	public void updateStatus(String status) {
-		this.status = status;
+		this.status = Config.hex(status);
 	}
 	public HashMap<String, Boolean> getFriends() {
 		return friends;
 	}
-	public ArrayList<String> getRequests() {
+
+	public HashMap<String, LocalDateTime> getRequestsAndExpiracy() {
+		if (FriendSystem.getInstance().getSettingsConfig().isRequestDurationEnabled()) {
+		LocalDateTime maxDurationAgo = LocalDateTime.now()
+				.minusMinutes(FriendSystem.getInstance().getSettingsConfig().getRequestDuration());
+
+		Iterator<Map.Entry<String, LocalDateTime>> iterator = requests.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, LocalDateTime> entry = iterator.next();
+			if (entry.getValue().isBefore(maxDurationAgo)) {
+				FriendSystem.getInstance().getMySQL().removeRequestAsync(uuid, entry.getKey());
+				iterator.remove();
+			}
+		}
+	}
+
 		return requests;
+	}
+
+	public ArrayList<String> getRequests() {
+		return new ArrayList<>(getRequestsAndExpiracy().keySet());
 	}
 
 	public void sendMessage(BaseComponent[] message) {

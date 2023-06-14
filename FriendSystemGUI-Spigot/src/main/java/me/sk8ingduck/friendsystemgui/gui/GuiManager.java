@@ -6,11 +6,13 @@ public class GuiManager {
     public static GuiSettings guiSettings;
     public static GuiRequests guiRequests;
     public static GuiSelectedPlayer guiSelectedPlayer;
+    public static GuiChangeStatus guiChangeStatus;
     public static void init() {
         guiMainMenu = new GuiMainMenu();
         guiSettings = new GuiSettings();
         guiRequests = new GuiRequests();
         guiSelectedPlayer = new GuiSelectedPlayer();
+        guiChangeStatus = new GuiChangeStatus();
     }
 
 

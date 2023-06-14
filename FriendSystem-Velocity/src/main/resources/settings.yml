@@ -1,0 +1,118 @@
+# The language specifies the language used for the chat messages.
+# The GUI language can be changed in the settings.yml file of the spigot plugin
+language: english
+
+# Here you can disable the commands if you don't need them
+commands:
+  msgEnabled: true
+  rEnabled: true
+
+tabComplete:
+  enabled: true
+  # If 'global' is true, then tab completion completes ALL players that are currently connected on the proxy,
+  # otherwise it's server-specific
+  global: true
+  suggestions:
+    - help
+    - toggleinvites
+    - togglemsgs
+    - togglejump
+    - togglenotifies
+    - list
+    - requests
+    - status
+    - add
+    - remove
+    - accept
+    - deny
+    - jump
+    - favourite
+  # Here you can specify the subcommands after which the playernames will be suggested
+  suggestPlayerAfter:
+    - add
+    - remove
+    - accept
+    - deny
+    - jump
+    - favourite
+
+joinMessages:
+  # 'onlineFriendsCount' is the minimum number of online friends required,
+  # to get the notification 'there are currently X friends online' when you join the server
+  onlineFriendsCount: 1
+  # 'requestsCount' is the minimum number of friend requests required,
+  # to get the notification 'you have X pending friend requests' when you join the server
+  requestsCount: 1
+
+
+# This is the format that will be used to show dates
+# (for example: You're friends with ... since [DATE])
+dateTimeFormat: 'yyyy-MM-dd HH:mm:ss'
+
+# Here you can specify the duration for which a friend request will be available to the player.
+# The time unit is minutes.
+requestDuration:
+  enabled: false
+  duration: 1440 # this is 1 day
+
+# Here you can specify the friends / requests per page in the /friend list or /friend requests command
+pagination:
+  friendsPerPage: 5
+  requestsPerPage: 5
+
+permissions:
+  # if disabled, then you can have unlimited friends.
+  # You can create as many maxfriends groups as you want
+  enabled: false
+  maxfriends:
+    default: 5
+    premium: 25
+    premium_plus: 50
+    youtuber: 100
+    moderator: 500
+
+
+
+commandManager:
+  help:
+    main: '/friend help'
+    alias: '/friend h'
+  toggleinvites:
+    main: '/friend toggleinvites'
+    alias: '/friend toggle invites'
+  togglemsgs:
+    main: '/friend togglemsgs'
+    alias: '/friend toggle msgs'
+  togglejump:
+    main: '/friend togglejump'
+    alias: '/friend toggle jump'
+  togglenotifies:
+    main: '/friend togglenotifies'
+    alias: '/friend toggle notifies'
+  list:
+    main: '/friend list'
+    alias: '/friend list'
+  requests:
+    main: '/friend requests'
+    alias:
+  status:
+    main: '/friend status %STATUS%'
+    alias:
+  add:
+    main: '/friend add %PLAYER%'
+    alias: '/friend request %PLAYER%'
+  remove:
+    main: '/friend remove %PLAYER%'
+    alias: '/friend delete %PLAYER%'
+  accept:
+    main: '/friend accept %PLAYER%'
+    alias:
+  deny:
+    main: '/friend deny %PLAYER%'
+    alias: '/friend decline %PLAYER%'
+  jump:
+    main: '/friend jump %PLAYER%'
+    alias: '/friend goto %PLAYER%'
+  favourite:
+    main: '/friend favourite %PLAYER%'
+    alias: '/friend fav %PLAYER%'

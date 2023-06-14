@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -49,7 +48,15 @@ public class MySQL {
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS request(" +
                     "UUID VARCHAR(40), " +
                     "requestUUID VARCHAR(40), " +
+                    "requestDate DATETIME DEFAULT NOW(), " +
                     "FOREIGN KEY (requestUUID) REFERENCES player(UUID));");
+
+            DatabaseMetaData dbm = connection.getMetaData();
+            ResultSet tables = dbm.getColumns(null, null, "request", "requestDate");
+            if (!tables.next()) {
+                stmt.executeUpdate("ALTER TABLE request ADD COLUMN requestDate DATETIME");
+                stmt.executeUpdate("UPDATE request SET requestDate=NOW()");
+            }
 
             stmt.close();
         } catch (SQLException e) {
@@ -87,12 +94,12 @@ public class MySQL {
                     friendsRs.close();
                     friendsStmt.close();
 
-                    ArrayList<String> requests = new ArrayList<>();
-                    PreparedStatement requestsStmt = con.prepareStatement("SELECT requestUUID FROM request WHERE UUID=?");
+                    HashMap<String, LocalDateTime> requests = new HashMap<>();
+                    PreparedStatement requestsStmt = con.prepareStatement("SELECT requestUUID, requestDate FROM request WHERE UUID=?");
                     requestsStmt.setString(1, uuid);
                     ResultSet requestsRs = requestsStmt.executeQuery();
                     while (requestsRs.next()) {
-                        requests.add(requestsRs.getString("requestUUID"));
+                        requests.put(requestsRs.getString("requestUUID"), requestsRs.getTimestamp("requestDate").toLocalDateTime());
                     }
                     requestsRs.close();
                     requestsStmt.close();
@@ -171,7 +178,7 @@ public class MySQL {
 
     private void addRequest(String uuid, String requestUUID) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement stmt = con.prepareStatement("INSERT INTO `request`(`UUID`, `requestUUID`) VALUES (?, ?)")) {
+             PreparedStatement stmt = con.prepareStatement("INSERT INTO `request`(`UUID`, `requestUUID`, `requestDate`) VALUES (?, ?, NOW())")) {
             stmt.setString(1, uuid);
             stmt.setString(2, requestUUID);
             stmt.executeUpdate();

@@ -16,7 +16,7 @@ public class SettingsConfig extends Config {
 	public SettingsConfig(String name, File path) {
 		super(name, path);
 
-		language = (String) getPathOrSet("language", "german", false);
+		language = (String) getPathOrSet("language", "english", false);
 		guiEnabled = (boolean) getPathOrSet("guiEnabled", true);
 		guiSlot = (int) getPathOrSet("guiSlot", 8);
 		rightClickPlayerToOpenMenuEnabled = (Boolean) getPathOrSet("rightClickPlayerToOpenMenuEnabled", true);

@@ -28,15 +28,30 @@ public class MessagesChineseConfig extends MessagesConfig {
 				"&e/friend status <status> &8- &7设置你的状态\n" +
 				"&e/friend favourite <player> &8- &7添加/移除 一个关注\n" +
 				"&9&m----------------->&r&e« 好友系统 »&9&m-----------------");
-		messages.put("friend.list.format.header", "&9&m--------------&r&e« 你的好友 »&9&m--------------");
+
+		messages.put("friend.list.format.header", "&9&m-----------&r&e« 你的好友 &7(页面: %CURRENT_PAGE%/%TOTAL_PAGES%) »&9&m-----------");
 		messages.put("friend.list.format.online.regular", "&7%PLAYERON% &8- &a%SERVER% &7(上线时间 &e%ONLINE_TIME%&7) {jump}");
 		messages.put("friend.list.format.online.favourite", "&7[&c❤&7] %PLAYERON% &8- &a%SERVER% &7(上线时间 &e%ONLINE_TIME%&7) {jump}");
 		messages.put("friend.list.format.offline.regular", "&7%PLAYEROFF% &8- &c离线 &7(离线时间 &e%OFFLINE_SINCE%&7)");
 		messages.put("friend.list.format.offline.favourite", "&7[&c❤&7] %PLAYEROFF% &8- &c离线 &7(离线时间 &e%OFFLINE_SINCE%&7)");
-		messages.put("friend.list.format.footer", "&9&m--------------&r&e« 你的好友 »&9&m--------------");
-		messages.put("friend.request.format.header", "&9&m--------------&r&e« 开放请求 »&9&m--------------");
-		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny}");
-		messages.put("friend.request.format.footer", "&9&m--------------&r&e« 开放请求 »&9&m--------------");
+		messages.put("friend.list.format.nofriends", "&c你没有朋友");
+		messages.put("friend.list.format.pagination.pagenotfound", "&4找不到页面。");
+		messages.put("friend.list.format.pagination.textbeforepage", "\n                              ");
+		messages.put("friend.list.format.pagination.previouspage", "{friendListPreviousPage}");
+		messages.put("friend.list.format.pagination.currentpage", " &a%CURRENT_PAGE% ");
+		messages.put("friend.list.format.pagination.nextpage", "{friendListNextPage}");
+		messages.put("friend.list.format.footer", "&9&m-----------&r&e« 你的好友 &7(页面: %CURRENT_PAGE%/%TOTAL_PAGES%) »&9&m-----------");
+
+		messages.put("friend.request.format.header", "&9&m-----------&r&e« 开放请求 &7(页面: %CURRENT_PAGE%/%TOTAL_PAGES%) &e»&9&m-----------");
+		messages.put("friend.request.format.player", "&7- %PLAYER% {accept} {deny} &7(剩余时间: &e%EXPIRES_IN%&7)");
+		messages.put("friend.request.format.norequests", "&c你没有任何请求");
+		messages.put("friend.request.format.pagination.pagenotfound", "&4找不到页面。");
+		messages.put("friend.request.format.pagination.textbeforepage", "\n                              ");
+		messages.put("friend.request.format.pagination.previouspage", "{friendRequestsPreviousPage}");
+		messages.put("friend.request.format.pagination.currentpage", " &a%CURRENT_PAGE% ");
+		messages.put("friend.request.format.pagination.nextpage", "{friendRequestsNextPage}");
+		messages.put("friend.request.format.footer", "&9&m-----------&r&e« 开放请求 &7(页面: %CURRENT_PAGE%/%TOTAL_PAGES%) &e»&9&m-----------");
+
 		messages.put("friend.request.alreadyfriends", "&c你已经和 %PLAYER% 是好友了.");
 		messages.put("friend.request.alreadyrequested", "&c您已经向玩家%PLAYER%发送了一个好友请求，请求已经发出.");
 		messages.put("friend.request.alreadyreceivedrequest", "&7%PLAYER% &c向您发送了好友请求.\n{accept} {deny}");
@@ -110,14 +125,40 @@ public class MessagesChineseConfig extends MessagesConfig {
 	@Override
 	public void loadTextComponents() {
 		if (fileConfiguration.getSection("textcomponents").getKeys().isEmpty()) {
-			messages.put("textcomponents.accept", "&a[接受] {hovertext: &a接受来自 &6%PLAYER% 的好友申请, command: /friend accept %PLAYER%}");
-			messages.put("textcomponents.deny", "&c[拒绝] {hovertext: &c拒绝来自 &6%PLAYER% 的好友申请, command: /friend deny %PLAYER%}");
-			messages.put("textcomponents.onlineFriends", "&7%COUNT% {hovertext: &9展示在线好友列表, command: /friend list}");
-			messages.put("textcomponents.openRequests", "&7%COUNT% {hovertext: &9展示未处理的请求, command: /friend requests}");
-			messages.put("textcomponents.jump", "&a[转跳] {hovertext: &9转跳到在线好友 &7%PLAYERON% 的 &9服务器, command: /friend jump %PLAYERON%}");
+			fileConfiguration.set("textcomponents.accept", "&a[接受] {hovertext: &a接受来自 &6%PLAYER% 的好友申请, command: /friend accept %PLAYER%}");
+			fileConfiguration.set("textcomponents.deny", "&c[拒绝] {hovertext: &c拒绝来自 &6%PLAYER% 的好友申请, command: /friend deny %PLAYER%}");
+			fileConfiguration.set("textcomponents.onlineFriends", "&7%COUNT% {hovertext: &9展示在线好友列表, command: /friend list}");
+			fileConfiguration.set("textcomponents.openRequests", "&7%COUNT% {hovertext: &9展示未处理的请求, command: /friend requests}");
+			fileConfiguration.set("textcomponents.jump", "&a[转跳] {hovertext: &9转跳到在线好友 &7%PLAYERON% 的 &9服务器, command: /friend jump %PLAYERON%}");
 
+			fileConfiguration.set("textcomponents.friendRequestsPreviousPage", "&6« {hovertext: &9上一页, command: /friend requests %PREVIOUS_PAGE%}");
+			fileConfiguration.set("textcomponents.friendRequestsNextPage", "&6» {hovertext: &9下一页, command: /friend requests %NEXT_PAGE%}");
+
+			fileConfiguration.set("textcomponents.friendListPreviousPage", "&6« {hovertext: &9上一页, command: /friend list %PREVIOUS_PAGE%}");
+			fileConfiguration.set("textcomponents.friendListNextPage", "&6» {hovertext: &9下一页, command: /friend list %NEXT_PAGE%}");
 			super.save();
 		}
+
+		boolean shouldSave = false;
+		if (fileConfiguration.get("textcomponents.friendRequestsPreviousPage") == null) {
+			fileConfiguration.set("textcomponents.friendRequestsPreviousPage", "&6« {hovertext: &9上一页, command: /friend requests %PREVIOUS_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendRequestsNextPage") == null) {
+			fileConfiguration.set("textcomponents.friendRequestsNextPage", "&6» {hovertext: &9下一页, command: /friend requests %NEXT_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendListPreviousPage") == null) {
+			fileConfiguration.set("textcomponents.friendListPreviousPage", "&6« {hovertext: &9上一页, command: /friend list %PREVIOUS_PAGE%}");
+			shouldSave = true;
+		}
+		if (fileConfiguration.get("textcomponents.friendListNextPage") == null) {
+			fileConfiguration.set("textcomponents.friendListNextPage", "&6» {hovertext: &9下一页, command: /friend list %NEXT_PAGE%}");
+			shouldSave = true;
+		}
+
+		if (shouldSave)
+			super.save();
 
 		fileConfiguration.getSection("textcomponents")
 				.getKeys()

@@ -24,11 +24,14 @@ public class PlayerInteractListener implements Listener {
         if (event.getAction().equals(Action.PHYSICAL)
                 || event.getAction().equals(Action.LEFT_CLICK_AIR)
                 || event.getAction().equals(Action.LEFT_CLICK_BLOCK)
+                || player.getInventory().getItemInHand() == null
+                || player.getInventory().getItemInHand().getType() == null
                 || player.getInventory().getItemInHand().getType() == Material.AIR
                 || player.getInventory().getItemInHand().getItemMeta() == null
-                || guiConfig.get("guiItem").getItemMeta() == null
+                || guiConfig.getGuiItem().getItemMeta() == null
+                || player.getInventory().getItemInHand().getItemMeta().getDisplayName() == null
                 || !player.getInventory().getItemInHand().getItemMeta().getDisplayName()
-                .equalsIgnoreCase(guiConfig.get("guiItem").getItemMeta().getDisplayName())) {
+                .equalsIgnoreCase(guiConfig.getGuiItem().getItemMeta().getDisplayName())) {
             return;
         }
         

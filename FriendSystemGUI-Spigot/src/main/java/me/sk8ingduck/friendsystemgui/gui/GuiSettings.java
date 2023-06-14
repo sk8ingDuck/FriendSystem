@@ -1,86 +1,70 @@
 package me.sk8ingduck.friendsystemgui.gui;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import io.github.rysefoxx.inventory.plugin.content.IntelligentItem;
+import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
+import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
+import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.util.ItemCreator;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import org.ipvp.canvas.slot.Slot;
-import org.ipvp.canvas.type.ChestMenu;
 
 public class GuiSettings {
-
 
 	public void open(Player player) {
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
 
-		ChestMenu gui = ChestMenu.builder(4).title(guiConfig.getSettingsGuiTitle()).build();
+		FriendSystemGUI.getInstance().getPluginMessaging().getSettings(player, (invites, notifies, msgs, jump) ->
+				RyseInventory.builder()
+						.title(guiConfig.getSettingsGuiTitle())
+						.rows(4)
+						.provider(new InventoryProvider() {
+							@Override
+							public void init(Player player, InventoryContents contents) {
+								for (int i = 0; i < 36; i++)
+									contents.set(i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 
-		for (int i = 0; i < 36; i++)
-			gui.getSlot(i).setItem(ItemCreator.createGlassPane(DyeColor.BLACK, " "));
+								contents.set(1, 1, IntelligentItem.of(guiConfig.getItem("settingsMenu.back"),
+										clickEvent -> GuiManager.guiMainMenu.open(player)));
 
-		Slot back = gui.getSlot(10);
-		Slot toggleInvites = gui.getSlot(13);
-		Slot toggleNotifies = gui.getSlot(14);
-		Slot toggleMsgs = gui.getSlot(15);
-		Slot toggleJump = gui.getSlot(16);
+								contents.set(1, 3, IntelligentItem.of(guiConfig.getItem("settingsMenu.toggleInvites"),
+										clickEvent -> {
+											player.closeInventory();
+											FriendSystemGUI.getInstance().getPluginMessaging().toggleOption(player, "toggleinvites");
+										}));
 
-		Slot currentInvites = gui.getSlot(22);
-		Slot currentNotifies = gui.getSlot(23);
-		Slot currentMsgs = gui.getSlot(24);
-		Slot currentJump = gui.getSlot(25);
+								contents.set(1, 4, IntelligentItem.of(guiConfig.getItem("settingsMenu.toggleNotifies"),
+										clickEvent -> {
+											player.closeInventory();
+											FriendSystemGUI.getInstance().getPluginMessaging().toggleOption(player, "togglenotifies");
+										}));
 
-		back.setItem(guiConfig.get("gui.settingsMenu.item.back"));
-		toggleInvites.setItem(guiConfig.get("gui.settingsMenu.item.toggleInvites"));
-		toggleNotifies.setItem(guiConfig.get("gui.settingsMenu.item.toggleNotifies"));
-		toggleMsgs.setItem(guiConfig.get("gui.settingsMenu.item.toggleMsgs"));
-		toggleJump.setItem(guiConfig.get("gui.settingsMenu.item.toggleJump"));
+								contents.set(1, 5, IntelligentItem.of(guiConfig.getItem("settingsMenu.toggleMsgs"),
+										clickEvent -> {
+											player.closeInventory();
+											FriendSystemGUI.getInstance().getPluginMessaging().toggleOption(player, "togglemsgs");
+										}));
 
-		FriendSystemGUI.getInstance().getPluginMessaging().getSettings(player, (invites, notifies, msgs, jump) -> {
-			currentInvites.setItem(guiConfig.get("gui.settingsMenu.item.invites" + (invites ? "On" : "Off")));
-			currentNotifies.setItem(guiConfig.get("gui.settingsMenu.item.notifies" + (notifies ? "On" : "Off")));
-			currentMsgs.setItem(guiConfig.get("gui.settingsMenu.item.msgs" + (msgs ? "On" : "Off")));
-			currentJump.setItem(guiConfig.get("gui.settingsMenu.item.jump" + (jump ? "On" : "Off")));
+								contents.set(1, 6, IntelligentItem.of(guiConfig.getItem("settingsMenu.toggleJump"),
+										clickEvent -> {
+											player.closeInventory();
+											FriendSystemGUI.getInstance().getPluginMessaging().toggleOption(player, "togglejump");
+										}));
+								contents.set(1, 7, IntelligentItem.of(guiConfig.getItem("settingsMenu.changeStatus"),
+										clickEvent -> {
+											player.closeInventory();
+											GuiManager.guiChangeStatus.open(player);
+										}));
 
-		});
-
-		toggleInvites.setClickHandler((player1, clickInformation) -> {
-			player1.closeInventory();
-
-			ByteArrayDataOutput out = ByteStreams.newDataOutput();
-			out.writeUTF("toggleinvites");
-			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		});
-
-		toggleNotifies.setClickHandler((player1, clickInformation) -> {
-			player1.closeInventory();
-
-			ByteArrayDataOutput out = ByteStreams.newDataOutput();
-			out.writeUTF("togglenotifies");
-			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		});
-
-		toggleMsgs.setClickHandler((player1, clickInformation) -> {
-			player1.closeInventory();
-
-			ByteArrayDataOutput out = ByteStreams.newDataOutput();
-			out.writeUTF("togglemsgs");
-			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		});
-
-		toggleJump.setClickHandler((player1, clickInformation) -> {
-			player1.closeInventory();
-
-			ByteArrayDataOutput out = ByteStreams.newDataOutput();
-			out.writeUTF("togglejump");
-			player1.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
-		});
-
-		back.setClickHandler((player1, clickInformation) -> GuiManager.guiMainMenu.open(player));
-
-		gui.open(player);
+								contents.set(2, 3, guiConfig.getItem("settingsMenu.invites" + (invites ? "On" : "Off")));
+								contents.set(2, 4, guiConfig.getItem("settingsMenu.notifies" + (notifies ? "On" : "Off")));
+								contents.set(2, 5, guiConfig.getItem("settingsMenu.msgs" + (msgs ? "On" : "Off")));
+								contents.set(2, 6, guiConfig.getItem("settingsMenu.jump" + (jump ? "On" : "Off")));
+							}
+						})
+						.build(FriendSystemGUI.getInstance())
+						.open(player)
+		);
 	}
-
 }

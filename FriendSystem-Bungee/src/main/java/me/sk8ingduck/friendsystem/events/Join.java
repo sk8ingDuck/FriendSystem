@@ -2,6 +2,7 @@ package me.sk8ingduck.friendsystem.events;
 
 import me.sk8ingduck.friendsystem.FriendSystem;
 import me.sk8ingduck.friendsystem.config.MessagesConfig;
+import me.sk8ingduck.friendsystem.config.SettingsConfig;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
 import me.sk8ingduck.friendsystem.utils.FriendPlayer;
 import net.md_5.bungee.api.ProxyServer;
@@ -24,12 +25,13 @@ public class Join implements Listener {
         boolean onlineMode = ProxyServer.getInstance().getConfig().isOnlineMode();
         String playerUUIDorName = onlineMode ? player.getUniqueId().toString() : player.getName();
 
-        fm.updateLastSeen(playerUUIDorName);
         FriendPlayer friendPlayer = fm.getFriendPlayer(playerUUIDorName);
         if (friendPlayer == null) {
             fm.addFriendPlayer(playerUUIDorName);
             return;
         }
+        fm.updateLastSeen(playerUUIDorName); //update mysql
+        friendPlayer.updateLastSeen(); //update cache
 
         friendPlayer.getOnlineFriends().keySet().forEach(friend -> {
             FriendPlayer friendPlayer2 = fm.getFriendPlayer(onlineMode ? friend.getUniqueId().toString() : friend.getName());
@@ -38,9 +40,14 @@ public class Join implements Listener {
             }
         });
 
-        player.sendMessage(c.get("join.friendcounter",
-                "%COUNT%", String.valueOf(friendPlayer.getOnlineFriends().size())));
-        player.sendMessage(c.get("join.requestcounter",
-                "%COUNT%", String.valueOf(friendPlayer.getRequests().size())));
+
+        SettingsConfig settings = FriendSystem.getInstance().getSettingsConfig();
+        int onlineFriends = friendPlayer.getOnlineFriends().size();
+        int request = friendPlayer.getRequests().size();
+
+        if (onlineFriends >= settings.getOnlineFriendsMessageMinimum())
+            player.sendMessage(c.get("join.friendcounter", "%COUNT%", String.valueOf(onlineFriends)));
+        if (request >= settings.getRequestsMessageMinimum())
+            player.sendMessage(c.get("join.requestcounter", "%COUNT%", String.valueOf(request)));
     }
 }

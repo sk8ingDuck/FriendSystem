@@ -7,6 +7,7 @@ import me.sk8ingduck.friendsystemgui.FriendSystemGUI;
 import me.sk8ingduck.friendsystemgui.pluginmessage.callback.OwnInfoCallback;
 import me.sk8ingduck.friendsystemgui.pluginmessage.callback.PlayerInfoCallback;
 import me.sk8ingduck.friendsystemgui.pluginmessage.callback.SettingsCallback;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -22,6 +23,7 @@ public class PluginMessage implements PluginMessageListener {
 	private final HashMap<String, PlayerInfoCallback> playerInfoCallbacks = new HashMap<>();
 	private final HashMap<String, SettingsCallback> settingsCallbacks = new HashMap<>();
 	private final HashMap<String, OwnInfoCallback> ownInfoCallbacks = new HashMap<>();
+	private final HashMap<String, Consumer<String>> statusCallbacks = new HashMap<>();
 
 
 	@Override
@@ -36,7 +38,14 @@ public class PluginMessage implements PluginMessageListener {
 				&& !subchannel.equalsIgnoreCase("requestsList")
 				&& !subchannel.equalsIgnoreCase("playerInfo")
 				&& !subchannel.equalsIgnoreCase("settings")
-				&& !subchannel.equalsIgnoreCase("ownInfo")) {
+				&& !subchannel.equalsIgnoreCase("ownInfo")
+				&& !subchannel.equalsIgnoreCase("status")
+				&& !subchannel.equalsIgnoreCase("reloadConfigs")) {
+			return;
+		}
+		if (subchannel.equalsIgnoreCase("reloadConfigs")) {
+			FriendSystemGUI.getInstance().reloadConfigs();
+			player.sendMessage("§aSpigot configs reloaded for server: " + Bukkit.getServer().getName());
 			return;
 		}
 		String uuid = in.readUTF();
@@ -60,7 +69,7 @@ public class PluginMessage implements PluginMessageListener {
 
 			ArrayList<Request> requests = new ArrayList<>();
 			for (int i = 0; i < size; i++) {
-				requests.add(new Request(in.readUTF(), in.readUTF()));
+				requests.add(new Request(in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF()));
 			}
 
 			requestsListCallbacks.get(uuid).accept(requests);
@@ -84,6 +93,10 @@ public class PluginMessage implements PluginMessageListener {
 			ownInfoCallbacks.get(uuid).onReceive(in.readUTF(), in.readUTF(), in.readUTF());
 			ownInfoCallbacks.remove(uuid);
 
+		} else if (subchannel.equalsIgnoreCase("status")) {
+			if (!statusCallbacks.containsKey(uuid)) return;
+			statusCallbacks.get(uuid).accept(in.readUTF());
+			statusCallbacks.remove(uuid);
 		}
 	}
 
@@ -123,6 +136,27 @@ public class PluginMessage implements PluginMessageListener {
 		out.writeUTF("ownInfo");
 		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 		ownInfoCallbacks.put(player.getUniqueId().toString(), ownInfoCallback);
+	}
+
+	public void getStatus(Player player, Consumer<String> statusCallback) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("getstatus");
+		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+		statusCallbacks.put(player.getUniqueId().toString(), statusCallback);
+	}
+
+	public void toggleOption(Player player, String option) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(option);
+		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
+	}
+
+	public void sendCommand(Player player, String command, String data) {
+		player.closeInventory();
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(command);
+		out.writeUTF(data);
+		player.sendPluginMessage(FriendSystemGUI.getInstance(), "me:friendsystem", out.toByteArray());
 	}
 
 }
