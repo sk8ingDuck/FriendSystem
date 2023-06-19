@@ -21,9 +21,9 @@ public class GuiGermanConfig extends GuiConfig {
 
 		mainGuiTitle = (String) getPathOrSet("gui.mainMenu.title", "&9Freunde Menü");
 		mainGuiRows = (int) getPathOrSet("gui.mainMenu.rows", 6);
-
+		items.put("gui.mainMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.mainMenu.friends.startSlot", 0);
-		itemSlots.put("gui.mainMenu.friends.endSlot", 36);
+		itemSlots.put("gui.mainMenu.friends.friendsPerPage", 36);
 		items.put("gui.mainMenu.friends.onlineFriend", SkullCreator.createPlayerSkull("&a%PLAYER%",
 				" ", "&7Server", "&e→ %SERVER%", " ", "&7Online seit", "&e→ %ONLINE_TIME%", " ", "&7Status", "&e→ %STATUS%"));
 		items.put("gui.mainMenu.friends.onlineFriendFavourite", SkullCreator.createPlayerSkull("&a&7[&c❤&7] &a%PLAYER%",
@@ -37,9 +37,9 @@ public class GuiGermanConfig extends GuiConfig {
 				" ", "&7Server", "&e→ %SERVER%", " ", "&7Du bist online seit", "&e→ %ONLINE_TIME%", " ", "&7Dein Status", "&e→ %STATUS%"));
 		itemSlots.put("gui.mainMenu.ownInfo.slot", 49);
 		items.put("gui.mainMenu.settings.item", ItemCreator.createItem(Material.REDSTONE, "&cEinstellungen"));
-		itemSlots.put("gui.mainMenu.settings.slot", 43);
+		itemSlots.put("gui.mainMenu.settings.slot", 50);
 		items.put("gui.mainMenu.requests.item", ItemCreator.createItem(Material.WRITTEN_BOOK, "&bFreundschaftsanfragen"));
-		itemSlots.put("gui.mainMenu.requests.slot", 47);
+		itemSlots.put("gui.mainMenu.requests.slot", 48);
 		items.put("gui.mainMenu.previousPage.item", Skull.LEFT.getSkull("&eNach links"));
 		itemSlots.put("gui.mainMenu.previousPage.slot", 45);
 		items.put("gui.mainMenu.nextPage.item", Skull.RIGHT.getSkull("&eNach rechts"));
@@ -47,8 +47,9 @@ public class GuiGermanConfig extends GuiConfig {
 
 		requestsGuiTitle = (String) getPathOrSet("gui.requestsMenu.title", "&9Freundschaftsanfragen");
 		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.rows", 6);
+		items.put("gui.requestsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.requestsMenu.requests.startSlot", 0);
-		itemSlots.put("gui.requestsMenu.requests.endSlot", 36);
+		itemSlots.put("gui.requestsMenu.requests.requestsPerPage", 36);
 		items.put("gui.requestsMenu.requests.item", SkullCreator.createSkeletonSkull( "&7%PLAYER%", " ",
 				"&7Anfrage von", "&e→ %REQUEST_DATE%", " ", "&7Läuft ab in:", "&e→ %EXPIRES_IN%"));
 
@@ -61,6 +62,7 @@ public class GuiGermanConfig extends GuiConfig {
 
 		settingsGuiTitle = (String) getPathOrSet("gui.settingsMenu.title", "&cEinstellungen");
 		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.rows", 4);
+		items.put("gui.settingsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.settingsMenu.toggleInvites.item", ItemCreator.createItem(Material.TORCH, "&6Freundesanfragen aktivieren / deaktiveren"));
 		itemSlots.put("gui.settingsMenu.toggleInvites.slot", 11);
 		items.put("gui.settingsMenu.toggleNotifies.item", ItemCreator.createItem(Material.WOOD_DOOR, "&6Join/Leave Nachrichten aktivieren / deaktiveren"));
@@ -93,6 +95,7 @@ public class GuiGermanConfig extends GuiConfig {
 
 		selectedPlayerGuiTitle = (String) getPathOrSet("gui.selectedPlayerMenu.title", "&6Ausgewählter Spieler &7- &6%PLAYER%");
 		selectedPlayerGuiRows = (int) getPathOrSet("gui.selectedPlayerMenu.rows", 1);
+		items.put("gui.selectedPlayerMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.selectedPlayerMenu.addFavourite.item", Skull.HEART.getSkull("&aAls Favorit hinzufügen"));
 		itemSlots.put("gui.selectedPlayerMenu.addFavourite.slot", 5);
 		items.put("gui.selectedPlayerMenu.removeFavourite.item", Skull.CROSS.getSkull("&cVon Favoriten entfernen"));

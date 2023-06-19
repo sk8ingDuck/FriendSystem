@@ -26,7 +26,7 @@ public class GuiChangeStatus {
 										anvil.itemLeft(ItemCreator.createItem(Material.PAPER, status));
 										anvil.onClick((completion, stateSnapshot) -> {
 											FriendSystemGUI.getInstance().getPluginMessaging()
-													.sendCommand(player, "status", completion.toString());
+													.sendCommand(player, "status", stateSnapshot.getText());
 											return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Status changed!"));
 										});
 									}

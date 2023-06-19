@@ -20,24 +20,30 @@ public class GuiRequests {
 
 	public void open(Player player) {
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
+		int rows = guiConfig.getMainGuiRows();
 
 		FriendSystemGUI.getInstance().getPluginMessaging().getRequests(player, requests ->
 				RyseInventory.builder()
 						.title(guiConfig.getRequestsGuiTitle())
-						.rows(6)
+						.rows(rows)
 						.provider(new InventoryProvider() {
 							@Override
 							public void init(Player player, InventoryContents contents) {
-								for (int i = 0; i < 9; i++) {
-									contents.set(4, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
-									contents.set(5, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
+								int startSlot = guiConfig.getSlot("requestsMenu.requests.startSlot", false);
+								int requestsPerPage = guiConfig.getSlot("requestsMenu.requests.requestsPerPage", false);
+
+								for (int i = 0; i < startSlot; i++) {
+									contents.set(i, guiConfig.getItem("requestsMenu.backgroundItem", false));
+								}
+								for (int i = startSlot + requestsPerPage; i < rows * 9; i++) {
+									contents.set(i, guiConfig.getItem("requestsMenu.backgroundItem", false));
 								}
 
 								Pagination pagination = contents.pagination();
-								pagination.setItemsPerPage(36);
+								pagination.setItemsPerPage(requestsPerPage);
 
 								pagination.iterator(SlotIterator.builder()
-										.startPosition(0, 0)
+										.startPosition(startSlot)
 										.type(SlotIterator.SlotIteratorType.HORIZONTAL)
 										.build());
 
@@ -48,24 +54,33 @@ public class GuiRequests {
 											GuiManager.guiSelectedPlayer.open(player, request.getUuid(), request.getName())));
 								});
 
-								contents.set(5, 0, IntelligentItem.of(guiConfig.getItem("requestsMenu.previousPage"),
-										clickEvent -> {
-											if (!pagination.isFirst()) {
-												RyseInventory currentInventory = pagination.inventory();
-												currentInventory.open(player, pagination.previous().page());
-											}
-										}));
+								int previousPageSlot = guiConfig.getSlot("requestsMenu.previousPage");
+								if (previousPageSlot != -1) {
+									contents.set(previousPageSlot, IntelligentItem.of(guiConfig.getItem("requestsMenu.previousPage"),
+											clickEvent -> {
+												if (!pagination.isFirst()) {
+													RyseInventory currentInventory = pagination.inventory();
+													currentInventory.open(player, pagination.previous().page());
+												}
+											}));
+								}
 
-								contents.set(5, 8, IntelligentItem.of(guiConfig.getItem("requestsMenu.nextPage"),
-										clickEvent -> {
-											if (!pagination.isLast()) {
-												RyseInventory currentInventory = pagination.inventory();
-												currentInventory.open(player, pagination.next().page());
-											}
-										}));
+								int nextPageSlot = guiConfig.getSlot("requestsMenu.nextPage");
+								if (nextPageSlot != -1) {
+									contents.set(nextPageSlot, IntelligentItem.of(guiConfig.getItem("requestsMenu.nextPage"),
+											clickEvent -> {
+												if (!pagination.isLast()) {
+													RyseInventory currentInventory = pagination.inventory();
+													currentInventory.open(player, pagination.next().page());
+												}
+											}));
+								}
 
-								contents.set(5, 4, IntelligentItem.of(guiConfig.getItem("requestsMenu.back"),
-										clickEvent -> GuiManager.guiMainMenu.open(player)));
+								int backSlot = guiConfig.getSlot("requestsMenu.back");
+								if (backSlot != -1) {
+									contents.set(backSlot, IntelligentItem.of(guiConfig.getItem("requestsMenu.back"),
+											clickEvent -> GuiManager.guiMainMenu.open(player)));
+								}
 							}
 						})
 						.build(FriendSystemGUI.getInstance())
@@ -83,7 +98,7 @@ public class GuiRequests {
 		if (itemMeta.getLore() != null)
 			itemMeta.setLore(itemMeta.getLore().stream()
 					.map(lore -> lore.replaceAll("%REQUEST_DATE%", requestDate)
-									.replaceAll("%EXPIRES_IN%", expiracy))
+							.replaceAll("%EXPIRES_IN%", expiracy))
 					.collect(Collectors.toList()));
 
 		itemStack.setItemMeta(itemMeta);

@@ -48,7 +48,7 @@ public class MySQL {
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS request(" +
                     "UUID VARCHAR(40), " +
                     "requestUUID VARCHAR(40), " +
-                    "requestDate DATETIME DEFAULT NOW(), " +
+                    "requestDate DATETIME, " +
                     "FOREIGN KEY (requestUUID) REFERENCES player(UUID));");
 
             DatabaseMetaData dbm = connection.getMetaData();

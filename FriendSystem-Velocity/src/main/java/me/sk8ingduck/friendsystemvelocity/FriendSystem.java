@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -20,9 +21,12 @@ import me.sk8ingduck.friendsystemvelocity.events.Disconnect;
 import me.sk8ingduck.friendsystemvelocity.events.Join;
 import me.sk8ingduck.friendsystemvelocity.events.PluginMessage;
 import me.sk8ingduck.friendsystemvelocity.mysql.MySQL;
+import me.sk8ingduck.friendsystemvelocity.mysql.MySQLDriver;
 import me.sk8ingduck.friendsystemvelocity.util.FriendManager;
 import org.slf4j.Logger;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -49,6 +53,12 @@ public class FriendSystem {
 		instance = this;
 		FriendSystem.server = server;
 
+		try {
+			new MySQLDriver(Paths.get("plugins/FriendSystem/driver"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 		logger.info("Plugin loaded.");
 	}
 
@@ -56,6 +66,7 @@ public class FriendSystem {
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 
 		DBConfig dbConfig = new DBConfig("plugins/FriendSystem/database.yml");
+
 		mysql = new MySQL(dbConfig.getHost(), dbConfig.getPort(),
 				dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDatabase());
 
@@ -81,7 +92,6 @@ public class FriendSystem {
 		server.getEventManager().register(this, new Join());
 		server.getEventManager().register(this, new Disconnect());
 		server.getEventManager().register(this, new PluginMessage());
-
 	}
 
 	public static Optional<Player> getPlayer(String nameOrUuid) {

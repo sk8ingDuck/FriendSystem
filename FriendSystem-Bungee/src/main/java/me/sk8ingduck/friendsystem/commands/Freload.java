@@ -19,7 +19,7 @@ public class Freload extends Command {
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
 		FriendSystem.getInstance().reloadConfigs();
-		commandSender.sendMessage(new TextComponent("§aBungeeCord configs reloaded."));
+		commandSender.sendMessage(new TextComponent("§a§a[FriendSystem] BungeeCord configs reloaded."));
 
 		if (commandSender instanceof ProxiedPlayer) {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -27,6 +27,8 @@ public class Freload extends Command {
 
 			ServerInfo playerServer = ((ProxiedPlayer) commandSender).getServer().getInfo();
 			playerServer.sendData("me:friendsystem", out.toByteArray());
+
+			commandSender.sendMessage(new TextComponent("§a[FriendSystem] Spigot configs reloaded for server: " + playerServer.getName()));
 		}
 	}
 }

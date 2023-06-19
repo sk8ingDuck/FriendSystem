@@ -30,9 +30,11 @@ public final class FriendSystemGUI extends JavaPlugin {
 
         new GuiGermanConfig("guis_german.yml", getDataFolder());
         new GuiEnglishConfig("guis_english.yml", getDataFolder());
-        new GuiEnglishConfig("guis_french.yml", getDataFolder());
+        new GuiFrenchConfig("guis_french.yml", getDataFolder());
         new GuiChineseConfig("guis_chinese.yml", getDataFolder());
         new GuiItalianConfig("guis_italian.yml", getDataFolder());
+        new GuiRussianConfig("guis_russian.yml", getDataFolder());
+        new GuiSpanishConfig("guis_spanish.yml", getDataFolder());
 
         guiConfig = loadGuiConfig();
 
@@ -54,6 +56,8 @@ public final class FriendSystemGUI extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new Placeholder().register();
         }
+
+        Bukkit.broadcastMessage(settingsConfig.getLanguage() + " <-");
     }
 
     @Override

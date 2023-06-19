@@ -1,9 +1,6 @@
 package me.sk8ingduck.friendsystem;
 
-import me.sk8ingduck.friendsystem.commands.Freload;
-import me.sk8ingduck.friendsystem.commands.Friend;
-import me.sk8ingduck.friendsystem.commands.Msg;
-import me.sk8ingduck.friendsystem.commands.R;
+import me.sk8ingduck.friendsystem.commands.*;
 import me.sk8ingduck.friendsystem.config.*;
 import me.sk8ingduck.friendsystem.config.languages.*;
 import me.sk8ingduck.friendsystem.events.Disconnect;
@@ -21,13 +18,11 @@ import java.util.regex.Pattern;
 
 public class FriendSystem extends Plugin {
 
-
 	private static FriendSystem instance;
 	private MySQL mysql;
 	private FriendManager friendManager;
 	private SettingsConfig settingsConfig;
 	private MessagesConfig messagesConfig;
-
 	private Friend friendCommand;
 
 	public static FriendSystem getInstance() {
@@ -45,12 +40,15 @@ public class FriendSystem extends Plugin {
 		friendManager = new FriendManager();
 
 		settingsConfig = new SettingsConfig("settings.yml", pluginFolder);
+
 		//init all language configs
         new MessagesGermanConfig("messages_german.yml", pluginFolder);
 		new MessagesEnglishConfig("messages_english.yml", pluginFolder);
 		new MessagesFrenchConfig("messages_french.yml", pluginFolder);
 		new MessagesChineseConfig("messages_chinese.yml", pluginFolder);
 		new MessagesItalianConfig("messages_italian.yml", pluginFolder);
+		new MessagesRussianConfig("messages_russian.yml", pluginFolder);
+		new MessagesSpanishConfig("messages_spanish.yml", pluginFolder);
 
 		messagesConfig = loadMessagesConfig();
 

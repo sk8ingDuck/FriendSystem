@@ -22,15 +22,10 @@ public abstract class Config {
 		this.filePath = filePath;
 		File file = new File(filePath);
 
-		loader = YamlConfigurationLoader
-				.builder()
-				.file(file)
-				.nodeStyle(NodeStyle.BLOCK)
-				.build();
-
 		try {
 			if (!file.exists()) {
 				if (!copyDefault) {
+					file.getParentFile().mkdirs();
 					file.createNewFile();
 				} else {
 					// Copy file from resources
@@ -50,6 +45,13 @@ public abstract class Config {
 					}
 				}
 			}
+
+			loader = YamlConfigurationLoader
+					.builder()
+					.file(file)
+					.nodeStyle(NodeStyle.BLOCK)
+					.build();
+
 			rootNode = loader.load();
 		} catch (IOException e) {
 			throw new RuntimeException(e);

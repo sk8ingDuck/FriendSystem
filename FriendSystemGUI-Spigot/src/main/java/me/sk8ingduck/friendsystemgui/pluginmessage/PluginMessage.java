@@ -45,7 +45,6 @@ public class PluginMessage implements PluginMessageListener {
 		}
 		if (subchannel.equalsIgnoreCase("reloadConfigs")) {
 			FriendSystemGUI.getInstance().reloadConfigs();
-			player.sendMessage("§aSpigot configs reloaded for server: " + Bukkit.getServer().getName());
 			return;
 		}
 		String uuid = in.readUTF();

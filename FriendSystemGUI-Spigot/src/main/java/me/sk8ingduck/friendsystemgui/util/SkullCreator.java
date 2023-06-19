@@ -36,14 +36,16 @@ public class SkullCreator {
 	private static Field blockProfileField;
 	private static Method metaSetProfileMethod;
 	private static Field metaProfileField;
+
 	private SkullCreator() {
 	}
 
 	/**
 	 * Creates a player or skeleton skull.
-	 * @param skullType The type of the skull to create (either "PLAYER_HEAD" or "SKELETON_SKULL").
+	 *
+	 * @param skullType   The type of the skull to create (either "PLAYER_HEAD" or "SKELETON_SKULL").
 	 * @param displayName The display name of the skull (can be null).
-	 * @param lore The lore of the skull (can be null).
+	 * @param lore        The lore of the skull (can be null).
 	 * @return The created skull ItemStack.
 	 */
 	public static ItemStack createSkull(String skullType, String displayName, String... lore) {
@@ -75,14 +77,16 @@ public class SkullCreator {
 	public static ItemStack createSkeletonSkull(String displayName, String... lore) {
 		return createSkull("SKELETON_SKULL", displayName, lore);
 	}
+
 	public static ItemStack createPlayerSkull() {
 		return createPlayerSkull(null, (String[]) null);
 	}
+
 	public static ItemStack createSkeletonSkull() {
 		return createSkeletonSkull(null, (String[]) null);
 	}
 
-    /**
+	/**
 	 * Creates a player skull item with the skin based on a player's name.
 	 *
 	 * @param name The Player's name.
@@ -155,9 +159,12 @@ public class SkullCreator {
 		notNull(id, "id");
 
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
-		meta.setOwner(Bukkit.getOfflinePlayer(id).getName());
-//        meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
-		item.setItemMeta(meta);
+
+		if (meta != null) {
+			meta.setOwner(Bukkit.getOfflinePlayer(id).getName());
+			//meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+			item.setItemMeta(meta);
+		}
 
 		return item;
 	}

@@ -74,45 +74,48 @@ permissions:
 
 
 commandManager:
-  help:
-    main: '/friend help'
-    alias: '/friend h'
-  toggleinvites:
-    main: '/friend toggleinvites'
-    alias: '/friend toggle invites'
-  togglemsgs:
-    main: '/friend togglemsgs'
-    alias: '/friend toggle msgs'
-  togglejump:
-    main: '/friend togglejump'
-    alias: '/friend toggle jump'
-  togglenotifies:
-    main: '/friend togglenotifies'
-    alias: '/friend toggle notifies'
-  list:
-    main: '/friend list'
-    alias: '/friend list'
-  requests:
-    main: '/friend requests'
-    alias:
-  status:
-    main: '/friend status %STATUS%'
-    alias:
-  add:
-    main: '/friend add %PLAYER%'
-    alias: '/friend request %PLAYER%'
-  remove:
-    main: '/friend remove %PLAYER%'
-    alias: '/friend delete %PLAYER%'
-  accept:
-    main: '/friend accept %PLAYER%'
-    alias:
-  deny:
-    main: '/friend deny %PLAYER%'
-    alias: '/friend decline %PLAYER%'
-  jump:
-    main: '/friend jump %PLAYER%'
-    alias: '/friend goto %PLAYER%'
-  favourite:
-    main: '/friend favourite %PLAYER%'
-    alias: '/friend fav %PLAYER%'
+  friend:
+    command: 'friend' #This means that the command starts with /friend
+    subcommands:
+      help:
+        main: 'help' #So the full command would be: /friend help
+        alias: 'h' #Or alternatively: /friend h
+      toggleinvites:
+        main: 'toggleinvites' #Full command: /friend toggleinvites
+        alias: 'toggle invites' #Alternative: /friend toggle invites
+      togglemsgs:
+        main: '/friend togglemsgs'
+        alias: '/friend toggle msgs'
+      togglejump:
+        main: '/friend togglejump'
+        alias: '/friend toggle jump'
+      togglenotifies:
+        main: '/friend togglenotifies'
+        alias: '/friend toggle notifies'
+      list:
+        main: '/friend list'
+        alias: '/friend list'
+      requests:
+        main: '/friend requests'
+        alias:
+      status:
+        main: '/friend status %STATUS%'
+        alias:
+      add:
+        main: '/friend add %PLAYER%'
+        alias: '/friend request %PLAYER%'
+      remove:
+        main: '/friend remove %PLAYER%'
+        alias: '/friend delete %PLAYER%'
+      accept:
+        main: '/friend accept %PLAYER%'
+        alias:
+      deny:
+        main: '/friend deny %PLAYER%'
+        alias: '/friend decline %PLAYER%'
+      jump:
+        main: '/friend jump %PLAYER%'
+        alias: '/friend goto %PLAYER%'
+      favourite:
+        main: '/friend favourite %PLAYER%'
+        alias: '/friend fav %PLAYER%'

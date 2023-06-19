@@ -54,17 +54,29 @@ public abstract class GuiConfig extends Config {
 	public String getMainGuiTitle() {
 		return mainGuiTitle;
 	}
+	public int getMainGuiRows() {
+		return mainGuiRows;
+	}
 
 	public String getRequestsGuiTitle() {
 		return requestsGuiTitle;
+	}
+	public int getRequestsGuiRows() {
+		return requestsGuiRows;
 	}
 
 	public String getSettingsGuiTitle() {
 		return settingsGuiTitle;
 	}
+	public int getSettingsGuiRows() {
+		return settingsGuiRows;
+	}
 
 	public String getSelectedPlayerGuiTitle() {
 		return selectedPlayerGuiTitle;
+	}
+	public int getSelectedPlayerGuiRows() {
+		return selectedPlayerGuiRows;
 	}
 
 	public ItemStack getItem(String path, boolean suffix) {
@@ -81,6 +93,7 @@ public abstract class GuiConfig extends Config {
 	public int getSlot(String path) {
 		return itemSlots.get("gui." + path + ".slot");
 	}
+	public int getSlot(String path, boolean suffix) { return suffix ? getSlot(path) : itemSlots.get("gui." + path); }
 
 	public void reformatConfig() {
 		renameSection("gui.mainMenu.item.ownInfo", "gui.mainMenu.ownInfo.item");

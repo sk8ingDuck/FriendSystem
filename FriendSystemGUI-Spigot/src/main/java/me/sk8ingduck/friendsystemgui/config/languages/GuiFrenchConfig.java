@@ -21,9 +21,9 @@ public class GuiFrenchConfig extends GuiConfig {
 
 		mainGuiTitle = (String) getPathOrSet("gui.mainMenu.title", "&9Menu des amis");
 		mainGuiRows = (int) getPathOrSet("gui.mainMenu.rows", 6);
-
+		items.put("gui.mainMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.mainMenu.friends.startSlot", 0);
-		itemSlots.put("gui.mainMenu.friends.endSlot", 36);
+		itemSlots.put("gui.mainMenu.friends.friendsPerPage", 36);
 		items.put("gui.mainMenu.friends.onlineFriend", SkullCreator.createPlayerSkull("&a%PLAYER%",
 				" ", "&7Serveur", "&e→ %SERVER%", " ", "&7En ligne depuis", "&e→ %ONLINE_TIME%", " ", "&7Statut", "&e→ %STATUS%"));
 		items.put("gui.mainMenu.friends.onlineFriendFavourite", SkullCreator.createPlayerSkull("&a&7[&c❤&7] &a%PLAYER%",
@@ -37,18 +37,19 @@ public class GuiFrenchConfig extends GuiConfig {
 				" ", "&7Serveur", "&e→ %SERVER%", " ", "&7Tu est en ligne depuis", "&e→ %ONLINE_TIME%", " ", "&7Ton Statut", "&e→ %STATUS%"));
 		itemSlots.put("gui.mainMenu.ownInfo.slot", 49);
 		items.put("gui.mainMenu.settings.item", ItemCreator.createItem(Material.REDSTONE, "&cParamètres"));
-		itemSlots.put("gui.mainMenu.settings.slot", 43);
+		itemSlots.put("gui.mainMenu.settings.slot", 50);
 		items.put("gui.mainMenu.requests.item", ItemCreator.createItem(Material.WRITTEN_BOOK, "&bDemandes d'amis"));
-		itemSlots.put("gui.mainMenu.requests.slot", 47);
+		itemSlots.put("gui.mainMenu.requests.slot", 48);
 		items.put("gui.mainMenu.previousPage.item", Skull.LEFT.getSkull("&ePage précédente"));
 		itemSlots.put("gui.mainMenu.previousPage.slot", 45);
 		items.put("gui.mainMenu.nextPage.item", Skull.RIGHT.getSkull("&ePage suivante"));
 		itemSlots.put("gui.mainMenu.nextPage.slot", 53);
 
 		requestsGuiTitle = (String) getPathOrSet("gui.requestsMenu.title", "&9Demandes d'amis");
-		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.size", 6);
+		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.rows", 6);
+		items.put("gui.requestsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.requestsMenu.requests.startSlot", 0);
-		itemSlots.put("gui.requestsMenu.requests.endSlot", 36);
+		itemSlots.put("gui.requestsMenu.requests.requestsPerPage", 36);
 		items.put("gui.requestsMenu.requests.item", SkullCreator.createSkeletonSkull( "&7%PLAYER%", " ",
 				"&7Demande de", "&e→ %REQUEST_DATE%", " ", "&7Expire dans:", "&e→ %EXPIRES_IN%"));
 
@@ -60,7 +61,8 @@ public class GuiFrenchConfig extends GuiConfig {
 		itemSlots.put("gui.requestsMenu.back.slot", 49);
 
 		settingsGuiTitle = (String) getPathOrSet("gui.settingsMenu.title", "&cParamètres");
-		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.size", 4);
+		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.rows", 4);
+		items.put("gui.settingsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.settingsMenu.toggleInvites.item", ItemCreator.createItem(Material.TORCH, "&6Basculer les demandes d'amis"));
 		itemSlots.put("gui.settingsMenu.toggleInvites.slot", 11);
 		items.put("gui.settingsMenu.toggleNotifies.item", ItemCreator.createItem(Material.WOOD_DOOR, "&6Basculer les notifications d'entrée/sortie"));
@@ -89,10 +91,11 @@ public class GuiFrenchConfig extends GuiConfig {
 		items.put("gui.settingsMenu.jumpOff.item", ItemCreator.createGlassPane(DyeColor.RED, "&6Les sauts sont maintenant &cinterdits"));
 		itemSlots.put("gui.settingsMenu.jumpOff.slot", 23);
 		items.put("gui.settingsMenu.back.item", Skull.BACK.getSkull("&cRetour"));
-		itemSlots.put("gui.settingsMenu.jumpOff.slot", 0);
+		itemSlots.put("gui.settingsMenu.back.slot", 0);
 
 		selectedPlayerGuiTitle = (String) getPathOrSet("gui.selectedPlayerMenu.title", "&6Joueur sélectionné &7- &6%PLAYER%");
 		selectedPlayerGuiRows = (int) getPathOrSet("gui.selectedPlayerMenu.rows", 1);
+		items.put("gui.selectedPlayerMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.selectedPlayerMenu.addFavourite.item", Skull.HEART.getSkull("&aAjouter aux favoris"));
 		itemSlots.put("gui.selectedPlayerMenu.addFavourite.slot", 5);
 		items.put("gui.selectedPlayerMenu.removeFavourite.item", Skull.CROSS.getSkull("&cRetirer des favoris"));

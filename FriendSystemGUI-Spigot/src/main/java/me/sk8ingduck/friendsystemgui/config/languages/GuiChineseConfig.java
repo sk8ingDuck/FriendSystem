@@ -21,9 +21,9 @@ public class GuiChineseConfig extends GuiConfig {
 
 		mainGuiTitle = (String) getPathOrSet("gui.mainMenu.title", "&9好友菜单");
 		mainGuiRows = (int) getPathOrSet("gui.mainMenu.rows", 6);
-
+		items.put("gui.mainMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.mainMenu.friends.startSlot", 0);
-		itemSlots.put("gui.mainMenu.friends.endSlot", 36);
+		itemSlots.put("gui.mainMenu.friends.friendsPerPage", 36);
 		items.put("gui.mainMenu.friends.onlineFriend", SkullCreator.createPlayerSkull("%PLAYER%",
 				" ", "服务器", "→ %SERVER%", " ", "在线时长", "→ %ONLINE_TIME%", " ", "状态", "→ %STATUS%"));
 		items.put("gui.mainMenu.friends.onlineFriendFavourite", SkullCreator.createPlayerSkull("[❤] %PLAYER%",
@@ -37,18 +37,19 @@ public class GuiChineseConfig extends GuiConfig {
 				" ", "服务器", "→ %SERVER%", " ", "您在线时长", "→ %ONLINE_TIME%", " ", "您的状态", "→ %STATUS%"));
 		itemSlots.put("gui.mainMenu.ownInfo.slot", 49);
 		items.put("gui.mainMenu.settings.item", ItemCreator.createItem(Material.REDSTONE, "设置"));
-		itemSlots.put("gui.mainMenu.settings.slot", 43);
+		itemSlots.put("gui.mainMenu.settings.slot", 50);
 		items.put("gui.mainMenu.requests.item", ItemCreator.createItem(Material.WRITTEN_BOOK, "好友请求"));
-		itemSlots.put("gui.mainMenu.requests.slot", 47);
+		itemSlots.put("gui.mainMenu.requests.slot", 48);
 		items.put("gui.mainMenu.previousPage.item", Skull.LEFT.getSkull("上一页"));
 		itemSlots.put("gui.mainMenu.previousPage.slot", 45);
 		items.put("gui.mainMenu.nextPage.item", Skull.RIGHT.getSkull("下一页"));
 		itemSlots.put("gui.mainMenu.nextPage.slot", 53);
 
 		requestsGuiTitle = (String) getPathOrSet("gui.requestsMenu.title", "&9好友请求");
-		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.size", 6);
+		requestsGuiRows = (int) getPathOrSet("gui.requestsMenu.rows", 6);
+		items.put("gui.requestsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		itemSlots.put("gui.requestsMenu.requests.startSlot", 0);
-		itemSlots.put("gui.requestsMenu.requests.endSlot", 36);
+		itemSlots.put("gui.requestsMenu.requests.requestsPerPage", 36);
 		items.put("gui.requestsMenu.requests.item", SkullCreator.createSkeletonSkull( "&7%PLAYER%", " ",
 				"&7来自的请求", "&e→ %REQUEST_DATE%", " ", "&7剩余时间:", "&e→ %EXPIRES_IN%"));
 
@@ -60,7 +61,8 @@ public class GuiChineseConfig extends GuiConfig {
 		itemSlots.put("gui.requestsMenu.back.slot", 49);
 
 		settingsGuiTitle = (String) getPathOrSet("gui.settingsMenu.title", "&c设置");
-		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.size", 4);
+		settingsGuiRows = (int) getPathOrSet("gui.settingsMenu.rows", 4);
+		items.put("gui.settingsMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.settingsMenu.toggleInvites.item", ItemCreator.createItem(Material.TORCH, "切换好友请求"));
 		itemSlots.put("gui.settingsMenu.toggleInvites.slot", 11);
 		items.put("gui.settingsMenu.toggleNotifies.item", ItemCreator.createItem(Material.WOOD_DOOR, "切换加入/离开通知"));
@@ -89,10 +91,11 @@ public class GuiChineseConfig extends GuiConfig {
 		items.put("gui.settingsMenu.jumpOff.item", ItemCreator.createGlassPane(DyeColor.RED, "跳跃现在不允许"));
 		itemSlots.put("gui.settingsMenu.jumpOff.slot", 23);
 		items.put("gui.settingsMenu.back.item", Skull.BACK.getSkull("返回"));
-		itemSlots.put("gui.settingsMenu.jumpOff.slot", 0);
+		itemSlots.put("gui.settingsMenu.back.slot", 0);
 
 		selectedPlayerGuiTitle = (String) getPathOrSet("gui.selectedPlayerMenu.title", "&6选中的玩家 &7- &6%PLAYER%");
 		selectedPlayerGuiRows = (int) getPathOrSet("gui.selectedPlayerMenu.rows", 1);
+		items.put("gui.selectedPlayerMenu.backgroundItem", ItemCreator.createGlassPane(DyeColor.BLACK, " "));
 		items.put("gui.selectedPlayerMenu.addFavourite.item", Skull.HEART.getSkull("添加到收藏"));
 		itemSlots.put("gui.selectedPlayerMenu.addFavourite.slot", 5);
 		items.put("gui.selectedPlayerMenu.removeFavourite.item", Skull.CROSS.getSkull("从收藏中移除"));

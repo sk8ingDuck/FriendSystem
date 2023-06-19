@@ -23,24 +23,31 @@ public class GuiMainMenu {
 
 	public void open(Player player) {
 		GuiConfig guiConfig = FriendSystemGUI.getInstance().getGuiConfig();
+		int rows = guiConfig.getMainGuiRows();
+
 		FriendSystemGUI.getInstance().getPluginMessaging().getFriends(player,
 				friends -> FriendSystemGUI.getInstance().getPluginMessaging().getOwnInfo(player,
 						(server, onlineTime, status) -> RyseInventory.builder()
 								.title(guiConfig.getMainGuiTitle())
-								.rows(6)
+								.rows(rows)
 								.provider(new InventoryProvider() {
 									@Override
 									public void init(Player player, InventoryContents contents) {
-										for (int i = 0; i < 9; i++) {
-											contents.set(4, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
-											contents.set(5, i, ItemCreator.createGlassPane(DyeColor.BLACK, " "));
+										int startSlot = guiConfig.getSlot("mainMenu.friends.startSlot", false);
+										int friendsPerPage = guiConfig.getSlot("mainMenu.friends.friendsPerPage", false);
+
+										for (int i = 0; i < startSlot; i++) {
+											contents.set(i, guiConfig.getItem("mainMenu.backgroundItem", false));
+										}
+										for (int i = startSlot + friendsPerPage; i < rows * 9; i++) {
+											contents.set(i, guiConfig.getItem("mainMenu.backgroundItem", false));
 										}
 
 										Pagination pagination = contents.pagination();
-										pagination.setItemsPerPage(36);
+										pagination.setItemsPerPage(friendsPerPage);
 
 										pagination.iterator(SlotIterator.builder()
-												.startPosition(0, 0)
+												.startPosition(startSlot)
 												.type(SlotIterator.SlotIteratorType.HORIZONTAL)
 												.build());
 
@@ -59,31 +66,46 @@ public class GuiMainMenu {
 																	.open(player, friend.getUuid(), friend.getName())));
 												});
 
-										contents.set(5, 0,
-												IntelligentItem.of(guiConfig.getItem("mainMenu.previousPage"), clickEvent -> {
-													if (!pagination.isFirst()) {
-														RyseInventory currentInventory = pagination.inventory();
-														currentInventory.open(player, pagination.previous().page());
-													}
-												}));
+										int previousPageSlot = guiConfig.getSlot("mainMenu.previousPage");
+										if (previousPageSlot != -1) {
+											contents.set(previousPageSlot,
+													IntelligentItem.of(guiConfig.getItem("mainMenu.previousPage"), clickEvent -> {
+														if (!pagination.isFirst()) {
+															RyseInventory currentInventory = pagination.inventory();
+															currentInventory.open(player, pagination.previous().page());
+														}
+													}));
+										}
+										int nextPageSlot = guiConfig.getSlot("mainMenu.nextPage");
+										if (nextPageSlot != -1) {
+											contents.set(nextPageSlot,
+													IntelligentItem.of(guiConfig.getItem("mainMenu.nextPage"), clickEvent -> {
+														if (!pagination.isLast()) {
+															RyseInventory currentInventory = pagination.inventory();
+															currentInventory.open(player, pagination.next().page());
+														}
+													}));
+										}
 
-										contents.set(5, 8,
-												IntelligentItem.of(guiConfig.getItem("mainMenu.nextPage"), clickEvent -> {
-													if (!pagination.isLast()) {
-														RyseInventory currentInventory = pagination.inventory();
-														currentInventory.open(player, pagination.next().page());
-													}
-												}));
+										int settingsSlot = guiConfig.getSlot("mainMenu.settings");
+										if (settingsSlot != -1) {
+											contents.set(settingsSlot,
+													IntelligentItem.of(guiConfig.getItem("mainMenu.settings"),
+															clickEvent -> GuiManager.guiSettings.open(player)));
+										}
 
-										contents.set(5, 3,
-												IntelligentItem.of(guiConfig.getItem("mainMenu.settings"),
-														clickEvent -> GuiManager.guiSettings.open(player)));
-										contents.set(5, 5,
-												IntelligentItem.of(guiConfig.getItem("mainMenu.requests"),
-														clickEvent -> GuiManager.guiRequests.open(player)));
+										int requestsSlot = guiConfig.getSlot("mainMenu.requests");
+										if (requestsSlot != -1) {
+											contents.set(requestsSlot,
+													IntelligentItem.of(guiConfig.getItem("mainMenu.requests"),
+															clickEvent -> GuiManager.guiRequests.open(player)));
+										}
 
-										contents.set(5, 4, getHead(guiConfig.getItem("mainMenu.ownInfo"),
-												player.getName(), true, onlineTime, server, status));
+										int ownInfoSlot = guiConfig.getSlot("mainMenu.ownInfo");
+										if (ownInfoSlot != -1) {
+											contents.set(ownInfoSlot, getHead(guiConfig.getItem("mainMenu.ownInfo"),
+													player.getName(), true, onlineTime, server, status));
+										}
 									}
 								})
 								.build(FriendSystemGUI.getInstance()).open(player)));
