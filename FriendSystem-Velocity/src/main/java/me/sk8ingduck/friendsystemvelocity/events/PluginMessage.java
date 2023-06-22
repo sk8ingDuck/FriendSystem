@@ -77,7 +77,13 @@ public class PluginMessage {
 			sendOwnInfo(receiver, onlineMode);
 
 		} else if (subChannel.equalsIgnoreCase("getstatus")) {
+
 			sendStatus(receiver, onlineMode);
+
+		} else if (subChannel.equalsIgnoreCase("forwardcmd")) {
+
+
+
 		}
 	}
 

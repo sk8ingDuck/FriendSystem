@@ -8,9 +8,11 @@ import me.sk8ingduck.friendsystem.events.Join;
 import me.sk8ingduck.friendsystem.events.PluginMessage;
 import me.sk8ingduck.friendsystem.mysql.MySQL;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
+import me.sk8ingduck.friendsystem.utils.UpdateChecker;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.PluginManager;
 
 import java.util.UUID;
@@ -67,7 +69,15 @@ public class FriendSystem extends Plugin {
 
 		getProxy().registerChannel("me:friendsystem");
 
-		getLogger().info("§aFriendSystem enabled!");
+		getLogger().info("§a[FriendSystem] Plugin enabled!");
+
+		new UpdateChecker(this, 108701).getLatestVersion(version -> {
+			if (!getDescription().getVersion().equalsIgnoreCase(version)) {
+				getLogger().info("§6[FriendSystem] There is a new version available on SpigotMC!");
+			} else {
+				getLogger().info("§a[FriendSystem] Plugin is up-to-date!");
+			}
+		});
 	}
 
 	public void onDisable() {

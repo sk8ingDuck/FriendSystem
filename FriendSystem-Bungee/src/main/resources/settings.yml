@@ -70,3 +70,33 @@ permissions:
     premium_plus: 50
     youtuber: 100
     moderator: 500
+
+commandManager:
+  friend:
+    main: 'friend' #This means that the friend command starts with /friend
+    alias: 'friends' #This means you can also use /friends
+    subcommands:
+      help:
+        main: 'help' #full command would be /friend help (or /friends help)
+        alias: 'h' #or /friend h (or /friends h)
+      toggleinvites:
+        main: 'toggleinvites'
+        alias: 'toggle invites'
+      togglemsgs:
+        main: 'togglemsgs'
+        alias: 'toggle msgs'
+      togglejump:
+        main: 'togglejump'
+        alias: 'toggle jump'
+      togglenotifies:
+        main: 'togglenotifies'
+        alias: 'toggle notifies'
+      list:
+        main: 'list'
+        alias: ''
+      requests:
+        main: 'requests'
+        alias: ''
+      status:
+        main: 'status %STATUS%'
+        alias: ''

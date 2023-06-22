@@ -72,6 +72,9 @@ public class PluginMessage implements Listener {
 			sendOwnInfo(receiver, onlineMode);
 		} else if (subChannel.equalsIgnoreCase("getstatus")) {
 			sendStatus(receiver, onlineMode);
+		} else if (subChannel.equalsIgnoreCase("forwardcmd")) {
+			String cmd = in.readUTF();
+			ProxyServer.getInstance().getPluginManager().dispatchCommand(receiver, cmd);
 		}
 	}
 

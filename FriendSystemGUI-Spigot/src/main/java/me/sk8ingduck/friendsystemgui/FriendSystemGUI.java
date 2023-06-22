@@ -2,6 +2,7 @@ package me.sk8ingduck.friendsystemgui;
 
 import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
 import me.sk8ingduck.friendsystemgui.command.FCommand;
+import me.sk8ingduck.friendsystemgui.command.ForwardCommand;
 import me.sk8ingduck.friendsystemgui.config.*;
 import me.sk8ingduck.friendsystemgui.config.GuiConfig;
 import me.sk8ingduck.friendsystemgui.config.languages.*;
@@ -43,6 +44,7 @@ public final class FriendSystemGUI extends JavaPlugin {
         pm = new PluginMessage();
 
         this.getCommand("f").setExecutor(new FCommand());
+        this.getCommand("forwardcmd").setExecutor(new ForwardCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);

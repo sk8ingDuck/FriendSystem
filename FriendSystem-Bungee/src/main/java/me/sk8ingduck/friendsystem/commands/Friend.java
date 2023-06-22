@@ -11,6 +11,7 @@ import me.sk8ingduck.friendsystem.utils.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -157,6 +158,15 @@ public class Friend extends Command implements TabExecutor {
 				printFriendRequestPage(player, friendPlayer, Integer.parseInt(args[1]), onlineMode);
 				return;
 			}
+
+			if ((args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("deny"))
+					&& args[1].equalsIgnoreCase("all")) {
+				friendPlayer.getRequests().forEach(request ->
+								UUIDFetcher.getName(UUID.fromString(request), name ->
+								ProxyServer.getInstance().getPluginManager().dispatchCommand(player, "friend " + args[0] + " " + name)));
+				return;
+			}
+
 			String playerName = args[1];
 
 			if (playerName.equalsIgnoreCase(player.getName())) {
@@ -274,6 +284,10 @@ public class Friend extends Command implements TabExecutor {
 					friendPlayer.getFriends().put(uuid2, newState);
 					mySQL.updateFavouriteAsync(uuid, uuid2, newState);
 					player.sendMessage(c.get("friend.favourite." + (newState ? "added" : "removed"), "%PLAYER%", playerName));
+				} else if (action.equalsIgnoreCase("removestatus") && player.hasPermission("friendsystem.removestatus")) {
+					friendPlayer2.updateStatus("");
+					mySQL.updateStatusAsync(uuid2, "");
+					player.sendMessage(new TextComponent("§a[FriendSystem] Status of " + playerName + " removed."));
 				}
 			});
 		}

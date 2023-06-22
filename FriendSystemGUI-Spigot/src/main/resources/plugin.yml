@@ -10,3 +10,6 @@ commands:
   f:
     description: open friend menu
     usage: /f
+  forwardcmd:
+    description: Forward a Bukkit command to Bungeecord
+    usage: /forwardcmd <Command>

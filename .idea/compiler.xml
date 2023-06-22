@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="friendsystemgui" />
         <module name="FriendSystem-Bungee" />
         <module name="FriendSystemGUI-Spigot" />
       </profile>
@@ -44,5 +45,8 @@
         <module name="FriendSystem-Velocity.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="FriendSystemGUI-Spigot" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import me.sk8ingduck.friendsystemvelocity.FriendSystem;
 import me.sk8ingduck.friendsystemvelocity.config.MessagesConfig;
 import me.sk8ingduck.friendsystemvelocity.config.SettingsConfig;
@@ -162,6 +163,15 @@ public class Friend implements SimpleCommand {
 				printFriendRequestPage(player, friendPlayer, Integer.parseInt(args[1]), onlineMode);
 				return;
 			}
+			if ((args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("deny"))
+					&& args[1].equalsIgnoreCase("all")) {
+				friendPlayer.getRequests().forEach(request ->
+								UUIDFetcher.getName(UUID.fromString(request), name ->
+										FriendSystem.server.getCommandManager()
+												.executeAsync(player, "friend " + args[0] + " " + name)));
+				return;
+			}
+
 			String playerName = args[1];
 
 			if (playerName.equalsIgnoreCase(player.getUsername())) {
@@ -282,6 +292,10 @@ public class Friend implements SimpleCommand {
 					friendPlayer.getFriends().put(uuid2, newState);
 					mySQL.updateFavouriteAsync(uuid, uuid2, newState);
 					player.sendMessage(c.get("friend.favourite." + (newState ? "added" : "removed"), "%PLAYER%", playerName, "%PREFIX%", prefix));
+				} else if (action.equalsIgnoreCase("removestatus") && player.hasPermission("friendsystem.removestatus")) {
+					friendPlayer2.updateStatus("");
+					mySQL.updateStatusAsync(uuid2, "");
+					player.sendMessage(Component.text("[FriendSystem] Status of " + playerName + " removed."));
 				}
 			});
 		}

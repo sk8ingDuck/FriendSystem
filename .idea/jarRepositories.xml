@@ -12,24 +12,19 @@
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="jitpack" />
-      <option name="name" value="jitpack" />
-      <option name="url" value="https://jitpack.io" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="maven2" />
       <option name="name" value="maven2" />
-      <option name="url" value="https://maven.pkg.github.com/Exlll/ConfigLib" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="de.exlll" />
-      <option name="name" value="de.exlll" />
       <option name="url" value="https://maven.pkg.github.com/Exlll/ConfigLib" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="papermc-repo" />
       <option name="name" value="papermc-repo" />
       <option name="url" value="https://repo.papermc.io/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jitpack" />
+      <option name="name" value="jitpack" />
+      <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -60,6 +55,11 @@
       <option name="id" value="spigot-repo" />
       <option name="name" value="spigot-repo" />
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="de.exlll" />
+      <option name="name" value="de.exlll" />
+      <option name="url" value="https://maven.pkg.github.com/Exlll/ConfigLib" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />
