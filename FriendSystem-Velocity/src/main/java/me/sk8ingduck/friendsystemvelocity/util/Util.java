@@ -1,5 +1,6 @@
 package me.sk8ingduck.friendsystemvelocity.util;
 
+import me.sk8ingduck.friendsystemvelocity.FriendSystem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -12,9 +13,13 @@ import java.util.concurrent.ExecutionException;
 
 public class Util {
 
-	static LuckPerms luckPerms = LuckPermsProvider.get();
+	static boolean luckPermsEnabled = FriendSystem.server.getPluginManager().getPlugin("luckperms").isPresent();
+
 
 	public static String getPrefix(UUID uuid) {
+		if (!luckPermsEnabled) return "";
+
+		LuckPerms luckPerms = LuckPermsProvider.get();
 		User user = luckPerms.getUserManager().getUser(uuid);
 		String prefix = null;
 

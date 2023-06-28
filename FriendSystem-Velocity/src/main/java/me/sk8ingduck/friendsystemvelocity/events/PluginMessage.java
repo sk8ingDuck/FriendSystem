@@ -6,15 +6,12 @@ import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.ServerConnection;
 import me.sk8ingduck.friendsystemvelocity.FriendSystem;
 import me.sk8ingduck.friendsystemvelocity.util.FriendManager;
 import me.sk8ingduck.friendsystemvelocity.util.FriendPlayer;
 import me.sk8ingduck.friendsystemvelocity.util.UUIDFetcher;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
 
 public class PluginMessage {

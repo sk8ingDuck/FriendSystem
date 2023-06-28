@@ -4,8 +4,9 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.plugin.PluginDescription;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -25,33 +26,42 @@ import me.sk8ingduck.friendsystemvelocity.mysql.MySQLDriver;
 import me.sk8ingduck.friendsystemvelocity.util.FriendManager;
 import org.slf4j.Logger;
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 @Plugin(
 		id = "friendsystem",
 		name = "FriendSystem",
-		version = "1.0"
+		version = "2.1",
+		authors = "sk8ingDuck",
+		dependencies = {
+				@Dependency(id = "LuckPerms", optional = true)
+		}
 )
 public class FriendSystem {
 
 	public static FriendSystem instance;
 	public static ProxyServer server;
-
+	private final PluginDescription description;
+	private final Logger logger;
 	private FriendManager friendManager;
 	private MySQL mysql;
 	private SettingsConfig settingsConfig;
 	private MessagesConfig messagesConfig;
 
-
-
 	@Inject
-	public FriendSystem(ProxyServer server, Logger logger) {
+	public FriendSystem(ProxyServer server, Logger logger, PluginDescription description) {
 		instance = this;
 		FriendSystem.server = server;
+		this.description = description;
+		this.logger = logger;
 
 		try {
 			new MySQLDriver(Paths.get("plugins/FriendSystem/driver"));
@@ -59,7 +69,19 @@ public class FriendSystem {
 			throw new RuntimeException(e);
 		}
 
-		logger.info("Plugin loaded.");
+		logger.info("FriendSystem loaded.");
+	}
+
+	public static Optional<Player> getPlayer(String nameOrUuid) {
+		if (Pattern.compile("^(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})$")
+				.matcher(nameOrUuid).matches())
+			return server.getPlayer(UUID.fromString(nameOrUuid));
+
+		return server.getPlayer(nameOrUuid);
+	}
+
+	public static FriendSystem getInstance() {
+		return instance;
 	}
 
 	@Subscribe
@@ -92,18 +114,15 @@ public class FriendSystem {
 		server.getEventManager().register(this, new Join());
 		server.getEventManager().register(this, new Disconnect());
 		server.getEventManager().register(this, new PluginMessage());
-	}
 
-	public static Optional<Player> getPlayer(String nameOrUuid) {
-		if (Pattern.compile("^(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})$")
-				.matcher(nameOrUuid).matches())
-			return server.getPlayer(UUID.fromString(nameOrUuid));
 
-		return server.getPlayer(nameOrUuid);
-	}
-
-	public static FriendSystem getInstance() {
-		return instance;
+		getLatestVersion(108701, version -> {
+			if (!description.getVersion().orElse("").equalsIgnoreCase(version)) {
+				logger.info("§6There is a new version available on SpigotMC!");
+			} else {
+				logger.info("§aPlugin is up-to-date!");
+			}
+		});
 	}
 
 	public FriendManager getFriendManager() {
@@ -126,4 +145,16 @@ public class FriendSystem {
 		settingsConfig.reload();
 		messagesConfig = new MessagesEnglishConfig("plugins/FriendSystem/messages_english.yml");
 	}
+
+	public void getLatestVersion(int resourceId, Consumer<String> version) {
+		try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream();
+		     Scanner scanner = new Scanner(inputStream)) {
+			if (scanner.hasNext()) {
+				version.accept(scanner.next());
+			}
+		} catch (IOException exception) {
+			logger.info("Cannot check for updates: " + exception.getMessage());
+		}
+	}
+
 }

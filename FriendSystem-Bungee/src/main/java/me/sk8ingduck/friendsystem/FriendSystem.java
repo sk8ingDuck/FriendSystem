@@ -8,14 +8,17 @@ import me.sk8ingduck.friendsystem.events.Join;
 import me.sk8ingduck.friendsystem.events.PluginMessage;
 import me.sk8ingduck.friendsystem.mysql.MySQL;
 import me.sk8ingduck.friendsystem.utils.FriendManager;
-import me.sk8ingduck.friendsystem.utils.UpdateChecker;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.PluginManager;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Scanner;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class FriendSystem extends Plugin {
@@ -71,7 +74,7 @@ public class FriendSystem extends Plugin {
 
 		getLogger().info("§a[FriendSystem] Plugin enabled!");
 
-		new UpdateChecker(this, 108701).getLatestVersion(version -> {
+		getLatestVersion(108701, version -> {
 			if (!getDescription().getVersion().equalsIgnoreCase(version)) {
 				getLogger().info("§6[FriendSystem] There is a new version available on SpigotMC!");
 			} else {
@@ -143,5 +146,18 @@ public class FriendSystem extends Plugin {
 
 	public Friend getFriendCommand() {
 		return friendCommand;
+	}
+
+	public void getLatestVersion(int resourceId, Consumer<String> version) {
+		ProxyServer.getInstance().getScheduler().runAsync(FriendSystem.getInstance(), () -> {
+			try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream();
+			     Scanner scanner = new Scanner(inputStream)) {
+				if (scanner.hasNext()) {
+					version.accept(scanner.next());
+				}
+			} catch (IOException exception) {
+				getLogger().info("Cannot look for updates: " + exception.getMessage());
+			}
+		});
 	}
 }

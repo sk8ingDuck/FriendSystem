@@ -58,8 +58,6 @@ public final class FriendSystemGUI extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new Placeholder().register();
         }
-
-        Bukkit.broadcastMessage(settingsConfig.getLanguage() + " <-");
     }
 
     @Override

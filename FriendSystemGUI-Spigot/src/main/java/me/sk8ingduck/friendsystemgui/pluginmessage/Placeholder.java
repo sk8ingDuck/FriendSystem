@@ -29,7 +29,7 @@ public class Placeholder extends PlaceholderExpansion {
 
 	@Override
 	public @NotNull String getVersion() {
-		return "2.0";
+		return "2.1";
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class Placeholder extends PlaceholderExpansion {
 				return Optional.ofNullable(settingsCache.get(playerId)).map(s -> Boolean.toString(s.isNotifies())).orElse("Loading...");
 			case "ismsgsenabled":
 				return Optional.ofNullable(settingsCache.get(playerId)).map(s -> Boolean.toString(s.isMsgs())).orElse("Loading...");
-			case "jumpenabled":
+			case "isjumpingenabled":
 				return Optional.ofNullable(settingsCache.get(playerId)).map(s -> Boolean.toString(s.isJump())).orElse("Loading...");
 			default:
 				return "Not found";
